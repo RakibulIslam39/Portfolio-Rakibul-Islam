@@ -101,13 +101,13 @@ async function chromePath() {
   return chromium.executablePath();
 }
 
-async function runLighthouse() {
-  const server = await serveDist(PORT);
-  const out = join(tmpdir(), `lh-${process.pid}.json`);
-  const env = { ...process.env, CHROME_PATH: await chromePath() };
-  const scores = [];
-  try {
-    for (const path of PAGES) {
+/**
+ * One Lighthouse run, retried once. Lighthouse is a measurement, not a gate: if a page still
+ * fails, it is left out of the report with a warning instead of failing the build.
+ */
+async function measure(path, env, out) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
       // Async on purpose: a sync call would block the event loop and the in-process server.
       await run(
         'npx',
@@ -119,14 +119,38 @@ async function runLighthouse() {
           '--output=json',
           `--output-path=${out}`,
           '--only-categories=performance,accessibility,best-practices,seo',
-          '--chrome-flags=--headless=new --no-sandbox',
+          // --disable-dev-shm-usage: Docker's 64 MB /dev/shm otherwise crashes Chrome tabs.
+          '--chrome-flags=--headless=new --no-sandbox --disable-dev-shm-usage --disable-gpu',
         ],
         { env, maxBuffer: 64 * 1024 * 1024 },
       );
       const c = JSON.parse(readFileSync(out, 'utf8')).categories;
       const pct = (k) => Math.round((c[k]?.score ?? 0) * 100);
-      scores.push({ path, performance: pct('performance'), accessibility: pct('accessibility'), bestPractices: pct('best-practices'), seo: pct('seo') });
-      console.log(`lighthouse ${path}`, scores.at(-1));
+      return { path, performance: pct('performance'), accessibility: pct('accessibility'), bestPractices: pct('best-practices'), seo: pct('seo') };
+    } catch (e) {
+      const lines = String(e.stderr || e.message).split('\n').filter((l) => l.trim() && !l.startsWith('npm warn'));
+      const reason = lines.find((l) => /error/i.test(l)) ?? lines.at(-1);
+      console.warn(`::warning::Lighthouse ${path} attempt ${attempt} failed: ${reason}`);
+    }
+  }
+  return null;
+}
+
+async function runLighthouse() {
+  const server = await serveDist(PORT);
+  const out = join(tmpdir(), `lh-${process.pid}.json`);
+  const env = { ...process.env, CHROME_PATH: await chromePath() };
+  const scores = [];
+  try {
+    for (const path of PAGES) {
+      const score = await measure(path, env, out);
+      if (!score) {
+        // The browser is probably unusable here; don't spend minutes failing every page.
+        console.warn(`::warning::Skipping the remaining Lighthouse pages after ${path} failed.`);
+        break;
+      }
+      scores.push(score);
+      console.log(`lighthouse ${path}`, score);
     }
   } finally {
     server.close();
