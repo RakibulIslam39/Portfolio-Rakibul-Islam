@@ -46,9 +46,10 @@ Things still marked TODO:
 | `tests/a11y.spec.ts` | axe WCAG 2.2 AA scan of every page in both themes |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
 
-Visual baselines are Linux renders (they match CI). On macOS the pixel comparison is
-skipped automatically. To refresh baselines after an intentional design change, run
-`npm run test:update` in CI or a Linux container.
+Visual baselines are rendered in Playwright's official Docker image, the same one CI uses,
+so they match pixel for pixel. On macOS the pixel comparison is skipped automatically.
+After an intentional design change, go to **Actions → Update visual snapshots → Run workflow**:
+it regenerates the baselines in that image and commits them.
 
 ## Project structure
 
