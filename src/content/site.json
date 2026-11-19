@@ -84,28 +84,42 @@
       "company": "WPPOOL",
       "period": "Oct 2024 – now",
       "place": "Remote",
-      "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins."
+      "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins.",
+      "bullets": [
+        "Designed and executed end-to-end manual and automated test suites for WordPress plugins, including FlexOrder, FlexStock, EchoRewards, FlexTable, FormyChat, WP Dark Mode and Jitsi Meet.",
+        "Designed reusable Playwright (TypeScript) automation frameworks using the Page Object Model for end-to-end, functional and regression testing.",
+        "Automated WooCommerce ↔ Google Sheets synchronization testing by integrating the Google Sheets API and WooCommerce REST API, ensuring bi-directional order and stock accuracy.",
+        "Performed API testing to validate endpoints, authentication, data integrity and error handling across plugin integrations.",
+        "Integrated automated test workflows into GitHub Actions CI/CD pipelines for continuous, commit-triggered testing.",
+        "Executed regression testing on release-candidate builds and wrote reproducible bug reports to speed up fixes.",
+        "Verified cross-browser compatibility, UI responsiveness and internationalization (i18n) across supported plugins.",
+        "Created user guides and testing documentation to improve usability and onboarding."
+      ]
     },
     {
       "role": "SQA Engineer",
       "company": "Zaimah Technologies",
       "period": "Dec 2023 – Apr 2024",
       "place": "Dhaka",
-      "summary": "End-to-end, API (Postman) and performance (JMeter) testing for MacroHealthPlus."
+      "summary": "End-to-end, API (Postman) and performance (JMeter) testing for MacroHealthPlus.",
+      "bullets": [
+        "Started with manual testing, finding defects and inconsistencies with a methodical approach.",
+        "Performed end-to-end testing of MacroHealthPlus across all modules.",
+        "Used Apache JMeter to evaluate performance and stability under various load conditions.",
+        "Ran comprehensive API testing in Postman, verifying endpoints, parameters and responses."
+      ]
     },
     {
       "role": "Software QA Engineer, intern",
       "company": "Edutechs",
       "period": "Jan 2018 – Jan 2021",
-      "place": "San Diego (remote)",
-      "summary": "Test plans, test cases and first automation scripts in an Agile squad."
-    },
-    {
-      "role": "BSc in CSE",
-      "company": "BUBT",
-      "period": "2018 – 2022",
-      "place": "Dhaka",
-      "summary": "Bangladesh University of Business and Technology."
+      "place": "San Diego, California",
+      "summary": "Test plans, test cases and first automation scripts in an Agile squad.",
+      "bullets": [
+        "Worked with developers and designers in an Agile, squad-based team on usability, security and quality for new features.",
+        "Reviewed design and technical specifications to create test plans and test cases for functional, regression and performance testing.",
+        "Wrote automation scripts, executed test scenarios and compiled quality reports."
+      ]
     }
   ],
   "plugins": [
@@ -128,7 +142,8 @@
         "Docker",
         "GitHub Actions"
       ],
-      "url": "https://github.com/RakibulIslam39"
+      "url": "https://github.com/RakibulIslam39",
+      "slug": "flexorder-e2e"
     },
     {
       "name": "Traffic Flow Prediction",
@@ -140,17 +155,20 @@
         "TensorFlow",
         "scikit-learn"
       ],
-      "url": "https://github.com/RakibulIslam39/traffic-flow-prediction-Python"
+      "url": "https://github.com/RakibulIslam39/traffic-flow-prediction-Python",
+      "slug": "traffic-flow-prediction"
     },
     {
       "name": "AI Face Analyzer",
-      "hook": "A side project in the browser",
-      "summary": "A web app that analyses faces with AI models. TODO: add a one-line result or demo link.",
+      "hook": "Runs entirely in the browser",
+      "summary": "A face-analysis web app that runs in the browser with no backend, deployed as a free Hugging Face Static Space.",
       "stack": [
-        "Web",
-        "AI"
+        "Static web app",
+        "In-browser ML",
+        "Hugging Face Spaces"
       ],
-      "url": "https://github.com/RakibulIslam39/ai-face-analyzer"
+      "url": "https://github.com/RakibulIslam39/ai-face-analyzer",
+      "slug": "ai-face-analyzer"
     }
   ],
   "pipeline": [
@@ -184,5 +202,36 @@
       "WooCommerce order management",
       "Google Sheets synchronization"
     ]
-  }
+  },
+  "summary": "QA Automation Engineer with 3+ years of experience building and maintaining automated test frameworks for web, SaaS and API applications. Skilled in Playwright (JavaScript/TypeScript), API testing, CI/CD with GitHub Actions, Docker, and performance testing with Apache JMeter.",
+  "education": [
+    {
+      "degree": "BSc in Computer Science and Engineering",
+      "school": "Bangladesh University of Business and Technology (BUBT)",
+      "period": "2018 – 2022",
+      "place": "Dhaka, Bangladesh",
+      "short": "BSc in CSE",
+      "schoolShort": "BUBT"
+    }
+  ],
+  "languages": [
+    {
+      "name": "Bengali",
+      "level": "Native"
+    },
+    {
+      "name": "English",
+      "level": "Advanced"
+    }
+  ],
+  "achievements": [
+    {
+      "title": "Built an end-to-end test automation framework",
+      "detail": "Automated 38 end-to-end scenarios across setup, WooCommerce order management and Google Sheets synchronization with Playwright and TypeScript, reaching a 100% pass rate and removing manual regression testing."
+    },
+    {
+      "title": "Engineered a zero-touch CI/CD pipeline",
+      "detail": "A Dockerized GitHub Actions pipeline, triggered on every plugin commit via repository_dispatch, provisions a fresh WordPress + WooCommerce environment and validates the exact pushed version before release."
+    }
+  ]
 }

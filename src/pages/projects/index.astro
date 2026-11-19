@@ -1,5 +1,137 @@
 ---
-import ComingSoon from '../../components/ComingSoon.astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<ComingSoon title="Projects | Rakibul Islam" heading="Projects" text="Full case studies (problem, approach, stack and result) are coming in the next phase." />
+<BaseLayout title="Projects | Rakibul Islam" description="Test automation frameworks, CI pipelines and side projects by Rakibul Islam.">
+  <div class="container">
+    <header class="page-head">
+      <p class="pill page-head__eyebrow">{projects.length} projects</p>
+      <h1>Projects</h1>
+      <p>Test frameworks, pipelines and a few side projects. Each one has a short case study: the problem, what I built and how it turned out.</p>
+    </header>
+
+    <ul class="plist">
+      {
+        projects.map((p, i) => (
+          <li class:list={['pcard', { 'pcard--lead': i === 0 }]}>
+            <a href={`/projects/${p.id}/`} class="pcard__link">
+              <span class="pcard__hook">{p.data.hook}</span>
+              <h2 class="pcard__title">{p.data.title}</h2>
+              <p class="pcard__summary">{p.data.summary}</p>
+              {p.data.metrics.length > 0 && (
+                <dl class="pcard__metrics">
+                  {p.data.metrics.slice(0, 3).map((m) => (
+                    <div>
+                      <dt>{m.label}</dt>
+                      <dd>{m.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              <span class="pcard__stack">
+                {p.data.stack.slice(0, 5).map((s) => (
+                  <span class="pill">{s}</span>
+                ))}
+              </span>
+              <span class="pcard__cta" aria-hidden="true">
+                Read case study →
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .plist {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .pcard--lead {
+    grid-column: 1 / -1;
+  }
+  .pcard__link {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    text-decoration: none;
+    transition: transform 0.3s var(--ease-arrive), box-shadow 0.3s;
+  }
+  .pcard__link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 1px var(--outline) inset, var(--shadow);
+  }
+  .pcard__hook {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--pass);
+  }
+  .pcard__title {
+    font-size: 28px;
+    letter-spacing: -0.025em;
+  }
+  .pcard--lead .pcard__title {
+    font-size: clamp(30px, 4vw, 40px);
+  }
+  .pcard__summary {
+    margin: 0;
+    max-width: 62ch;
+  }
+  .pcard__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin: 8px 0 4px;
+  }
+  .pcard__metrics div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .pcard__metrics dt {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .pcard__metrics dd {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .pcard__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pcard__stack .pill {
+    font-size: 12px;
+  }
+  .pcard__cta {
+    margin-top: auto;
+    padding-top: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+  @media (max-width: 699px) {
+    .plist {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -5,3 +5,7 @@ playwright-report/
 test-results/
 .DS_Store
 .env
+
+# Local scratch, not part of the site
+_to_delete/
+Claude outputs/

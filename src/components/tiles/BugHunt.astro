@@ -15,17 +15,17 @@ const bugs = [
   <AppIcon name="bug" slot="icon" />
   <div class="bh" data-bughunt data-total={bugs.length}>
     <div class="bh__ui" aria-label="A checkout form with planted bugs">
-      <button type="button" class="bug" data-bug="typo" aria-label="Inspect the heading"><span class="bh__h">Chekout</span></button>
+      <button type="button" class="bug" data-bug="typo"><span class="bh__h">Chekout</span><span class="sr-only"> (inspect heading)</span></button>
       <div class="bh__row">
         <span>Test plan (monthly)</span>
-        <button type="button" class="bug" data-bug="price" aria-label="Inspect the price">$-5.00</button>
+        <button type="button" class="bug" data-bug="price">$-5.00<span class="sr-only"> (inspect price)</span></button>
       </div>
       <div class="bh__row">
         <span>Delivery</span>
-        <button type="button" class="bug" data-bug="date" aria-label="Inspect the delivery date">31 Feb 2027</button>
+        <button type="button" class="bug" data-bug="date">31 Feb 2027<span class="sr-only"> (inspect delivery date)</span></button>
       </div>
-      <button type="button" class="bug bh__input-wrap" data-bug="align" aria-label="Inspect the email field"><span class="bh__input">you@email.com</span></button>
-      <button type="button" class="bug bh__pay-wrap" data-bug="contrast" aria-label="Inspect the pay button"><span class="bh__pay">Pay now</span></button>
+      <button type="button" class="bug bh__input-wrap" data-bug="align"><span class="bh__input">you@email.com</span><span class="sr-only"> (inspect email field)</span></button>
+      <button type="button" class="bug bh__pay-wrap" data-bug="contrast"><span class="bh__pay">Pay now</span><span class="sr-only"> (inspect pay button)</span></button>
     </div>
 
     <div class="bh__side">
@@ -101,7 +101,7 @@ const bugs = [
     padding: 5px 8px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    color: #888;
+    color: #666;
   }
   .bh__pay {
     display: block;

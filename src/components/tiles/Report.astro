@@ -7,7 +7,7 @@ const { total, passRate, note, suites } = site.report;
 const project = site.projects[0]!;
 ---
 
-<Tile id="report" size="2x2" app="Test report" href={project.url} hrefLabel={`Open ${project.name}`} class="report">
+<Tile id="report" size="2x2" app="Test report" href={`/projects/${project.slug}/`} hrefLabel={`Read the ${project.name} case study`} class="report">
   <AppIcon name="report" slot="icon" />
   <div class="rep">
     <div class="rep__top">

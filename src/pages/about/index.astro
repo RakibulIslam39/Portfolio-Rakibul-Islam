@@ -1,5 +1,330 @@
 ---
-import ComingSoon from '../../components/ComingSoon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import site from '../../content/site.json';
+
+const notes = [
+  { id: 'about', title: 'About me', preview: site.tagline },
+  { id: 'experience', title: 'Experience', preview: `${site.experience[0]!.role} at ${site.experience[0]!.company}` },
+  { id: 'achievements', title: 'Key achievements', preview: site.achievements[0]!.title },
+  { id: 'skills', title: 'Skills', preview: site.skills.slice(0, 4).map((s) => s.name).join(', ') },
+  { id: 'education', title: 'Education & languages', preview: site.education[0]!.degree },
+  { id: 'now', title: 'Now', preview: site.status.detail },
+];
+
+const groups = Object.entries(
+  site.skills.reduce<Record<string, string[]>>((acc, s) => {
+    (acc[s.group] ??= []).push(s.name);
+    return acc;
+  }, {}),
+);
 ---
 
-<ComingSoon title="About | Rakibul Islam" heading="About me" text="A Notes-app style page with my summary, experience, education and languages is coming in the next phase." />
+<BaseLayout title="About | Rakibul Islam" description={`About ${site.name}: ${site.summary}`}>
+  <div class="container">
+    <div class="notes" data-notes>
+      <div class="notes__bar">
+        <span class="notes__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="notes__app">Notes</span>
+        <span class="notes__count">{notes.length} notes</span>
+      </div>
+
+      <div class="notes__body">
+        <aside class="notes__side">
+          <p class="notes__folder">{site.firstName}'s notes</p>
+          <div class="notes__list" role="tablist" aria-label="Notes" aria-orientation="vertical">
+            {
+              notes.map((n, i) => (
+                <button
+                  class="notes__item"
+                  role="tab"
+                  type="button"
+                  id={`tab-${n.id}`}
+                  aria-controls={`note-${n.id}`}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  tabindex={i === 0 ? 0 : -1}
+                  data-note-tab={n.id}
+                >
+                  <span class="notes__title">{n.title}</span>
+                  <span class="notes__preview">{n.preview}</span>
+                </button>
+              ))
+            }
+          </div>
+        </aside>
+
+        <div class="notes__content">
+          <h1 class="notes__h1">About {site.firstName}</h1>
+
+          <section class="note prose" role="tabpanel" id="note-about" aria-labelledby="tab-about" data-note="about">
+            <h2>About me</h2>
+            <p><strong>{site.tagline}</strong></p>
+            <p>{site.summary}</p>
+            <p>{site.intro[1]}</p>
+            <!-- TODO: replace with your own story: how you got into QA and what you enjoy about it. -->
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+              consequat.
+            </p>
+          </section>
+
+          <section class="note prose" role="tabpanel" id="note-experience" aria-labelledby="tab-experience" data-note="experience">
+            <h2>Experience</h2>
+            {
+              site.experience.map((e) => (
+                <article class="job">
+                  <h3>
+                    {e.role} <span class="job__at">· {e.company}</span>
+                  </h3>
+                  <p class="job__meta">
+                    {e.period} · {e.place}
+                  </p>
+                  <ul>
+                    {e.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))
+            }
+          </section>
+
+          <section class="note prose" role="tabpanel" id="note-achievements" aria-labelledby="tab-achievements" data-note="achievements">
+            <h2>Key achievements</h2>
+            {
+              site.achievements.map((a) => (
+                <>
+                  <h3>{a.title}</h3>
+                  <p>{a.detail}</p>
+                </>
+              ))
+            }
+            <p><a href="/projects/flexorder-e2e/">Read the FlexOrder case study →</a></p>
+          </section>
+
+          <section class="note prose" role="tabpanel" id="note-skills" aria-labelledby="tab-skills" data-note="skills">
+            <h2>Skills</h2>
+            <dl class="skills-dl">
+              {
+                groups.map(([group, names]) => (
+                  <div>
+                    <dt>{group}</dt>
+                    <dd>{names.join(' · ')}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </section>
+
+          <section class="note prose" role="tabpanel" id="note-education" aria-labelledby="tab-education" data-note="education">
+            <h2>Education &amp; languages</h2>
+            {
+              site.education.map((ed) => (
+                <>
+                  <h3>{ed.degree}</h3>
+                  <p class="job__meta">
+                    {ed.school} · {ed.period} · {ed.place}
+                  </p>
+                </>
+              ))
+            }
+            <h3>Languages</h3>
+            <ul>
+              {
+                site.languages.map((l) => (
+                  <li>
+                    <strong>{l.name}</strong>: {l.level}
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+
+          <section class="note prose" role="tabpanel" id="note-now" aria-labelledby="tab-now" data-note="now">
+            <h2>Now</h2>
+            <p><strong>{site.status.headline}.</strong> {site.status.detail}</p>
+            <!-- TODO: what you're learning or building right now. -->
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate
+              velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+            <p>
+              <a href={`mailto:${site.email}`}>Email me</a> · <a href="/cv/">View my CV</a>
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .notes {
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset, var(--shadow);
+    overflow: hidden;
+  }
+  .notes__bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .notes__lights {
+    display: flex;
+    gap: 8px;
+  }
+  .notes__lights i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--outline);
+  }
+  .notes__app {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .notes__count {
+    margin-left: auto;
+  }
+  .notes__body {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: 560px;
+  }
+  .notes__side {
+    border-right: 1px solid var(--line);
+    background: var(--card);
+    padding: 16px 12px;
+  }
+  .notes__folder {
+    margin: 0 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .notes__list {
+    display: grid;
+    gap: 2px;
+  }
+  .notes__item {
+    display: grid;
+    gap: 2px;
+    text-align: left;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+  }
+  .notes__item:hover {
+    background: var(--hover);
+  }
+  .notes__item[aria-selected='true'] {
+    /* Notes-app yellow, same in both themes; text stays dark for contrast. */
+    background: #ffc23d;
+  }
+  .notes__item[aria-selected='true'] .notes__title,
+  .notes__item[aria-selected='true'] .notes__preview {
+    color: #1a1204;
+  }
+  .notes__title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .notes__preview {
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .notes__content {
+    padding: 36px 44px 48px;
+    min-width: 0;
+  }
+  .notes__h1 {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .note + .note {
+    margin-top: 48px;
+  }
+  :global([data-notes-ready]) .note + .note {
+    margin-top: 0;
+  }
+  .note h2 {
+    font-size: 32px;
+    margin-top: 0;
+  }
+  .job + .job {
+    margin-top: 28px;
+  }
+  .job h3 {
+    margin: 0 0 4px;
+  }
+  .job__at {
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .job__meta {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .skills-dl {
+    margin: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .skills-dl dt {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .skills-dl dd {
+    margin: 0;
+  }
+
+  @media (max-width: 799px) {
+    .notes__body {
+      grid-template-columns: 1fr;
+    }
+    .notes__side {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      overflow-x: auto;
+    }
+    .notes__folder {
+      display: none;
+    }
+    .notes__list {
+      grid-auto-flow: column;
+      grid-auto-columns: max-content;
+    }
+    .notes__preview {
+      display: none;
+    }
+    .notes__content {
+      padding: 24px 20px 32px;
+    }
+    .note h2 {
+      font-size: 26px;
+    }
+  }
+</style>
+
+<script>
+  import { initNotes } from '../../scripts/notes';
+  initNotes();
+</script>

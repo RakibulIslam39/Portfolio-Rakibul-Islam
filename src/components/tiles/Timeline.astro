@@ -2,13 +2,18 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
+
+const rows = [
+  ...site.experience.map((e) => ({ role: e.role, company: e.company, period: e.period })),
+  ...site.education.map((e) => ({ role: e.short, company: e.schoolShort, period: e.period })),
+];
 ---
 
 <Tile id="timeline" size="2x1" app="Career" href="/about/" hrefLabel="Read more about my experience" class="timeline">
   <AppIcon name="timeline" slot="icon" />
   <ol class="tl">
     {
-      site.experience.map((e, i) => (
+      rows.map((e, i) => (
         <li class:list={['tl__item', { 'tl__item--now': i === 0 }]}>
           <span class="tl__dot" aria-hidden="true" />
           <div class="tl__main">

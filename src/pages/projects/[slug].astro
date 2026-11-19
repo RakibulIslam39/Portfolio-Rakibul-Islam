@@ -1,0 +1,210 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length]! },
+  }));
+}
+
+const { project, next } = Astro.props;
+const { Content } = await render(project);
+const d = project.data;
+---
+
+<BaseLayout title={`${d.title} | Rakibul Islam`} description={d.summary}>
+  <article class="container case">
+    <a class="back-link" href="/projects/">← All projects</a>
+
+    <header class="page-head">
+      <p class="case__hook">{d.hook} {d.placeholder && <span class="draft-badge">Draft</span>}</p>
+      <h1>{d.title}</h1>
+      <p>{d.summary}</p>
+    </header>
+
+    <dl class="case__meta">
+      <div><dt>Role</dt><dd>{d.role}</dd></div>
+      <div><dt>When</dt><dd>{d.period}</dd></div>
+      <div><dt>Context</dt><dd>{d.context}</dd></div>
+      {
+        d.links.length > 0 && (
+          <div>
+            <dt>Links</dt>
+            <dd class="case__links">
+              {d.links.map((l) => (
+                <a href={l.url} target="_blank" rel="noopener">
+                  {l.label} ↗
+                </a>
+              ))}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+
+    {
+      d.metrics.length > 0 && (
+        <ul class="case__metrics" aria-label="Results">
+          {d.metrics.map((m) => (
+            <li>
+              <strong>{m.value}</strong>
+              <span>{m.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="case__layout">
+      <div class="prose">
+        <Content />
+      </div>
+      <aside class="case__stack" aria-label="Tech stack">
+        <h2>Stack</h2>
+        <ul>{d.stack.map((s) => <li class="pill">{s}</li>)}</ul>
+      </aside>
+    </div>
+
+    <nav class="case__next" aria-label="Next project">
+      <span>Next project</span>
+      <a href={`/projects/${next.id}/`}>{next.data.title} →</a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .case {
+    padding-bottom: 48px;
+  }
+  .case__hook {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px !important;
+    font-size: 13px !important;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--pass);
+  }
+  .case__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px 32px;
+    margin: 0 0 32px;
+    padding: 24px var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  .case__meta dt {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .case__meta dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .case__links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .case__links a {
+    color: var(--link);
+    text-decoration: none;
+  }
+  .case__links a:hover {
+    text-decoration: underline;
+  }
+  .case__metrics {
+    list-style: none;
+    margin: 0 0 40px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--gap);
+  }
+  .case__metrics li {
+    padding: 22px var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    display: grid;
+    gap: 4px;
+  }
+  .case__metrics strong {
+    font-size: 36px;
+    letter-spacing: -0.03em;
+    color: var(--pass);
+    line-height: 1.1;
+  }
+  .case__metrics span {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .case__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 48px;
+    align-items: start;
+  }
+  .case__stack {
+    position: sticky;
+    top: 96px;
+  }
+  .case__stack h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .case__stack ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .case__next {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .case__next a {
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .case__next a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 899px) {
+    .case__layout {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .case__stack {
+      position: static;
+      order: -1;
+    }
+  }
+</style>

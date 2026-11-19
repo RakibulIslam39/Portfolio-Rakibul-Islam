@@ -29,11 +29,18 @@ npm run check               # TypeScript / Astro typecheck
 All text lives in `src/content/site.json`: intro, status, skills, experience,
 projects, plugins, test report and pipeline steps. Change it there; the tiles update.
 
-Things still marked TODO:
+Long-form content is Markdown:
+
+- `src/content/projects/*.md`: case studies (frontmatter: hook, metrics, stack, links)
+- `src/content/writing/*.md`: blog posts (frontmatter: title, excerpt, date, category)
+
+Set `placeholder: false` in a file's frontmatter once its lorem ipsum is replaced; that removes the "Draft" label.
+
+Things still marked TODO (search the repo for `TODO` and `Lorem`):
 
 - `links.linkedin` in `site.json`: your real LinkedIn URL
 - `site` in `astro.config.mjs`: your domain
-- AI Face Analyzer project summary
+- Lorem ipsum in the three case studies, the About page ("About me" and "Now" notes) and all four writing posts
 - Portrait placeholders in `src/components/tiles/Portrait.astro`: swap for your photo/avatar
 
 ## Tests
@@ -44,6 +51,10 @@ Things still marked TODO:
 | `tests/shell.spec.ts` | Theme toggle + persistence, nav state, skip link, ⌘K palette (filter, arrows, Enter, Esc) |
 | `tests/widgets.spec.ts` | Terminal replay, Bug Hunt game, portrait switcher, map zoom limits, CI tile, clock, contact links |
 | `tests/a11y.spec.ts` | axe WCAG 2.2 AA scan of every page in both themes |
+| `tests/about.spec.ts` | Notes tabs: click, arrow keys, Home/End, hash deep links, readable without JS |
+| `tests/projects.spec.ts` | Projects index, case-study sections and metrics, next-project cycle, home tile links |
+| `tests/writing.spec.ts` | Newest-first order, category filter chips, post page |
+| `tests/cv.spec.ts` | All CV sections, PDF download, print layout |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
 
 Visual baselines are rendered in Playwright's official Docker image, the same one CI uses,
@@ -59,7 +70,9 @@ src/
   components/tiles/ one component per bento tile
   content/site.json all copy and data
   layouts/         BaseLayout (SEO, theme script)
-  pages/           routes (inner pages are placeholders until Phase 5)
+  content/projects/ case studies (Markdown)
+  content/writing/ blog posts (Markdown)
+  pages/           routes (/qa is a placeholder until Phase 6)
   scripts/         widget logic (theme, palette, terminal, bughunt)
   styles/          tokens.css, global.css
 tests/             Playwright specs
@@ -71,6 +84,6 @@ tests/             Playwright specs
 - [x] Phase 2: shell (nav, ⌘K palette, footer)
 - [x] Phase 3: bento home with static tiles
 - [x] Phase 4: interactive tiles with tests
-- [ ] Phase 5: About, Projects, Writing, CV pages
+- [x] Phase 5: About, Projects, Writing, CV pages
 - [ ] Phase 6: Cloudflare Pages Functions (`/api/stats`, `/api/ci`) and live `/qa` dashboard
 - [ ] Phase 7: polish, OG images, Lighthouse CI, custom domain

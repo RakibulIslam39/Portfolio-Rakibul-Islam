@@ -10,7 +10,7 @@ import site from '../../content/site.json';
     {
       site.projects.map((p) => (
         <li>
-          <a class="proj__card" href={p.url} target="_blank" rel="noopener">
+          <a class="proj__card" href={`/projects/${p.slug}/`}>
             <span class="proj__hook">{p.hook}</span>
             <span class="proj__name">{p.name}</span>
             <span class="proj__summary">{p.summary}</span>

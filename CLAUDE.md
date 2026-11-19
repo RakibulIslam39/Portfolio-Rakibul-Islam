@@ -7,7 +7,8 @@ QA Automation Engineer / SDET, Dhaka, Bangladesh (remote, UTC+6). 3+ years.
 Jr. SQA Engineer at WPPOOL (WordPress/WooCommerce plugins: FlexOrder, FlexStock, EchoRewards,
 FlexTable, FormyChat, WP Dark Mode, Jitsi Meet). Previously SQA Engineer at Zaimah Technologies
 (2023-24), QA intern at Edutechs (2018-21). BSc CSE, BUBT (2018-22).
-All facts live in `src/content/site.json`. Never invent facts or numbers; add a TODO instead.
+All facts live in `src/content/site.json` and the Markdown in `src/content/projects` and `src/content/writing`.
+Never invent facts or numbers. Where information is missing, use lorem ipsum with a `<!-- TODO -->` comment and set `placeholder: true`.
 
 ## Concept
 Bento-grid site styled as a "QA engineer's desktop": each tile is a small app widget.

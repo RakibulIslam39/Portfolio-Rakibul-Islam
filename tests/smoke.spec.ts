@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/about/', '/projects/', '/writing/', '/qa/'];
+const pages = [
+  '/',
+  '/about/',
+  '/projects/',
+  '/projects/flexorder-e2e/',
+  '/projects/traffic-flow-prediction/',
+  '/projects/ai-face-analyzer/',
+  '/writing/',
+  '/writing/page-objects-that-age-well/',
+  '/cv/',
+  '/qa/',
+];
 
 test('home page loads with the right title and heading', async ({ page }) => {
   const errors: string[] = [];

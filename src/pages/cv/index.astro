@@ -1,0 +1,269 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import site from '../../content/site.json';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+---
+
+<BaseLayout title="CV | Rakibul Islam" description={`CV of ${site.name}, ${site.role}. ${site.summary}`}>
+  <div class="container">
+    <div class="cv-actions">
+      <a class="btn btn--primary" href="/Rakibul-Islam-CV.pdf" download>Download PDF</a>
+      <button class="btn" type="button" data-print>Print this page</button>
+    </div>
+
+    <article class="cv">
+      <header class="cv__head">
+        <div>
+          <h1>{site.name}</h1>
+          <p class="cv__role">QA Engineer · QA Automation Engineer · SDET</p>
+        </div>
+        <ul class="cv__contact">
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li>{site.location}</li>
+          <li><a href={site.links.github}>{host(site.links.github)}</a></li>
+          <li><a href={site.links.linkedin}>{host(site.links.linkedin)}</a></li>
+        </ul>
+      </header>
+
+      <section class="cv__sec">
+        <h2>Summary</h2>
+        <p>{site.summary} {site.intro[1]}</p>
+      </section>
+
+      <section class="cv__sec">
+        <h2>Experience</h2>
+        {
+          site.experience.map((e) => (
+            <div class="cv__item">
+              <div class="cv__row">
+                <h3>
+                  {e.role} <span>· {e.company}</span>
+                </h3>
+                <span class="cv__when">
+                  {e.period} · {e.place}
+                </span>
+              </div>
+              <ul>
+                {e.bullets.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="cv__sec">
+        <h2>Key achievements</h2>
+        {
+          site.achievements.map((a) => (
+            <div class="cv__item">
+              <h3>{a.title}</h3>
+              <p>{a.detail}</p>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="cv__sec">
+        <h2>Projects</h2>
+        {
+          projects.map((p) => (
+            <div class="cv__item">
+              <div class="cv__row">
+                <h3>
+                  <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                </h3>
+                <span class="cv__when">{p.data.stack.slice(0, 4).join(', ')}</span>
+              </div>
+              <p>{p.data.summary}</p>
+            </div>
+          ))
+        }
+      </section>
+
+      <div class="cv__cols">
+        <section class="cv__sec">
+          <h2>Skills</h2>
+          <p class="cv__skills">{site.skills.map((s) => s.name).join(' · ')}</p>
+        </section>
+        <section class="cv__sec">
+          <h2>Education</h2>
+          {
+            site.education.map((ed) => (
+              <div class="cv__item">
+                <h3>{ed.degree}</h3>
+                <p class="cv__when">
+                  {ed.school} · {ed.period}
+                </p>
+              </div>
+            ))
+          }
+          <h2 class="cv__h2-gap">Languages</h2>
+          <p>{site.languages.map((l) => `${l.name} (${l.level})`).join(' · ')}</p>
+        </section>
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .cv-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  .cv {
+    padding: clamp(24px, 5vw, 56px);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    margin-bottom: 48px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .cv__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--text);
+  }
+  .cv h1 {
+    font-size: clamp(34px, 5vw, 46px);
+    letter-spacing: -0.03em;
+  }
+  .cv__role {
+    margin: 6px 0 0;
+    color: var(--link);
+    font-weight: 500;
+  }
+  .cv__contact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    text-align: right;
+  }
+  .cv__contact a,
+  .cv h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .cv__contact a:hover,
+  .cv h3 a:hover {
+    text-decoration: underline;
+  }
+  .cv__sec {
+    margin-top: 28px;
+  }
+  .cv h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .cv__h2-gap {
+    margin-top: 20px;
+  }
+  .cv__item + .cv__item {
+    margin-top: 16px;
+  }
+  .cv__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 16px;
+  }
+  .cv h3 {
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+  .cv h3 span {
+    color: var(--link);
+    font-weight: 500;
+  }
+  .cv__when {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .cv ul {
+    margin: 6px 0 0;
+    padding-left: 1.2em;
+  }
+  .cv li {
+    margin: 3px 0;
+  }
+  .cv p {
+    margin: 4px 0 0;
+  }
+  .cv__cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
+  }
+  @media (max-width: 699px) {
+    .cv__contact {
+      text-align: left;
+    }
+    .cv__cols {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media print {
+    :global(.topbar),
+    :global(.footer),
+    :global(.skip-link),
+    :global(dialog),
+    .cv-actions {
+      display: none !important;
+    }
+    :global(html),
+    :global(body) {
+      background: #fff !important;
+      color: #111 !important;
+    }
+    :global(main) {
+      padding: 0 !important;
+    }
+    :global(.container) {
+      width: 100% !important;
+    }
+    .cv {
+      --text: #111;
+      --body-text: #222;
+      --muted: #555;
+      --line: #ccc;
+      --link: #0b4fa3;
+      background: #fff;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      font-size: 10.5pt;
+      color: #222;
+    }
+    .cv__item {
+      break-inside: avoid;
+    }
+  }
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+</style>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
