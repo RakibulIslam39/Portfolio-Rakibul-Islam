@@ -18,6 +18,13 @@ const args = process.argv.slice(2);
 const resultsPath = args.includes('--results') ? args[args.indexOf('--results') + 1] : 'reports/results.json';
 const withLighthouse = !args.includes('--no-lighthouse');
 const PAGES = ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/cv/'];
+/**
+ * Minimum Lighthouse scores (mobile). A measured page below any of these fails the run
+ * after the report is written. Pages Lighthouse could not measure are not judged.
+ * Skip with --no-budget.
+ */
+export const BUDGET = { performance: 90, accessibility: 95, bestPractices: 95, seo: 95 };
+const enforceBudget = !args.includes('--no-budget');
 const PORT = 4330;
 
 /* ---------- Playwright results ---------- */
@@ -76,6 +83,12 @@ function serveDist(port) {
   if (!existsSync(root)) throw new Error('dist/ not found: run `npm run build` first');
   const server = createServer((req, res) => {
     const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    // Pages Functions don't exist here. Answer like an unconfigured deploy (204) so the
+    // widgets' requests don't log 404s, which would cost "Best practices" points.
+    if (urlPath.startsWith('/api/')) {
+      res.writeHead(204).end();
+      return;
+    }
     let file = normalize(join(root, urlPath));
     if (!file.startsWith(root)) {
       res.writeHead(403).end();
@@ -173,3 +186,16 @@ const qa = {
 mkdirSync('src/data', { recursive: true });
 writeFileSync('src/data/qa-report.json', JSON.stringify(qa, null, 2) + '\n');
 console.log(`Wrote src/data/qa-report.json: ${qa.tests.passed}/${qa.tests.total} passed, ${qa.lighthouse.length} Lighthouse pages`);
+
+const labels = { performance: 'Performance', accessibility: 'Accessibility', bestPractices: 'Best practices', seo: 'SEO' };
+const misses = qa.lighthouse.flatMap((row) =>
+  Object.entries(BUDGET)
+    .filter(([k, min]) => row[k] < min)
+    .map(([k, min]) => `${row.path} ${labels[k]} ${row[k]} < ${min}`),
+);
+if (enforceBudget && misses.length) {
+  for (const m of misses) console.error(`::error::Lighthouse budget missed: ${m}`);
+  process.exitCode = 1;
+} else if (qa.lighthouse.length) {
+  console.log(`Lighthouse budget met on all ${qa.lighthouse.length} pages (${Object.entries(BUDGET).map(([k, v]) => `${labels[k]} ≥ ${v}`).join(', ')}).`);
+}

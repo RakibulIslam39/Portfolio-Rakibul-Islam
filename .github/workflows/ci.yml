@@ -28,14 +28,19 @@ jobs:
       - run: npm ci
       - name: Typecheck
         run: npm run check
-      - name: Run Playwright (E2E, accessibility, visual, API unit tests)
+      - name: Generate share images (Open Graph) from the built pages
+        run: npm run build && npm run og
+      - name: Run Playwright (E2E, accessibility, visual, SEO, API unit tests)
         run: npm test
-      - name: Build the QA report (test results + Lighthouse)
+      - name: Build the QA report and check Lighthouse budgets
         run: npm run qa:report
       - uses: actions/upload-artifact@v4
         with:
-          name: qa-report
-          path: src/data/qa-report.json
+          name: site-data
+          # Both paths keep their place in the repo when downloaded into the deploy job.
+          path: |
+            src/data/qa-report.json
+            public/og/
           retention-days: 30
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -70,9 +75,9 @@ jobs:
       - uses: actions/download-artifact@v4
         if: env.CLOUDFLARE_API_TOKEN != ''
         with:
-          name: qa-report
-          path: src/data
-      - name: Build with the fresh QA report
+          name: site-data
+          path: .
+      - name: Build with the fresh QA report and share images
         if: env.CLOUDFLARE_API_TOKEN != ''
         run: npm run build
       - name: Deploy to Cloudflare Pages (static site + functions/)

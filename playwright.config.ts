@@ -25,9 +25,9 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    // API unit tests need no browser, so they run once, in the chromium project.
-    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /api\.spec/ },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /(visual|api)\.spec/ },
+    // API unit tests and SEO checks don't depend on the browser, so they run once, in chromium.
+    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /(api|seo)\.spec/ },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /(visual|api|seo)\.spec/ },
   ],
   webServer: {
     command: `npm run build && npx astro preview --port ${PORT} --ignore-lock`,

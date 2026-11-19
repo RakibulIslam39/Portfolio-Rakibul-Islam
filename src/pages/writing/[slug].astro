@@ -13,7 +13,7 @@ const { Content } = await render(post);
 const d = post.data;
 ---
 
-<BaseLayout title={`${d.title} | Rakibul Islam`} description={d.excerpt}>
+<BaseLayout title={`${d.title} | Rakibul Islam`} description={d.excerpt} noindex={d.placeholder}>
   <article class="container post">
     <a class="back-link" href="/writing/">← All writing</a>
     <header class="page-head">

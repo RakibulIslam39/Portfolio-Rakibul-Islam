@@ -10,7 +10,7 @@ The site is tested like a product: E2E, accessibility and visual tests run on ev
 - Plain CSS with design tokens (`src/styles/tokens.css`), dark/light theme
 - One small vanilla TypeScript file per interactive widget (`src/scripts/`)
 - Playwright + axe-core for tests, GitHub Actions for CI
-- Hosting: Cloudflare Pages (Phase 7)
+- Hosting: Cloudflare Pages, deployed by CI only when every test passes
 
 ## Run it
 
@@ -20,6 +20,7 @@ npx playwright install      # first time only
 npm run dev                 # http://localhost:4321
 npm test                    # build + all Playwright tests
 npm run check               # TypeScript / Astro typecheck
+npm run og                  # share images (after npm run build)
 ```
 
 `npm test` builds the site and serves it on port 4329 for the tests.
@@ -57,6 +58,7 @@ Things still marked TODO (search the repo for `TODO` and `Lorem`):
 | `tests/cv.spec.ts` | All CV sections, PDF download, print layout |
 | `tests/qa.spec.ts` | /qa report, live CI and visitor cards (APIs mocked), fallbacks, footer and hero widgets |
 | `tests/api.spec.ts` | Unit tests for `/api/ci` and `/api/stats` logic with a fake fetch |
+| `tests/seo.spec.ts` | Sitemap, robots.txt, canonical URLs, a 1200×630 share image per page, noindex drafts, headers |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
 
 Visual baselines are rendered in Playwright's official Docker image, the same one CI uses,
@@ -106,11 +108,37 @@ Cloudflare's GraphQL explorer (https://graphql.cloudflare.com) and adjust the fi
 
 To try the functions locally: `npm run build && npx wrangler pages dev dist`.
 
+## SEO and sharing
+
+- **Site address** lives in one place: `SITE` in `astro.config.mjs` (plus the `Sitemap:` line in
+  `public/robots.txt`; `tests/seo.spec.ts` fails if they disagree). Canonical URLs, Open Graph
+  links and `/sitemap.xml` are built from it.
+- **Share images**: `npm run build && npm run og` renders a 1200×630 PNG per page into `public/og/`
+  from each page's title and description. CI regenerates them on every push, so deployed images
+  always match the text; run it locally after changing titles if you want the committed copies fresh.
+- **Drafts**: writing posts with `placeholder: true` get `noindex` and stay out of the sitemap.
+- **Headers**: `public/_headers` sets security headers and long caching for hashed assets on Cloudflare.
+
+To preview how a link looks when shared, paste the URL into
+LinkedIn's Post Inspector (https://www.linkedin.com/post-inspector/).
+
+## Custom domain
+
+1. Buy a domain (any registrar; Cloudflare Registrar sells at cost).
+2. Cloudflare dashboard → Workers & Pages → `rakibul-portfolio` → Custom domains → Set up a domain.
+   Follow its DNS steps; HTTPS is automatic.
+3. Change `SITE` in `astro.config.mjs` and the `Sitemap:` line in `public/robots.txt` to the new
+   address, then push. The `.pages.dev` address keeps working.
+
 ## QA report
 
 `npm run qa:report` turns `reports/results.json` (written by every `npm test`) plus Lighthouse
 runs against `dist/` into `src/data/qa-report.json`, which `/qa` renders. The committed file is
 sample data from a local run (`"sample": true`); CI replaces it before deploying.
+
+**Lighthouse budgets** (mobile, set in `scripts/qa-report.mjs`): Performance ≥ 90, Accessibility ≥ 95,
+Best practices ≥ 95, SEO ≥ 95. A measured page below budget fails CI, so nothing slower ships.
+If Lighthouse itself crashes on a page, that's a warning, not a failure.
 
 ## Project structure
 
@@ -128,7 +156,8 @@ src/
   data/qa-report.json  data for /qa (sample until CI regenerates it)
 functions/api/     Cloudflare Pages Functions (thin wrappers)
 server/            endpoint logic, unit-testable without Cloudflare
-scripts/qa-report.mjs  builds the QA report
+scripts/qa-report.mjs  builds the QA report and checks Lighthouse budgets
+scripts/og-images.mjs  renders share images into public/og/
 tests/             Playwright specs
 ```
 
@@ -140,4 +169,4 @@ tests/             Playwright specs
 - [x] Phase 4: interactive tiles with tests
 - [x] Phase 5: About, Projects, Writing, CV pages
 - [x] Phase 6: Cloudflare Pages Functions (`/api/stats`, `/api/ci`), live `/qa` dashboard, deploy only when green
-- [ ] Phase 7: polish, OG images, Lighthouse CI, custom domain
+- [x] Phase 7: correct site URL, sitemap, share images, Lighthouse budgets, security headers, custom-domain guide
