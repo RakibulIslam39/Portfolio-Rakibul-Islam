@@ -20,6 +20,9 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Latest commit on the branch, not the one from when the run was queued.
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -35,6 +38,7 @@ jobs:
           git add tests/visual.spec.ts-snapshots
           git diff --cached --quiet && echo "No snapshot changes" && exit 0
           git commit -m "test: update visual snapshots [skip ci]"
-          # main may have moved while the tests ran; rebase onto it before pushing.
-          git pull --rebase origin main
+          # main may have moved while the tests ran. Rebase onto it, and if both sides
+          # touched the same baseline images, keep the ones this run just generated.
+          git pull --rebase -X theirs origin "${{ github.ref_name }}"
           git push
