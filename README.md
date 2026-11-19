@@ -55,12 +55,62 @@ Things still marked TODO (search the repo for `TODO` and `Lorem`):
 | `tests/projects.spec.ts` | Projects index, case-study sections and metrics, next-project cycle, home tile links |
 | `tests/writing.spec.ts` | Newest-first order, category filter chips, post page |
 | `tests/cv.spec.ts` | All CV sections, PDF download, print layout |
+| `tests/qa.spec.ts` | /qa report, live CI and visitor cards (APIs mocked), fallbacks, footer and hero widgets |
+| `tests/api.spec.ts` | Unit tests for `/api/ci` and `/api/stats` logic with a fake fetch |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
 
 Visual baselines are rendered in Playwright's official Docker image, the same one CI uses,
 so they match pixel for pixel. On macOS the pixel comparison is skipped automatically.
 After an intentional design change, go to **Actions → Update visual snapshots → Run workflow**:
 it regenerates the baselines in that image and commits them.
+
+## Deploy and live data (Cloudflare Pages)
+
+CI deploys `main` to Cloudflare Pages, but only after every test passes. The deploy job
+rebuilds the site with the fresh QA report, so `/qa` and the home page show the real results of
+that run. Until the secrets below exist, the deploy job just prints a notice and skips.
+
+**One-time setup**
+
+1. Create a free Cloudflare account, then create the Pages project from your Mac:
+   ```bash
+   npx wrangler login
+   npx wrangler pages project create rakibul-portfolio --production-branch=main
+   ```
+2. Create an API token (Cloudflare dashboard → My Profile → API Tokens → Create Token → Custom)
+   with **Account · Cloudflare Pages · Edit**. In GitHub → Settings → Secrets and variables → Actions,
+   add the secrets `CLOUDFLARE_API_TOKEN` (the token) and `CLOUDFLARE_ACCOUNT_ID` (shown on the
+   dashboard's Account home and in its URL).
+3. Push to `main`. The site goes live at `https://rakibul-portfolio.pages.dev`.
+
+**Live visitor numbers (optional)**
+
+4. In the Pages project → Metrics, enable **Web Analytics** (cookie-free; Cloudflare adds the script).
+5. Create a second API token with **Account · Account Analytics · Read**.
+6. In the Pages project → Settings → Variables and Secrets (Production), add:
+   - `CF_ANALYTICS_TOKEN` (secret): the token from step 5
+   - `CF_ACCOUNT_ID`: your account ID
+   - `CF_SITE_TAG`: the Web Analytics site tag (Web Analytics → your site)
+   - `GITHUB_TOKEN` (optional secret): a read-only token, raises GitHub's rate limit for `/api/ci`
+7. Redeploy. `/api/stats` returns `204` until all three `CF_*` values exist, and the widgets stay hidden.
+
+The analytics query is in `server/stats.ts`. If `/api/stats` returns 502, test the query in
+Cloudflare's GraphQL explorer (https://graphql.cloudflare.com) and adjust the field names.
+
+**Endpoints** (`functions/api/`, logic in `server/`, unit-tested in `tests/api.spec.ts`)
+
+| Endpoint | Returns | Cached |
+| --- | --- | --- |
+| `/api/ci` | Latest CI run on `main`: status, run number, duration, commit, link | 2 min |
+| `/api/stats` | Visits today, visits in the last 7 days, countries this week | 5 min |
+
+To try the functions locally: `npm run build && npx wrangler pages dev dist`.
+
+## QA report
+
+`npm run qa:report` turns `reports/results.json` (written by every `npm test`) plus Lighthouse
+runs against `dist/` into `src/data/qa-report.json`, which `/qa` renders. The committed file is
+sample data from a local run (`"sample": true`); CI replaces it before deploying.
 
 ## Project structure
 
@@ -72,9 +122,13 @@ src/
   layouts/         BaseLayout (SEO, theme script)
   content/projects/ case studies (Markdown)
   content/writing/ blog posts (Markdown)
-  pages/           routes (/qa is a placeholder until Phase 6)
+  pages/           routes
   scripts/         widget logic (theme, palette, terminal, bughunt)
-  styles/          tokens.css, global.css
+  styles/          tokens.css, global.css, prose.css
+  data/qa-report.json  data for /qa (sample until CI regenerates it)
+functions/api/     Cloudflare Pages Functions (thin wrappers)
+server/            endpoint logic, unit-testable without Cloudflare
+scripts/qa-report.mjs  builds the QA report
 tests/             Playwright specs
 ```
 
@@ -85,5 +139,5 @@ tests/             Playwright specs
 - [x] Phase 3: bento home with static tiles
 - [x] Phase 4: interactive tiles with tests
 - [x] Phase 5: About, Projects, Writing, CV pages
-- [ ] Phase 6: Cloudflare Pages Functions (`/api/stats`, `/api/ci`) and live `/qa` dashboard
+- [x] Phase 6: Cloudflare Pages Functions (`/api/stats`, `/api/ci`), live `/qa` dashboard, deploy only when green
 - [ ] Phase 7: polish, OG images, Lighthouse CI, custom domain

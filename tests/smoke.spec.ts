@@ -16,7 +16,10 @@ const pages = [
 test('home page loads with the right title and heading', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  page.on('console', (m) => {
+    // Local preview has no Pages Functions, so /api/* 404s there; the widgets fall back by design.
+    if (m.type() === 'error' && !m.location().url.includes('/api/')) errors.push(m.text());
+  });
 
   await page.goto('/');
   await expect(page).toHaveTitle(/Rakibul Islam/);

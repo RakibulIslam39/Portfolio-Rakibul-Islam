@@ -1,0 +1,144 @@
+{
+  "sample": true,
+  "generatedAt": "2026-11-19T13:07:17.048Z",
+  "commit": null,
+  "runUrl": null,
+  "tests": {
+    "total": 152,
+    "passed": 147,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 5,
+    "durationMs": 81232,
+    "projects": [
+      "chromium",
+      "mobile"
+    ],
+    "files": [
+      {
+        "file": "a11y.spec.ts",
+        "total": 36,
+        "passed": 36,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "about.spec.ts",
+        "total": 10,
+        "passed": 9,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 1
+      },
+      {
+        "file": "api.spec.ts",
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "cv.spec.ts",
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "projects.spec.ts",
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "qa.spec.ts",
+        "total": 14,
+        "passed": 14,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "shell.spec.ts",
+        "total": 16,
+        "passed": 12,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 4
+      },
+      {
+        "file": "smoke.spec.ts",
+        "total": 28,
+        "passed": 28,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "widgets.spec.ts",
+        "total": 16,
+        "passed": 16,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      },
+      {
+        "file": "writing.spec.ts",
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "flaky": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "lighthouse": [
+    {
+      "path": "/",
+      "performance": 99,
+      "accessibility": 96,
+      "bestPractices": 96,
+      "seo": 100
+    },
+    {
+      "path": "/about/",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100
+    },
+    {
+      "path": "/projects/",
+      "performance": 99,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100
+    },
+    {
+      "path": "/projects/flexorder-e2e/",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100
+    },
+    {
+      "path": "/writing/",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100
+    },
+    {
+      "path": "/cv/",
+      "performance": 99,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 100
+    }
+  ]
+}

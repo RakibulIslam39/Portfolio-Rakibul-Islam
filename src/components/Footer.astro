@@ -6,6 +6,7 @@ const year = new Date().getFullYear();
 <footer class="footer container">
   <p>
     © {year} {site.name}. Built with Astro, tested with Playwright.
+    <a class="footer__live" href="/qa/" data-visitors hidden><span class="dot" aria-hidden="true"></span> <span data-visitors-text></span></a>
   </p>
   <p class="footer__links">
     <a href={`mailto:${site.email}`}>Email</a>
@@ -15,7 +16,30 @@ const year = new Date().getFullYear();
   </p>
 </footer>
 
+<script>
+  import { getJSON, type Stats } from '../scripts/live';
+  const link = document.querySelector<HTMLAnchorElement>('[data-visitors]');
+  if (link) {
+    void getJSON<Stats>('/api/stats').then((s) => {
+      if (!s) return;
+      link.querySelector('[data-visitors-text]')!.textContent = `${s.today} visitors today · ${s.countries} countries this week`;
+      link.hidden = false;
+    });
+  }
+</script>
+
 <style>
+  .footer__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+  }
+  .footer__live .dot {
+    width: 6px;
+    height: 6px;
+    box-shadow: none;
+  }
   .footer {
     display: flex;
     flex-wrap: wrap;

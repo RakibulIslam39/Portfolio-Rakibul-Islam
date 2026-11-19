@@ -1,6 +1,10 @@
 ---
 import Tile from '../Tile.astro';
 import site from '../../content/site.json';
+import qa from '../../data/qa-report.json';
+
+const ran = qa.tests.total - qa.tests.skipped;
+const green = qa.tests.failed === 0;
 ---
 
 <Tile id="hero" size="4x1" class="hero">
@@ -15,6 +19,13 @@ import site from '../../content/site.json';
     <a class="btn btn--primary" href="/Rakibul-Islam-CV.pdf" download>Download CV</a>
     <a class="btn" href={`mailto:${site.email}?subject=${encodeURIComponent('Hello Rakibul (via your portfolio)')}`}>Email me</a>
     <span class="pill"><span class="dot" aria-hidden="true"></span> {site.status.headline}</span>
+    {
+      !qa.sample && green && (
+        <a class="pill hero__qa" href="/qa/">
+          <span class="dot" aria-hidden="true" /> This site: {qa.tests.passed}/{ran} tests passing
+        </a>
+      )
+    }
   </div>
 </Tile>
 
@@ -42,6 +53,12 @@ import site from '../../content/site.json';
   .hero__tagline {
     color: var(--text);
     font-weight: 500;
+  }
+.hero__qa {
+    text-decoration: none;
+  }
+  .hero__qa:hover {
+    border-color: var(--pass);
   }
   .hero__cta {
     display: flex;

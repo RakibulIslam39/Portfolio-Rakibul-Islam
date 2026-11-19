@@ -8,7 +8,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
-  reporter: isCI ? [['github'], ['html', { open: 'never' }]] : [['list'], ['html', { open: 'never' }]],
+  reporter: [
+    isCI ? ['github'] : ['list'],
+    ['html', { open: 'never' }],
+    // Feeds scripts/qa-report.mjs, which builds the data for the /qa page.
+    ['json', { outputFile: 'reports/results.json' }],
+  ],
   // Visual baselines are rendered on Linux (CI). On macOS/Windows we skip pixel comparison.
   ignoreSnapshots: process.platform !== 'linux',
   expect: {
@@ -20,8 +25,9 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['Pixel 7'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /visual\.spec/ },
+    // API unit tests need no browser, so they run once, in the chromium project.
+    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /api\.spec/ },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /(visual|api)\.spec/ },
   ],
   webServer: {
     command: `npm run build && npx astro preview --port ${PORT} --ignore-lock`,

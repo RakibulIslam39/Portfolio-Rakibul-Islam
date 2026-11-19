@@ -1,5 +1,506 @@
 ---
-import ComingSoon from '../../components/ComingSoon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import qa from '../../data/qa-report.json';
+import { formatDate } from '../../lib/format';
+
+const t = qa.tests;
+const ran = t.total - t.skipped;
+const passRate = ran ? Math.round((t.passed / ran) * 100) : 0;
+const minutes = Math.floor(t.durationMs / 60000);
+const seconds = Math.round((t.durationMs % 60000) / 1000);
+const generated = new Date(qa.generatedAt);
+
+const categories = [
+  { key: 'performance', label: 'Performance' },
+  { key: 'accessibility', label: 'Accessibility' },
+  { key: 'bestPractices', label: 'Best practices' },
+  { key: 'seo', label: 'SEO' },
+] as const;
+const grade = (n: number) => (n >= 90 ? 'good' : n >= 50 ? 'ok' : 'poor');
+const avg = (k: (typeof categories)[number]['key']) =>
+  qa.lighthouse.length ? Math.round(qa.lighthouse.reduce((s, r) => s + r[k], 0) / qa.lighthouse.length) : 0;
 ---
 
-<ComingSoon title="QA report | Rakibul Islam" heading="This site's QA report" text="A live dashboard of this site's own test results and Lighthouse scores is coming soon." />
+<BaseLayout title="QA report | Rakibul Islam" description="This site's own test results, Lighthouse scores and live CI status.">
+  <div class="container qa">
+    <header class="page-head">
+      <p class="pill page-head__eyebrow">
+        {
+          qa.sample ? (
+            <span data-qa-source>Sample data from a local run · {formatDate(generated)}</span>
+          ) : (
+            <span data-qa-source>
+              Latest CI run · {formatDate(generated)}
+              {qa.commit && <> · commit {qa.commit}</>}
+            </span>
+          )
+        }
+      </p>
+      <h1>This site's QA report</h1>
+      <p>
+        Every push runs the full Playwright suite on {t.projects.length} browser setups, an accessibility scan and Lighthouse.
+        Only a green build gets deployed.
+      </p>
+    </header>
+
+    <section class="live" aria-label="Live status">
+      <article class="card" data-live-ci>
+        <h2 class="card__label">Latest CI run <span class="live__tag">Live</span></h2>
+        <p class="ci-status" data-ci-state="unknown">
+          <span class="ci-status__dot" aria-hidden="true"></span>
+          <span data-ci-label>Checking…</span>
+        </p>
+        <p class="card__meta" data-ci-meta>Live status appears on the deployed site.</p>
+      </article>
+      <article class="card" data-live-stats>
+        <h2 class="card__label">Visitors <span class="live__tag">Live</span></h2>
+        <dl class="stats" data-stats hidden>
+          <div><dt>Today</dt><dd data-stat="today">–</dd></div>
+          <div><dt>This week</dt><dd data-stat="week">–</dd></div>
+          <div><dt>Countries</dt><dd data-stat="countries">–</dd></div>
+        </dl>
+        <p class="card__meta" data-stats-fallback>Visitor numbers appear on the deployed site. Cookie-free, via Cloudflare Web Analytics.</p>
+      </article>
+    </section>
+
+    <section class="summary" aria-labelledby="tests-h">
+      <h2 id="tests-h" class="section-h">Tests</h2>
+      <div class="summary__grid">
+        <article class="card card--big">
+          <div class="ring" style={`--p:${passRate}`} role="img" aria-label={`${passRate}% of tests passed`}>
+            <span>{passRate}%</span>
+          </div>
+          <div>
+            <p class="big"><strong data-qa-passed>{t.passed}</strong> / {ran} passed</p>
+            <p class="card__meta">
+              {t.failed} failed · {t.flaky} flaky · {t.skipped} skipped on purpose
+            </p>
+          </div>
+        </article>
+        <article class="card">
+          <h3 class="card__label">Duration</h3>
+          <p class="big"><strong>{minutes}m {String(seconds).padStart(2, '0')}s</strong></p>
+          <p class="card__meta">{t.files.length} spec files</p>
+        </article>
+        <article class="card">
+          <h3 class="card__label">Browser setups</h3>
+          <ul class="chips">{t.projects.map((p) => <li class="pill">{p}</li>)}</ul>
+        </article>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Results per test file" tabindex="0">
+        <table>
+          <caption class="sr-only">Results per test file</caption>
+          <thead>
+            <tr><th scope="col">Spec file</th><th scope="col">Tests</th><th scope="col">Passed</th><th scope="col">Failed</th><th scope="col">Skipped</th><th scope="col"><span class="sr-only">Pass bar</span></th></tr>
+          </thead>
+          <tbody>
+            {
+              t.files.map((f) => (
+                <tr>
+                  <th scope="row"><code>{f.file}</code></th>
+                  <td>{f.total}</td>
+                  <td class="ok">{f.passed}</td>
+                  <td class:list={{ bad: f.failed > 0 }}>{f.failed}</td>
+                  <td>{f.skipped}</td>
+                  <td>
+                    <span class="bar" aria-hidden="true">
+                      <span style={`width:${f.total - f.skipped ? Math.round((f.passed / (f.total - f.skipped)) * 100) : 0}%`} />
+                    </span>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {
+      qa.lighthouse.length > 0 && (
+        <section aria-labelledby="lh-h">
+          <h2 id="lh-h" class="section-h">Lighthouse (mobile)</h2>
+          <ul class="lh-avg">
+            {categories.map((c) => (
+              <li class={`score score--${grade(avg(c.key))}`}>
+                <span class="score__ring" style={`--p:${avg(c.key)}`}>
+                  {avg(c.key)}
+                </span>
+                <span class="score__label">{c.label}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="table-wrap" role="region" aria-label="Lighthouse scores per page" tabindex="0">
+            <table>
+              <caption class="sr-only">Lighthouse scores per page</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Page</th>
+                  {categories.map((c) => (
+                    <th scope="col">{c.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {qa.lighthouse.map((row) => (
+                  <tr>
+                    <th scope="row">
+                      <a href={row.path}>
+                        <code>{row.path}</code>
+                      </a>
+                    </th>
+                    {categories.map((c) => (
+                      <td class={`num num--${grade(row[c.key])}`}>{row[c.key]}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
+
+    <section aria-labelledby="how-h">
+      <h2 id="how-h" class="section-h">How this report is made</h2>
+      <ol class="how">
+        <li><strong>Push to main.</strong> GitHub Actions runs in Playwright's official Docker image.</li>
+        <li><strong>Test.</strong> E2E, accessibility (axe, WCAG 2.2 AA) and visual tests on desktop Chrome, mobile Chrome and Safari's engine.</li>
+        <li><strong>Measure.</strong> Lighthouse checks the key pages, and a script turns the results into this page.</li>
+        <li><strong>Ship only if green.</strong> The site is rebuilt with this report and deployed to Cloudflare Pages.</li>
+      </ol>
+      {
+        qa.runUrl && (
+          <p>
+            <a class="btn" href={qa.runUrl} target="_blank" rel="noopener">
+              Open this run on GitHub ↗
+            </a>
+          </p>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .qa {
+    padding-bottom: 48px;
+  }
+  .qa section + section {
+    margin-top: 40px;
+  }
+  .section-h {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  .card {
+    padding: 22px var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  .card__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .card__meta {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .card__meta a {
+    color: var(--link);
+  }
+  .live {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .live__tag {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--pass-soft);
+    color: var(--pass);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+  .ci-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ci-status__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--outline);
+  }
+  .ci-status[data-ci-state='passing'] .ci-status__dot {
+    background: var(--pass);
+    box-shadow: 0 0 0 5px var(--pass-soft);
+  }
+  .ci-status[data-ci-state='failing'] .ci-status__dot {
+    background: var(--fail);
+    box-shadow: 0 0 0 5px var(--fail-soft);
+  }
+  .ci-status[data-ci-state='running'] .ci-status__dot {
+    background: var(--warn);
+  }
+  .stats {
+    display: flex;
+    gap: 32px;
+    margin: 0;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stats dt {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .stats dd {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .summary__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--gap);
+    margin-bottom: var(--gap);
+  }
+  .card--big {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .ring {
+    --size: 88px;
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(closest-side, var(--tile) 78%, transparent 80% 100%),
+      conic-gradient(var(--pass) calc(var(--p) * 1%), var(--line) 0);
+  }
+  .ring span {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .big {
+    margin: 0;
+    font-size: 18px;
+    color: var(--body-text);
+  }
+  .big strong {
+    font-size: 32px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th,
+  td {
+    padding: 12px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  thead th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  tbody th {
+    font-weight: 500;
+    color: var(--text);
+  }
+  tbody th a {
+    color: inherit;
+  }
+  td.ok {
+    color: var(--pass);
+    font-weight: 600;
+  }
+  td.bad {
+    color: var(--fail);
+    font-weight: 700;
+  }
+  .bar {
+    display: block;
+    width: 120px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--pass);
+  }
+  .num {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .num--good {
+    color: var(--pass);
+  }
+  .num--ok {
+    color: var(--warn);
+  }
+  .num--poor {
+    color: var(--fail);
+  }
+  .lh-avg {
+    list-style: none;
+    margin: 0 0 var(--gap);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 12px;
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  .score__ring {
+    --c: var(--pass);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    background:
+      radial-gradient(closest-side, var(--tile) 80%, transparent 82% 100%),
+      conic-gradient(var(--c) calc(var(--p) * 1%), var(--line) 0);
+  }
+  .score--ok .score__ring {
+    --c: var(--warn);
+  }
+  .score--poor .score__ring {
+    --c: var(--fail);
+  }
+  .score__label {
+    font-size: 14px;
+    color: var(--body-text);
+  }
+  .how {
+    margin: 0 0 16px;
+    padding-left: 1.3em;
+    max-width: 70ch;
+  }
+  .how li {
+    margin: 8px 0;
+  }
+  .how strong {
+    color: var(--text);
+  }
+  @media (max-width: 799px) {
+    .live,
+    .summary__grid {
+      grid-template-columns: 1fr;
+    }
+    .lh-avg {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
+
+<script>
+  import { getJSON, relativeTime, formatDuration, statusLabel, type CiSummary, type Stats } from '../../scripts/live';
+
+  const ciCard = document.querySelector<HTMLElement>('[data-live-ci]')!;
+  const state = ciCard.querySelector<HTMLElement>('[data-ci-state]')!;
+  const label = ciCard.querySelector<HTMLElement>('[data-ci-label]')!;
+  const meta = ciCard.querySelector<HTMLElement>('[data-ci-meta]')!;
+
+  const loadCi = async () => {
+    const run = await getJSON<CiSummary>('/api/ci');
+    if (!run) {
+      state.dataset.ciState = 'unknown';
+      label.textContent = 'Unavailable';
+      return;
+    }
+    state.dataset.ciState = run.status;
+    label.textContent = statusLabel[run.status];
+    meta.textContent = '';
+    const link = document.createElement('a');
+    link.href = run.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = `Run #${run.runNumber}`;
+    const dur = formatDuration(run.durationSeconds);
+    meta.append(link, ` · ${relativeTime(run.startedAt)}${dur ? ` · ${dur}` : ''} · ${run.commit}`);
+  };
+
+  const statsCard = document.querySelector<HTMLElement>('[data-live-stats]')!;
+  const loadStats = async () => {
+    const s = await getJSON<Stats>('/api/stats');
+    if (!s) return;
+    (['today', 'week', 'countries'] as const).forEach((k) => {
+      statsCard.querySelector(`[data-stat="${k}"]`)!.textContent = s[k].toLocaleString('en');
+    });
+    statsCard.querySelector<HTMLElement>('[data-stats]')!.hidden = false;
+    statsCard.querySelector<HTMLElement>('[data-stats-fallback]')!.hidden = true;
+  };
+
+  void loadCi();
+  void loadStats();
+  // Keep the live cards fresh while the page is open.
+  setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      void loadCi();
+      void loadStats();
+    }
+  }, 60_000);
+</script>
