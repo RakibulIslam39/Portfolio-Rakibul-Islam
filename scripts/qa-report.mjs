@@ -7,10 +7,12 @@
  * Usage: node scripts/qa-report.mjs [--no-lighthouse] [--results reports/results.json]
  * Run `npm run build` first so dist/ exists for Lighthouse.
  */
-import { spawn, execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, statSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, extname, normalize, resolve } from 'node:path';
 
 const args = process.argv.slice(2);
 const resultsPath = args.includes('--results') ? args[args.indexOf('--results') + 1] : 'reports/results.json';
@@ -57,19 +59,40 @@ function summarizeTests(report) {
 }
 
 /* ---------- Lighthouse ---------- */
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const run = promisify(execFile);
+const TYPES = {
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript',
+  '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp',
+  '.avif': 'image/avif', '.woff2': 'font/woff2', '.woff': 'font/woff', '.pdf': 'application/pdf', '.txt': 'text/plain',
+  '.vcf': 'text/vcard',
+};
 
-async function waitFor(url, ms = 30_000) {
-  const end = Date.now() + ms;
-  while (Date.now() < end) {
-    try {
-      if ((await fetch(url)).ok) return;
-    } catch {
-      /* not up yet */
+/**
+ * Serves dist/ with a tiny static server. Self-contained on purpose: `astro preview`
+ * behaves differently in CI containers (background mode, lock files).
+ */
+function serveDist(port) {
+  const root = resolve('dist');
+  if (!existsSync(root)) throw new Error('dist/ not found: run `npm run build` first');
+  const server = createServer((req, res) => {
+    const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    let file = normalize(join(root, urlPath));
+    if (!file.startsWith(root)) {
+      res.writeHead(403).end();
+      return;
     }
-    await sleep(300);
-  }
-  throw new Error(`Server did not start at ${url}`);
+    if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
+    if (!existsSync(file)) {
+      const notFound = join(root, '404.html');
+      res.writeHead(404, { 'content-type': TYPES['.html'] }).end(existsSync(notFound) ? readFileSync(notFound) : 'Not found');
+      return;
+    }
+    res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
+  });
+  return new Promise((ok, fail) => {
+    server.once('error', fail);
+    server.listen(port, '127.0.0.1', () => ok(server));
+  });
 }
 
 async function chromePath() {
@@ -79,26 +102,26 @@ async function chromePath() {
 }
 
 async function runLighthouse() {
-  const server = spawn('npx', ['astro', 'preview', '--port', String(PORT), '--ignore-lock'], { stdio: 'ignore' });
+  const server = await serveDist(PORT);
   const out = join(tmpdir(), `lh-${process.pid}.json`);
   const env = { ...process.env, CHROME_PATH: await chromePath() };
   const scores = [];
   try {
-    await waitFor(`http://localhost:${PORT}/`);
     for (const path of PAGES) {
-      execFileSync(
+      // Async on purpose: a sync call would block the event loop and the in-process server.
+      await run(
         'npx',
         [
           '-y',
           'lighthouse@12',
-          `http://localhost:${PORT}${path}`,
+          `http://127.0.0.1:${PORT}${path}`,
           '--quiet',
           '--output=json',
           `--output-path=${out}`,
           '--only-categories=performance,accessibility,best-practices,seo',
           '--chrome-flags=--headless=new --no-sandbox',
         ],
-        { env, stdio: 'ignore' },
+        { env, maxBuffer: 64 * 1024 * 1024 },
       );
       const c = JSON.parse(readFileSync(out, 'utf8')).categories;
       const pct = (k) => Math.round((c[k]?.score ?? 0) * 100);
@@ -106,7 +129,7 @@ async function runLighthouse() {
       console.log(`lighthouse ${path}`, scores.at(-1));
     }
   } finally {
-    server.kill();
+    server.close();
     rmSync(out, { force: true });
   }
   return scores;
