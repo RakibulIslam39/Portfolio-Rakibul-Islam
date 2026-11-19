@@ -1,0 +1,42 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+import site from '../../content/site.json';
+---
+
+<Tile id="plugins" size="1x1" app="Plugins I test" class="plugins">
+  <AppIcon name="plugins" slot="icon" />
+  <ul class="plg">
+    {
+      site.plugins.map((p) => (
+        <li>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+          {p}
+        </li>
+      ))
+    }
+  </ul>
+</Tile>
+
+<style>
+  .plg {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    columns: 1;
+  }
+  .plg li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    color: var(--text);
+  }
+  .plg svg {
+    color: var(--pass);
+    flex: none;
+  }
+</style>

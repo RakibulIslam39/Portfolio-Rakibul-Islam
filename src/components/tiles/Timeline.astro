@@ -1,0 +1,81 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+import site from '../../content/site.json';
+---
+
+<Tile id="timeline" size="2x1" app="Career" href="/about/" hrefLabel="Read more about my experience" class="timeline">
+  <AppIcon name="timeline" slot="icon" />
+  <ol class="tl">
+    {
+      site.experience.map((e, i) => (
+        <li class:list={['tl__item', { 'tl__item--now': i === 0 }]}>
+          <span class="tl__dot" aria-hidden="true" />
+          <div class="tl__main">
+            <strong>{e.role}</strong> · {e.company}
+          </div>
+          <span class="tl__period">{e.period}</span>
+        </li>
+      ))
+    }
+  </ol>
+</Tile>
+
+<style>
+  .tl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .tl::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--line);
+  }
+  .tl__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    gap: 14px;
+    align-items: baseline;
+    padding: 7px 0;
+    font-size: 14px;
+  }
+  .tl__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--tile);
+    border: 2px solid var(--outline);
+    position: relative;
+    top: 1px;
+  }
+  .tl__item--now .tl__dot {
+    border-color: var(--pass);
+    background: var(--pass);
+    box-shadow: 0 0 0 4px var(--pass-soft);
+  }
+  .tl__main strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .tl__period {
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 480px) {
+    .tl__item {
+      grid-template-columns: 12px 1fr;
+    }
+    .tl__period {
+      grid-column: 2;
+    }
+  }
+</style>

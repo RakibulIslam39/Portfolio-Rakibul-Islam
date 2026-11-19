@@ -1,0 +1,51 @@
+---
+/** Original app-style icons: a coloured rounded square with a simple white glyph. */
+type Name = 'terminal' | 'report' | 'ci' | 'map' | 'contact' | 'projects' | 'timeline' | 'skills' | 'plugins' | 'cv' | 'bug' | 'status' | 'portrait';
+interface Props {
+  name: Name;
+}
+const { name } = Astro.props;
+
+const colours: Record<Name, [string, string]> = {
+  terminal: ['#3a3a40', '#1c1c20'],
+  report: ['#36d399', '#0f9e66'],
+  ci: ['#4c8dff', '#2156d9'],
+  map: ['#5ad16a', '#1f9a4c'],
+  contact: ['#9b9ba3', '#5d5d66'],
+  projects: ['#ffb340', '#f07b00'],
+  timeline: ['#c27cff', '#7b3fe4'],
+  skills: ['#2ec4d6', '#0a8798'],
+  plugins: ['#3d7eff', '#1f4fc4'],
+  cv: ['#ff6b5e', '#e0281b'],
+  bug: ['#ff5a7a', '#d81b4a'],
+  status: ['#36d399', '#0f9e66'],
+  portrait: ['#8e8e96', '#55555c'],
+};
+const [c1, c2] = colours[name];
+const gid = `g-${name}`;
+---
+
+<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true">
+  <defs>
+    <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color={c1}></stop>
+      <stop offset="1" stop-color={c2}></stop>
+    </linearGradient>
+  </defs>
+  <rect width="28" height="28" rx="7" fill={`url(#${gid})`}></rect>
+  <g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    {name === 'terminal' && <path d="M8 10l4 4-4 4M14 18h6" />}
+    {name === 'report' && <path d="M8.5 14.5l3.5 3.5 7.5-8" />}
+    {name === 'status' && <path d="M8.5 14.5l3.5 3.5 7.5-8" />}
+    {name === 'ci' && <><circle cx="9" cy="9" r="2" /><circle cx="9" cy="19" r="2" /><circle cx="19" cy="14" r="2" /><path d="M9 11v6M11 9.5c4 0 6 1.5 6.3 2.8" /></>}
+    {name === 'map' && <><path d="M14 21s5-4.6 5-8.5a5 5 0 0 0-10 0C9 16.4 14 21 14 21z" /><circle cx="14" cy="12.5" r="1.8" /></>}
+    {name === 'contact' && <><circle cx="14" cy="11" r="3" /><path d="M8.5 20c1-3 3-4 5.5-4s4.5 1 5.5 4" /></>}
+    {name === 'projects' && <><rect x="7.5" y="9" width="13" height="10" rx="2" /><path d="M11 9V7.5h6V9" /></>}
+    {name === 'timeline' && <><path d="M10 7v14" /><circle cx="10" cy="10" r="1.6" fill="#fff" /><circle cx="10" cy="18" r="1.6" fill="#fff" /><path d="M14 10h6M14 18h4" /></>}
+    {name === 'skills' && <><path d="M14 6.5l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L6.8 11.8l5-.7z" /></>}
+    {name === 'plugins' && <><path d="M11 7v4M17 7v4M9 11h10v3a5 5 0 0 1-10 0zM14 19v3" /></>}
+    {name === 'cv' && <><path d="M10 6.5h6l3.5 3.5v11.5h-9.5z" /><path d="M16 6.5V10h3.5M12.5 15h5M12.5 18h3.5" /></>}
+    {name === 'bug' && <><ellipse cx="14" cy="15.5" rx="4" ry="5" /><path d="M14 10.5V20.5M10 13H7M21 13h-3M10 17H7M21 17h-3M11.5 9l-1.5-2M16.5 9l1.5-2" /></>}
+    {name === 'portrait' && <><circle cx="14" cy="11.5" r="3.2" /><path d="M8 21c1.2-3.3 3.4-4.6 6-4.6s4.8 1.3 6 4.6" /></>}
+  </g>
+</svg>

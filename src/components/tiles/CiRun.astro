@@ -1,0 +1,158 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+import site from '../../content/site.json';
+/* Phase 6 will replace this static run with live data from /api/ci. */
+---
+
+<Tile id="ci" size="2x1" app="GitHub Actions" class="ci">
+  <AppIcon name="ci" slot="icon" />
+  <div class="ci__head">
+    <p class="ci__title">Zero-touch E2E pipeline</p>
+    <span class="ci__badge" data-ci-badge>
+      <span class="dot" aria-hidden="true"></span><span data-ci-status>Success</span>
+    </span>
+  </div>
+  <ol class="ci__steps" data-ci>
+    {
+      site.pipeline.map((s) => (
+        <li class="is-done" data-ci-step>
+          <span class="ci__icon" aria-hidden="true" />
+          <span class="ci__step">{s.step}</span>
+          <span class="ci__detail">{s.detail}</span>
+        </li>
+      ))
+    }
+  </ol>
+</Tile>
+
+<style>
+  .ci__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .ci__title {
+    color: var(--text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .ci__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--pass-soft);
+    color: var(--pass);
+  }
+  .ci__badge[data-state='running'] {
+    background: rgba(255, 179, 64, 0.14);
+    color: var(--warn);
+  }
+  .ci__badge[data-state='running'] .dot {
+    background: var(--warn);
+    box-shadow: 0 0 0 4px rgba(255, 179, 64, 0.2);
+  }
+  .ci__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .ci__steps li {
+    display: grid;
+    grid-template-columns: 18px 130px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 13.5px;
+  }
+  .ci__step {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .ci__detail {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ci__icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--outline);
+    position: relative;
+  }
+  .is-done .ci__icon {
+    border-color: var(--pass);
+    background: var(--pass);
+  }
+  .is-done .ci__icon::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 7px;
+    border: solid var(--tile);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .is-running .ci__icon {
+    border-color: var(--warn);
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (max-width: 480px) {
+    .ci__steps li {
+      grid-template-columns: 18px 1fr;
+    }
+    .ci__detail {
+      grid-column: 2;
+    }
+  }
+</style>
+
+<script>
+  /* Replays the pipeline once when the tile comes into view. */
+  const root = document.querySelector<HTMLElement>('[data-ci]');
+  const badge = document.querySelector<HTMLElement>('[data-ci-badge]');
+  const label = document.querySelector<HTMLElement>('[data-ci-status]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (root && badge && label && !reduce) {
+    const steps = Array.from(root.querySelectorAll<HTMLElement>('[data-ci-step]'));
+    const run = async () => {
+      steps.forEach((s) => s.classList.remove('is-done', 'is-running'));
+      badge.dataset.state = 'running';
+      label.textContent = 'In progress';
+      for (const s of steps) {
+        s.classList.add('is-running');
+        await new Promise((r) => setTimeout(r, 650));
+        s.classList.replace('is-running', 'is-done');
+      }
+      badge.dataset.state = 'done';
+      label.textContent = 'Success';
+    };
+    const io = new IntersectionObserver((e) => {
+      if (e.some((x) => x.isIntersecting)) {
+        io.disconnect();
+        void run();
+      }
+    }, { threshold: 0.5 });
+    io.observe(root);
+  }
+</script>

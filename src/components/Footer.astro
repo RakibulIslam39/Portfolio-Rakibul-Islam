@@ -1,0 +1,49 @@
+---
+import site from '../content/site.json';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer container">
+  <p>
+    © {year} {site.name}. Built with Astro, tested with Playwright.
+  </p>
+  <p class="footer__links">
+    <a href={`mailto:${site.email}`}>Email</a>
+    <a href={site.links.github} rel="me noopener" target="_blank">GitHub</a>
+    <a href={site.links.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
+    <a href="/Rakibul-Islam-CV.pdf">CV (PDF)</a>
+  </p>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding: 24px 0 120px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .footer p {
+    margin: 0;
+  }
+  .footer__links {
+    display: flex;
+    gap: 16px;
+  }
+  .footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .footer a:hover {
+    color: var(--text);
+    text-decoration: underline;
+  }
+  @media (min-width: 641px) {
+    .footer {
+      padding-bottom: 32px;
+    }
+  }
+</style>

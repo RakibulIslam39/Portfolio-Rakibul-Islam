@@ -1,0 +1,188 @@
+{
+  "name": "Rakibul Islam",
+  "firstName": "Rakibul",
+  "role": "QA Automation Engineer & SDET",
+  "location": "Dhaka, Bangladesh",
+  "timezone": "UTC+6",
+  "email": "rakibul.cse.bubt@gmail.com",
+  "links": {
+    "github": "https://github.com/RakibulIslam39",
+    "linkedin": "https://www.linkedin.com/in/TODO-your-linkedin-handle/"
+  },
+  "tagline": "I break things on purpose, so your users don't.",
+  "intro": [
+    "I've spent 3+ years building automated test frameworks for web, SaaS and API products. Right now I test WordPress and WooCommerce plugins at WPPOOL.",
+    "Most days that means Playwright and TypeScript, Dockerized test environments and GitHub Actions pipelines that run on every commit."
+  ],
+  "status": {
+    "open": true,
+    "headline": "Open to new roles",
+    "detail": "Remote QA Automation / SDET roles, including teams in Europe.",
+    "cta": "Email me"
+  },
+  "skills": [
+    {
+      "name": "Playwright",
+      "group": "Automation"
+    },
+    {
+      "name": "TypeScript",
+      "group": "Language"
+    },
+    {
+      "name": "JavaScript",
+      "group": "Language"
+    },
+    {
+      "name": "SQL",
+      "group": "Language"
+    },
+    {
+      "name": "API testing",
+      "group": "Automation"
+    },
+    {
+      "name": "Postman",
+      "group": "Tools"
+    },
+    {
+      "name": "Apache JMeter",
+      "group": "Performance"
+    },
+    {
+      "name": "Docker",
+      "group": "DevOps"
+    },
+    {
+      "name": "GitHub Actions",
+      "group": "DevOps"
+    },
+    {
+      "name": "Git",
+      "group": "DevOps"
+    },
+    {
+      "name": "Cross-browser",
+      "group": "Practice"
+    },
+    {
+      "name": "Regression",
+      "group": "Practice"
+    },
+    {
+      "name": "AI-assisted testing",
+      "group": "Practice"
+    },
+    {
+      "name": "Agile",
+      "group": "Practice"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Jr. SQA Engineer",
+      "company": "WPPOOL",
+      "period": "Oct 2024 – now",
+      "place": "Remote",
+      "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins."
+    },
+    {
+      "role": "SQA Engineer",
+      "company": "Zaimah Technologies",
+      "period": "Dec 2023 – Apr 2024",
+      "place": "Dhaka",
+      "summary": "End-to-end, API (Postman) and performance (JMeter) testing for MacroHealthPlus."
+    },
+    {
+      "role": "Software QA Engineer, intern",
+      "company": "Edutechs",
+      "period": "Jan 2018 – Jan 2021",
+      "place": "San Diego (remote)",
+      "summary": "Test plans, test cases and first automation scripts in an Agile squad."
+    },
+    {
+      "role": "BSc in CSE",
+      "company": "BUBT",
+      "period": "2018 – 2022",
+      "place": "Dhaka",
+      "summary": "Bangladesh University of Business and Technology."
+    }
+  ],
+  "plugins": [
+    "FlexOrder",
+    "FlexStock",
+    "EchoRewards",
+    "FlexTable",
+    "FormyChat",
+    "WP Dark Mode",
+    "Jitsi Meet"
+  ],
+  "projects": [
+    {
+      "name": "FlexOrder E2E Automation",
+      "hook": "38 scenarios. 100% pass rate.",
+      "summary": "Playwright + TypeScript framework with a Dockerized WordPress environment and a GitHub Actions pipeline triggered on every plugin commit.",
+      "stack": [
+        "Playwright",
+        "TypeScript",
+        "Docker",
+        "GitHub Actions"
+      ],
+      "url": "https://github.com/RakibulIslam39"
+    },
+    {
+      "name": "Traffic Flow Prediction",
+      "hook": "R² ≈ 0.94 on real freeway data",
+      "summary": "Compared LSTM, GRU and stacked autoencoder models to forecast short-term traffic flow from Caltrans PeMS sensor data (RMSE ≈ 9.6 vehicles).",
+      "stack": [
+        "Python",
+        "Keras",
+        "TensorFlow",
+        "scikit-learn"
+      ],
+      "url": "https://github.com/RakibulIslam39/traffic-flow-prediction-Python"
+    },
+    {
+      "name": "AI Face Analyzer",
+      "hook": "A side project in the browser",
+      "summary": "A web app that analyses faces with AI models. TODO: add a one-line result or demo link.",
+      "stack": [
+        "Web",
+        "AI"
+      ],
+      "url": "https://github.com/RakibulIslam39/ai-face-analyzer"
+    }
+  ],
+  "pipeline": [
+    {
+      "step": "Plugin commit",
+      "detail": "repository_dispatch event"
+    },
+    {
+      "step": "Provision",
+      "detail": "Docker: WordPress + WooCommerce"
+    },
+    {
+      "step": "Install build",
+      "detail": "the exact pushed version"
+    },
+    {
+      "step": "Run Playwright",
+      "detail": "38 E2E scenarios"
+    },
+    {
+      "step": "Report",
+      "detail": "HTML report + status"
+    }
+  ],
+  "report": {
+    "total": 38,
+    "passRate": 100,
+    "note": "WooCommerce ↔ Google Sheets order-sync plugin",
+    "suites": [
+      "Setup & onboarding",
+      "WooCommerce order management",
+      "Google Sheets synchronization"
+    ]
+  }
+}

@@ -1,0 +1,160 @@
+---
+/**
+ * A bento tile. Sizes are columns x rows on the 4-column desktop grid;
+ * the grid collapses to 2 and then 1 column on smaller screens.
+ */
+interface Props {
+  size?: '1x1' | '2x1' | '2x2' | '4x1';
+  title?: string;
+  /** Short app-style label shown next to the icon, e.g. "Terminal". */
+  app?: string;
+  /** Optional link for the corner arrow. */
+  href?: string;
+  hrefLabel?: string;
+  id: string;
+  class?: string;
+  tone?: 'default' | 'dark';
+  /** Remove inner padding so media can run edge to edge. */
+  flush?: boolean;
+}
+
+const { size = '1x1', app, href, hrefLabel, id, class: extra = '', tone = 'default', flush = false } = Astro.props;
+const external = href ? /^https?:/.test(href) : false;
+---
+
+<section class:list={['tile', `tile--${size}`, `tile--${tone}`, { 'tile--flush': flush }, extra]} id={id} aria-labelledby={app ? `${id}-app` : undefined} data-tile={id}>
+  {
+    (app || href) && (
+      <header class="tile__head">
+        {app && (
+          <h2 class="tile__app" id={`${id}-app`}>
+            <span class="tile__icon" aria-hidden="true">
+              <slot name="icon" />
+            </span>
+            {app}
+          </h2>
+        )}
+        {href && (
+          <a
+            class="tile__arrow"
+            href={href}
+            aria-label={hrefLabel ?? `Open ${app ?? 'link'}`}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener' : undefined}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+          </a>
+        )}
+      </header>
+    )
+  }
+  <div class="tile__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-arrive), box-shadow 0.35s var(--ease-arrive);
+    animation: tile-in 0.6s var(--ease-arrive) both;
+  }
+  .tile--flush {
+    padding: 0;
+  }
+  .tile--dark {
+    background: #101012;
+    color: #d6d6dc;
+  }
+  @keyframes tile-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.985);
+    }
+  }
+  .tile--2x1,
+  .tile--2x2 {
+    grid-column: span 2;
+  }
+  .tile--2x2 {
+    grid-row: span 2;
+  }
+  .tile--4x1 {
+    grid-column: 1 / -1;
+  }
+  .tile__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    min-height: 28px;
+  }
+  .tile__app {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+  .tile--dark .tile__app {
+    color: #9d9da6;
+  }
+  .tile__icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .tile__icon :global(svg) {
+    width: 28px;
+    height: 28px;
+  }
+  .tile__arrow {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--outline);
+    color: var(--muted);
+    transition: transform 0.25s var(--ease-arrive), color 0.2s, background-color 0.2s;
+  }
+  .tile__arrow:hover {
+    color: var(--text);
+    background: var(--hover);
+    transform: rotate(45deg);
+  }
+  .tile__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 1023px) {
+    .tile--4x1 {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 699px) {
+    .tile--2x1,
+    .tile--2x2,
+    .tile--4x1 {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+</style>

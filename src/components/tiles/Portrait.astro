@@ -1,0 +1,118 @@
+---
+import Tile from '../Tile.astro';
+/*
+ * Placeholder portraits. TODO: replace with your own photo and avatar
+ * (put files in /public/portraits/ and swap the <svg> for <img>).
+ */
+const pixels = [
+  '..xxxxxx..',
+  '.xxxxxxxx.',
+  'xxhhhhhhxx',
+  'xhssssssh.',
+  '.sseesees.',
+  '.ssssssss.',
+  '.sssmmsss.',
+  '..ssssss..',
+  '.bbbbbbbb.',
+  'bbbbbbbbbb',
+];
+const colour: Record<string, string> = { x: '#2a2018', h: '#3a2b20', s: '#c98d66', e: '#1b1b1f', m: '#9a4f3c', b: '#2fd08a' };
+---
+
+<Tile id="portrait" size="1x1" class="portrait" flush>
+  <button class="portrait__stage" type="button" data-portrait>
+    <span class="sr-only">Show next portrait style</span>
+    <figure class="portrait__frame is-active" data-portrait-frame aria-hidden="true">
+      <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Initials avatar">
+        <defs>
+          <linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fd08a"></stop><stop offset="1" stop-color="#0a84ff"></stop></linearGradient>
+        </defs>
+        <rect width="200" height="200" fill="url(#pg1)"></rect>
+        <text x="100" y="122" text-anchor="middle" font-size="64" font-weight="700" fill="#fff" font-family="Inter Variable, sans-serif" letter-spacing="-2">RI</text>
+      </svg>
+    </figure>
+    <figure class="portrait__frame" data-portrait-frame aria-hidden="true">
+      <svg viewBox="0 0 10 10" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Pixel-art avatar" shape-rendering="crispEdges">
+        <rect width="10" height="10" fill="#1d2a3a"></rect>
+        {
+          pixels.flatMap((row, y) =>
+            row.split('').map((c, x) => (c === '.' ? null : <rect x={x} y={y} width="1" height="1" fill={colour[c]} />)),
+          )
+        }
+      </svg>
+    </figure>
+    <figure class="portrait__frame" data-portrait-frame aria-hidden="true">
+      <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrated avatar placeholder">
+        <rect width="200" height="200" fill="#26262b"></rect>
+        <circle cx="100" cy="82" r="38" fill="#c98d66"></circle>
+        <path d="M60 70c4-30 76-34 80 0-12-10-24-14-40-14s-28 4-40 14z" fill="#2a2018"></path>
+        <path d="M34 200c8-44 34-64 66-64s58 20 66 64z" fill="#2fd08a"></path>
+        <circle cx="86" cy="84" r="4" fill="#1b1b1f"></circle><circle cx="114" cy="84" r="4" fill="#1b1b1f"></circle>
+        <path d="M88 100c6 6 18 6 24 0" stroke="#7a3a2c" stroke-width="4" fill="none" stroke-linecap="round"></path>
+      </svg>
+    </figure>
+  </button>
+  <p class="portrait__hint" aria-hidden="true">Tap to switch</p>
+</Tile>
+
+<style>
+  .portrait__stage {
+    position: relative;
+    flex: 1;
+    min-height: 220px;
+    aspect-ratio: 1;
+    border: 0;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .portrait__frame {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 0.45s var(--ease-travel), transform 0.6s var(--ease-arrive);
+  }
+  .portrait__frame svg {
+    width: 100%;
+    height: 100%;
+  }
+  .portrait__frame.is-active {
+    opacity: 1;
+    transform: none;
+  }
+  .portrait__hint {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  :global(.portrait):hover .portrait__hint,
+  .portrait__stage:focus-visible + .portrait__hint {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-portrait]').forEach((btn) => {
+    const frames = Array.from(btn.querySelectorAll<HTMLElement>('[data-portrait-frame]'));
+    let i = 0;
+    btn.addEventListener('click', () => {
+      frames[i]!.classList.remove('is-active');
+      i = (i + 1) % frames.length;
+      frames[i]!.classList.add('is-active');
+    });
+  });
+</script>

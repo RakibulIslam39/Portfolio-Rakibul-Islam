@@ -1,0 +1,57 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+import site from '../../content/site.json';
+---
+
+<Tile id="status" size="1x1" app="Status" class="status">
+  <AppIcon name="status" slot="icon" />
+  <p class="status__head"><span class="dot" aria-hidden="true"></span>{site.status.headline}</p>
+  <p class="status__detail">{site.status.detail}</p>
+  <p class="status__time">
+    Dhaka · <time data-local-time>--:--</time> <span>({site.timezone})</span>
+  </p>
+  <a class="btn btn--primary status__cta" href={`mailto:${site.email}?subject=${encodeURIComponent('A role you might like')}`}>{site.status.cta}</a>
+</Tile>
+
+<style>
+  .status__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .status__detail {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .status__time {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: auto;
+    margin-bottom: 12px;
+  }
+  .status__time time {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .status__cta {
+    justify-content: center;
+  }
+</style>
+
+<script>
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit' });
+  const tick = () => {
+    document.querySelectorAll<HTMLTimeElement>('[data-local-time]').forEach((t) => {
+      t.textContent = fmt.format(new Date());
+    });
+  };
+  tick();
+  setInterval(tick, 30_000);
+</script>

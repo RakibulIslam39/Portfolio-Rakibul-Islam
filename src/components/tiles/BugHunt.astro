@@ -1,0 +1,160 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+
+const bugs = [
+  { id: 'typo', label: 'Heading spelled “Chekout”' },
+  { id: 'price', label: 'Negative price' },
+  { id: 'date', label: 'Delivery date 31 Feb' },
+  { id: 'align', label: 'Misaligned input' },
+  { id: 'contrast', label: 'Unreadable button text' },
+];
+---
+
+<Tile id="bughunt" size="2x1" app="Bug Hunt" class="bughunt">
+  <AppIcon name="bug" slot="icon" />
+  <div class="bh" data-bughunt data-total={bugs.length}>
+    <div class="bh__ui" aria-label="A checkout form with planted bugs">
+      <button type="button" class="bug" data-bug="typo" aria-label="Inspect the heading"><span class="bh__h">Chekout</span></button>
+      <div class="bh__row">
+        <span>Test plan (monthly)</span>
+        <button type="button" class="bug" data-bug="price" aria-label="Inspect the price">$-5.00</button>
+      </div>
+      <div class="bh__row">
+        <span>Delivery</span>
+        <button type="button" class="bug" data-bug="date" aria-label="Inspect the delivery date">31 Feb 2027</button>
+      </div>
+      <button type="button" class="bug bh__input-wrap" data-bug="align" aria-label="Inspect the email field"><span class="bh__input">you@email.com</span></button>
+      <button type="button" class="bug bh__pay-wrap" data-bug="contrast" aria-label="Inspect the pay button"><span class="bh__pay">Pay now</span></button>
+    </div>
+
+    <div class="bh__side">
+      <p class="bh__lead">I planted {bugs.length} bugs in this checkout. Can you find them?</p>
+      <p class="bh__count"><b data-bh-found>0</b> / {bugs.length} found</p>
+      <ol class="bh__log" data-bh-log aria-live="polite"></ol>
+      <p class="bh__done" data-bh-done hidden>All found. QA passed ✓ Want someone like that on your team?</p>
+      <button type="button" class="btn bh__reset" data-bh-reset hidden>Reset</button>
+    </div>
+    <template data-bh-labels>{JSON.stringify(Object.fromEntries(bugs.map((b) => [b.id, b.label])))}</template>
+  </div>
+</Tile>
+
+<style>
+  .bh {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .bh__ui {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: #222;
+    font-size: 12.5px;
+  }
+  .bug {
+    all: unset;
+    cursor: crosshair;
+    position: relative;
+    border-radius: 6px;
+    outline-offset: 2px;
+  }
+  .bug:focus-visible {
+    outline: 2px dashed var(--link);
+  }
+  .bug.is-found::after {
+    content: '';
+    position: absolute;
+    inset: -4px -6px;
+    border: 2px solid #ff3b30;
+    border-radius: 8px;
+    animation: circle 0.35s var(--ease-arrive);
+  }
+  @keyframes circle {
+    from {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+  .bh__h {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .bh__row {
+    display: flex;
+    justify-content: space-between;
+    color: #555;
+  }
+  .bh__row .bug {
+    color: #111;
+    font-weight: 600;
+  }
+  .bh__input-wrap {
+    margin-left: 14px;
+  }
+  .bh__input {
+    display: block;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: #888;
+  }
+  .bh__pay {
+    display: block;
+    text-align: center;
+    padding: 6px;
+    border-radius: 6px;
+    background: #2fd08a;
+    color: #39d896;
+    font-weight: 700;
+  }
+  .bh__side {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+  .bh__lead {
+    color: var(--text);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .bh__count {
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .bh__count b {
+    color: var(--text);
+    font-size: 20px;
+  }
+  .bh__log {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12.5px;
+    color: var(--body-text);
+  }
+  .bh__done {
+    color: var(--pass);
+    font-weight: 600;
+    margin: 8px 0;
+    line-height: 1.35;
+  }
+  .bh__reset {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 6px 14px;
+  }
+  @media (max-width: 480px) {
+    .bh {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { initBugHunt } from '../../scripts/bughunt';
+  initBugHunt();
+</script>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/tiles/Hero.astro';
+import Portrait from '../components/tiles/Portrait.astro';
+import Status from '../components/tiles/Status.astro';
+import Terminal from '../components/tiles/Terminal.astro';
+import Report from '../components/tiles/Report.astro';
+import CiRun from '../components/tiles/CiRun.astro';
+import MapTile from '../components/tiles/MapTile.astro';
+import Contact from '../components/tiles/Contact.astro';
+import Projects from '../components/tiles/Projects.astro';
+import Timeline from '../components/tiles/Timeline.astro';
+import Skills from '../components/tiles/Skills.astro';
+import Plugins from '../components/tiles/Plugins.astro';
+import BugHunt from '../components/tiles/BugHunt.astro';
+import Cv from '../components/tiles/Cv.astro';
+---
+
+<BaseLayout>
+  <div class="bento container" data-bento>
+    <Hero />
+    <Portrait />
+    <Status />
+    <Terminal />
+    <Report />
+    <CiRun />
+    <MapTile />
+    <Contact />
+    <Projects />
+    <Timeline />
+    <Skills />
+    <Plugins />
+    <BugHunt />
+    <Cv />
+  </div>
+</BaseLayout>
+
+<style>
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(248px, auto);
+    grid-auto-flow: row dense;
+    gap: var(--gap);
+    margin-bottom: 48px;
+  }
+  @media (max-width: 1023px) {
+    .bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 699px) {
+    .bento {
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: auto;
+    }
+  }
+</style>

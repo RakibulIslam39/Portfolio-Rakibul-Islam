@@ -1,0 +1,52 @@
+---
+import Tile from '../Tile.astro';
+import site from '../../content/site.json';
+---
+
+<Tile id="hero" size="4x1" class="hero">
+  <h1>
+    <span class="hi">{site.firstName}</span> is a QA Automation Engineer &amp; SDET in <span class="hi">Dhaka</span>
+  </h1>
+  <div class="hero__copy">
+    {site.intro.map((p) => <p>{p}</p>)}
+    <p class="hero__tagline">{site.tagline}</p>
+  </div>
+  <div class="hero__cta">
+    <a class="btn btn--primary" href="/Rakibul-Islam-CV.pdf" download>Download CV</a>
+    <a class="btn" href={`mailto:${site.email}?subject=${encodeURIComponent('Hello Rakibul (via your portfolio)')}`}>Email me</a>
+    <span class="pill"><span class="dot" aria-hidden="true"></span> {site.status.headline}</span>
+  </div>
+</Tile>
+
+<style>
+  :global(.hero) :global(.tile__body) {
+    gap: 20px;
+  }
+  :global(.hero) h1 {
+    font-size: clamp(36px, 6vw, 60px);
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    color: var(--muted);
+    max-width: 18ch;
+  }
+  :global(.hero) .hi {
+    color: var(--text);
+  }
+  .hero__copy {
+    max-width: 62ch;
+    font-size: 17px;
+  }
+  .hero__copy p:last-child {
+    margin-bottom: 0;
+  }
+  .hero__tagline {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+</style>

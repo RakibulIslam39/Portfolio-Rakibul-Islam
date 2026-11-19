@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+interface Props { title: string; heading: string; text: string }
+const { title, heading, text } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <section class="soon container">
+    <p class="pill"><span class="dot" aria-hidden="true"></span> In development</p>
+    <h1>{heading}</h1>
+    <p>{text}</p>
+    <a class="btn" href="/">← Back home</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .soon {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 16px;
+  }
+  .soon h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    letter-spacing: -0.035em;
+  }
+  .soon p {
+    max-width: 52ch;
+    margin: 0;
+  }
+</style>
