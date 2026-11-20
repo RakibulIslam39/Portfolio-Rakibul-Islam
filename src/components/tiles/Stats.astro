@@ -33,7 +33,7 @@ const rows = [
       ))
     }
   </ul>
-  <p class="st__off" data-stats-off hidden>Visitor numbers are taking a break. The QA page has the rest.</p>
+  <p class="st__off" data-stats-off data-on="false">Visitor numbers are taking a break. The QA page has the rest.</p>
 </Tile>
 
 <style>
@@ -109,6 +109,10 @@ const rows = [
   .st__row[data-trend='down'] .st__chg {
     background: #d6362c;
   }
+  /* The note keeps its space even while hidden, so the tile never changes height. */
+  .st__off[data-on='false'] {
+    visibility: hidden;
+  }
   .st__off {
     margin: 10px 0 0;
     font-size: 13px;
@@ -151,9 +155,9 @@ const rows = [
     const s = await getJSON<Stats>('/api/stats');
     if (s && typeof s.today === 'number') {
       render(s);
-      off!.hidden = true;
+      off!.dataset.on = 'false';
     } else {
-      off!.hidden = false;
+      off!.dataset.on = 'true';
     }
   };
 

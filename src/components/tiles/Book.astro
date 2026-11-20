@@ -13,12 +13,16 @@ import site from '../../content/site.json';
     <p class="cal__date" data-cal-date></p>
     <h2 class="cal__title">Book a QA chat</h2>
     <ul class="cal__list" data-cal-list>
-      <li>
-        <a class="cal__slot" href={`mailto:${site.email}?subject=${encodeURIComponent('QA chat (via your portfolio)')}`}>
-          <strong>Open slot · 30 min</strong>
-          <span>Pick a day by email</span>
-        </a>
-      </li>
+      {
+        [1, 2, 3].map(() => (
+          <li>
+            <a class="cal__slot" href={`mailto:${site.email}?subject=${encodeURIComponent('QA chat (via your portfolio)')}`}>
+              <strong>Open slot · 30 min</strong>
+              <span>Next working day · Dhaka time</span>
+            </a>
+          </li>
+        ))
+      }
     </ul>
     <p class="cal__foot">Free video call · test strategy, Playwright or CI</p>
   </div>

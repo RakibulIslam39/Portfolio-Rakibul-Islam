@@ -133,12 +133,6 @@ import Blog from '../components/tiles/Blog.astro';
       animation: none;
     }
   }
-  /* Tiles skip style, layout and paint until they come near the screen. Only tiles with no
-     scroll-triggered script: WebKit's IntersectionObserver misses targets inside skipped content. */
-  .bento > :global(:is(#status, #report, #ci, #projects, #timeline, #skills, #certificates, #bughunt, #book, #plugins, #contact)) {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 320px;
-  }
   .bento {
     width: min(100% - 32px, var(--max-wide));
     display: grid;

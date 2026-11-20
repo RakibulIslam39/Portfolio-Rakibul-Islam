@@ -110,18 +110,24 @@ const apps: { id: string; label: string; icon: 'github' | 'linkedin' | 'medium' 
     gap: 14px;
     height: 100%;
   }
+  /* All panels share one grid cell, so the tallest sets the height and cycling never resizes
+     the tile. Hidden panels are invisible (and hidden from assistive tech) but keep their size. */
   .sw__panels {
     flex: 1;
     min-height: 0;
+    display: grid;
+    align-items: start;
   }
   .sw__panel {
+    grid-area: 1 / 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
     gap: 8px;
     animation: sw-in 0.3s var(--ease-arrive);
   }
   .sw__panel[hidden] {
-    display: none;
+    display: grid;
+    visibility: hidden;
   }
   @keyframes sw-in {
     from {

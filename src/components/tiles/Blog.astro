@@ -229,26 +229,16 @@ const short = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  /* The newest post arrives: it starts collapsed above the inbox and slides in. */
+  /* The newest post arrives: it fades and slides into the space already kept for it, so
+     nothing below the inbox moves. */
   .mail[data-arriving] .mail__msg--new {
-    display: grid;
-    grid-template-rows: 0fr;
     opacity: 0;
-  }
-  .mail[data-arriving] .mail__msg--new > a {
-    overflow: hidden;
-    min-height: 0;
-    padding-block: 0;
+    transform: translateY(-14px);
   }
   .mail[data-arrived] .mail__msg--new {
-    display: grid;
-    grid-template-rows: 1fr;
     opacity: 1;
-    transition: grid-template-rows 0.5s var(--ease-arrive), opacity 0.4s 0.15s;
-  }
-  .mail[data-arrived] .mail__msg--new > a {
-    overflow: hidden;
-    min-height: 0;
+    transform: none;
+    transition: transform 0.5s var(--ease-arrive), opacity 0.4s;
   }
   @media (max-width: 599px) {
     .mail__body {

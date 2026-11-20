@@ -12,6 +12,11 @@ export function initTerminal(): void {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let run = 0;
 
+    // Keep the window the same height while it types, so nothing below it jumps. The finished
+    // run is the static text plus the final "$" prompt line.
+    const lineHeight = parseFloat(getComputedStyle(out).lineHeight) || 24;
+    out.style.minHeight = `${out.scrollHeight + lineHeight}px`;
+
     const span = (kind: Line['kind']) => {
       const s = document.createElement('span');
       s.className = `t-${kind}`;
