@@ -3,57 +3,50 @@ import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
 import map from '../../data/findmy.json';
+import { VIEW as view } from '../../lib/findmy';
 
 /* Find My: Rakibul's pin walks a loop around Road No. 5, Rupnagar Road (Dhaka 1216).
- * Streets come from OpenStreetMap (src/data/findmy.json); the walk is drawn in code. */
+ * The streets are a static picture made at build time from OpenStreetMap data
+ * (src/lib/findmy.ts → /findmy/dark.svg and /findmy/light.svg). Only the pin is live: it walks
+ * with SVG's own animateMotion, so moving it costs no JavaScript per frame. */
+const routePath = 'M' + map.route.map((p) => `${p[0]} ${p[1]}`).join('L');
 const [x0, y0] = map.route[0] as [number, number, string];
-const view = { x: 220, y: 204, w: 250, h: 250 };
-const label = (a: [number, number], b: [number, number]) => {
-  const ang = (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
-  return ang > 90 || ang < -90 ? ang + 180 : ang;
-};
 ---
 
 <Tile id="map" size="1x1" area="map" class="findmy" flush>
   <div class="map__canvas" data-map>
     <div class="map__layers" data-map-layers>
-    <svg
-      class="map__svg"
-      viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-      preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true"
-      data-map-svg
-      data-zoom="1"
-    >
-      <rect x="-200" y="-200" width="1100" height="1100" class="m-land"></rect>
-      {map.parks.map((d) => <path class="m-park" d={d} />)}
-      {map.water.map((d) => <path class="m-water" d={d} />)}
-      {map.streams.map((d) => <path class="m-stream" d={d} />)}
-      {map.roads.filter((r) => r[0] !== 'm').map((r) => <path class:list={['m-road', `m-road--${r[0]}`]} d={r[1]} />)}
-      {map.roads.filter((r) => r[0] === 'm').map((r) => <path class="m-road m-road--m" d={r[1]} />)}
-      <path class="m-route" d={'M' + map.route.map((p) => `${p[0]} ${p[1]}`).join('L')} />
-      <text class="m-label m-label--main" transform={`translate(258 345) rotate(${label([297, 395], [268, 291])})`}>Rupnagar Rd</text>
-      <text class="m-label" transform={`translate(356 330) rotate(${label([287, 359], [423, 318])})`}>Road No. 5</text>
-    </svg>
-    <svg class="map__svg map__svg--pin" viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g class="m-pin" data-pin transform={`translate(${x0} ${y0})`}>
-        <circle class="m-pin__ring" r="9"></circle>
-        <circle r="7.2" fill="#fff"></circle>
-        <clipPath id="pin-clip"><circle r="6.2"></circle></clipPath>
-        <image
-          data-me
-          href="/portrait/photo-192.webp"
-          data-photo="/portrait/photo-192.webp"
-          data-avatar="/portrait/avatar-192.webp"
-          x="-6.2"
-          y="-6.2"
-          width="12.4"
-          height="12.4"
-          clip-path="url(#pin-clip)"
-          preserveAspectRatio="xMidYMid slice"
-        ></image>
-      </g>
-    </svg>
+      <img class="map__img map__img--dark" src="/findmy/dark.svg" width="500" height="500" alt="" fetchpriority="low" decoding="async" />
+      <img class="map__img map__img--light" src="/findmy/light.svg" width="500" height="500" alt="" fetchpriority="low" decoding="async" />
+      <svg
+        class="map__svg map__svg--pin"
+        viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+        data-map-svg
+        data-zoom="1"
+      >
+        <g class="m-pin" data-pin transform={`translate(${x0} ${y0})`}>
+          <g data-pin-walker>
+            <animateMotion dur="45s" repeatCount="indefinite" path={routePath} begin="indefinite" data-walk />
+            <circle class="m-pin__ring" r="9"></circle>
+            <circle r="7.2" fill="#fff"></circle>
+            <clipPath id="pin-clip"><circle r="6.2"></circle></clipPath>
+            <image
+              data-me
+              href="/portrait/photo-192.webp"
+              data-photo="/portrait/photo-192.webp"
+              data-avatar="/portrait/avatar-192.webp"
+              x="-6.2"
+              y="-6.2"
+              width="12.4"
+              height="12.4"
+              clip-path="url(#pin-clip)"
+              preserveAspectRatio="xMidYMid slice"
+            ></image>
+          </g>
+        </g>
+      </svg>
     </div>
     <div class="map__zoom">
       <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
@@ -84,108 +77,37 @@ const label = (a: [number, number], b: [number, number]) => {
     transform-origin: 50% 50%;
     transition: transform 0.45s var(--ease-arrive);
   }
-  .map__svg {
+  .map__svg,
+  .map__img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
   }
+  .map__img {
+    object-fit: cover;
+  }
+  .map__img--light,
+  :global([data-theme='light']) .map__img--dark {
+    display: none;
+  }
+  :global([data-theme='light']) .map__img--light {
+    display: block;
+  }
   /* The walking pin lives on its own layer so moving it never repaints the streets. */
   .map__svg--pin {
     will-change: transform;
-  }
-  .m-land {
-    fill: #1c2026;
-  }
-  .m-park {
-    fill: #1f3527;
-  }
-  .m-water {
-    fill: #17324a;
-  }
-  .m-stream {
-    fill: none;
-    stroke: #17324a;
-    stroke-width: 6;
-    stroke-linecap: round;
-  }
-  .m-road {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke: #353b45;
-    stroke-width: 7;
-  }
-  .m-road--s,
-  .m-road--f {
-    stroke-width: 3.5;
-    stroke: #2c3139;
-  }
-  .m-road--f {
-    stroke-dasharray: 3 4;
-  }
-  .m-road--m {
-    stroke: #6b5a33;
-    stroke-width: 11;
-  }
-  .m-route {
-    fill: none;
-    stroke: #3a8bff;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 2 6;
-    opacity: 0.85;
-  }
-  .m-label {
-    font: 600 9px/1 var(--font-sans, system-ui);
-    fill: #aeb4bf;
-    paint-order: stroke;
-    stroke: #1c2026;
-    stroke-width: 3px;
-    text-anchor: middle;
-  }
-  .m-label--main {
-    font-size: 10px;
-    fill: #e0c27a;
   }
   .m-pin__ring {
     fill: #3a8bff;
     opacity: 0.35;
     transform-origin: 0 0;
+  }
+  .is-walking .m-pin__ring {
     animation: ping 2s var(--ease-travel) infinite;
   }
   .m-pin {
     filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5));
-  }
-  :global([data-theme='light']) .m-land {
-    fill: #f2efe9;
-  }
-  :global([data-theme='light']) .m-park {
-    fill: #cfe8c9;
-  }
-  :global([data-theme='light']) .m-water {
-    fill: #aad3f0;
-  }
-  :global([data-theme='light']) .m-stream {
-    stroke: #aad3f0;
-  }
-  :global([data-theme='light']) .m-road {
-    stroke: #ffffff;
-  }
-  :global([data-theme='light']) .m-road--s,
-  :global([data-theme='light']) .m-road--f {
-    stroke: #e3ded4;
-  }
-  :global([data-theme='light']) .m-road--m {
-    stroke: #f7d58a;
-  }
-  :global([data-theme='light']) .m-label {
-    fill: #5d6470;
-    stroke: #f2efe9;
-  }
-  :global([data-theme='light']) .m-label--main {
-    fill: #8a6a1f;
   }
   @keyframes ping {
     from {
@@ -276,44 +198,46 @@ const label = (a: [number, number], b: [number, number]) => {
       }),
     );
 
-    // The walk: the pin moves along the route at a steady pace, one loop every 45 s.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // The walk: the pin follows the route (animateMotion starts at the route's first point,
+    // so the group's own offset is cleared). The street name is looked up twice a second.
     const tile = map.closest('.tile')!;
     const route = JSON.parse(tile.querySelector('[data-route]')!.textContent!) as [number, number, string][];
-    const pin = map.querySelector<SVGGElement>('[data-pin]')!;
     const street = tile.querySelector<HTMLElement>('[data-street]')!;
-    const legs = route.slice(1).map((p, i) => {
-      const a = route[i]!;
-      return { a, b: p, len: Math.hypot(p[0] - a[0], p[1] - a[1]), name: p[2] };
-    });
+    const legs = route.slice(1).map((p, i) => ({ len: Math.hypot(p[0] - route[i]![0], p[1] - route[i]![1]), name: p[2] }));
     const total = legs.reduce((n, l) => n + l.len, 0);
-    const LOOP = 45000;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let visible = true;
-    new IntersectionObserver(([e]) => (visible = !!e?.isIntersecting)).observe(map);
-    let t0 = 0;
-    let last = 0;
-    const frame = (now: number) => {
-      t0 ||= now;
-      // ~25 frames a second is plenty for a walking pin and keeps the main thread quiet.
-      if (visible && !document.hidden && now - last > 40) {
-        last = now;
-        let d = (((now - t0) % LOOP) / LOOP) * total;
+    const LOOP = 45;
+    const walk = map.querySelector<SVGAnimationElement>('[data-walk]')!;
+
+    const start = () => {
+      map.querySelector('[data-pin]')!.setAttribute('transform', '');
+      walk.beginElement();
+      const t0 = svg.getCurrentTime();
+      window.setInterval(() => {
+        if (document.hidden) return;
+        let d = (((svg.getCurrentTime() - t0) % LOOP) / LOOP) * total;
         for (const leg of legs) {
           if (d <= leg.len) {
-            const k = leg.len ? d / leg.len : 0;
-            pin.setAttribute('transform', `translate(${(leg.a[0] + (leg.b[0] - leg.a[0]) * k).toFixed(1)} ${(leg.a[1] + (leg.b[1] - leg.a[1]) * k).toFixed(1)})`);
             if (street.textContent !== leg.name) street.textContent = leg.name;
             break;
           }
           d -= leg.len;
         }
-      }
-      requestAnimationFrame(frame);
+      }, 500);
     };
-    // Start walking once the page has finished loading, so the walk never competes with it.
-    const start = () => requestAnimationFrame(frame);
-    if (document.readyState === 'complete') window.setTimeout(start, 800);
-    else window.addEventListener('load', () => window.setTimeout(start, 800), { once: true });
+    // Start walking on the visitor's first move (mouse, touch, scroll or key), so the animation
+    // never competes with the page loading and an idle background tab stays idle.
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      events.forEach((ev) => window.removeEventListener(ev, go));
+      map.classList.add('is-walking');
+      start();
+    };
+    const events = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'] as const;
+    events.forEach((ev) => window.addEventListener(ev, go, { once: true, passive: true }));
   });
   applyLook(savedLook());
 </script>

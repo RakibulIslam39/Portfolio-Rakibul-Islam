@@ -88,6 +88,7 @@ test.describe('iMessage pop-up', () => {
     const note = page.getByRole('complementary', { name: 'Rakibul Islam' });
     await expect(note).toBeHidden();
     await page.mouse.wheel(0, 400);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
     await page.clock.runFor(11_000);
     await expect(note).toBeVisible();
     await note.getByRole('button', { name: 'Reply' }).click();
@@ -98,6 +99,7 @@ test.describe('iMessage pop-up', () => {
 
     await page.reload();
     await page.mouse.wheel(0, 400);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
     await page.clock.runFor(11_000);
     await expect(page.getByRole('complementary', { name: 'Rakibul Islam' })).toBeHidden();
   });

@@ -133,6 +133,11 @@ import Blog from '../components/tiles/Blog.astro';
       animation: none;
     }
   }
+  /* Tiles below the fold skip style, layout and paint until they come near the screen. */
+  .bento > :global(.tile:nth-child(n + 5)) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
   .bento {
     width: min(100% - 32px, var(--max-wide));
     display: grid;

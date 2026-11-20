@@ -46,27 +46,12 @@ const look: Record<Glyph, [string, string, string]> = {
 };
 const [top, bottom, ink] = look[name];
 // Unique per instance: a gradient inside a hidden panel can't be borrowed by a visible icon.
-const seq = globalThis as { __appIconSeq?: number };
-seq.__appIconSeq = (seq.__appIconSeq ?? 0) + 1;
-const uid = `ai-${name}-${seq.__appIconSeq}`;
 const medium = name === 'medium' || name === 'blog';
 const brand = medium ? undefined : brandPaths[name];
 ---
 
-<svg class="app-icon" viewBox="0 0 28 28" width={size} height={size} aria-hidden="true">
-  <defs>
-    <linearGradient id={`${uid}-bg`} x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color={top}></stop>
-      <stop offset="1" stop-color={bottom}></stop>
-    </linearGradient>
-    <linearGradient id={`${uid}-gloss`} x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff" stop-opacity="0.32"></stop>
-      <stop offset="0.5" stop-color="#fff" stop-opacity="0"></stop>
-    </linearGradient>
-  </defs>
-  <rect width="28" height="28" rx="6.3" fill={`url(#${uid}-bg)`}></rect>
-  <rect width="28" height="28" rx="6.3" fill={`url(#${uid}-gloss)`}></rect>
-  <rect x="0.25" y="0.25" width="27.5" height="27.5" rx="6.1" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="0.5"></rect>
+<span class="app-icon" style={`--top:${top};--bottom:${bottom};--size:${size}px`} aria-hidden="true">
+  <svg viewBox="0 0 28 28" width={size} height={size}>
   {
     brand ? (
       <g transform="translate(6.5 6.5) scale(0.625)">
@@ -104,12 +89,36 @@ const brand = medium ? undefined : brandPaths[name];
       </g>
     )
   }
-</svg>
+  </svg>
+</span>
 
 <style>
+  /* The squircle, gradient, gloss and edge are CSS, so each icon is one small glyph SVG. */
   .app-icon {
+    position: relative;
     display: block;
     flex: none;
-    filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.28));
+    width: var(--size);
+    height: var(--size);
+    border-radius: 22.5%;
+    background: linear-gradient(var(--top), var(--bottom));
+    box-shadow:
+      0 0 0 0.5px rgb(0 0 0 / 0.18) inset,
+      0 1px 1.5px rgb(0 0 0 / 0.28);
+    overflow: hidden;
+  }
+  .app-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgb(255 255 255 / 0.32), rgb(255 255 255 / 0) 50%);
+    pointer-events: none;
+  }
+  .app-icon svg {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 </style>
