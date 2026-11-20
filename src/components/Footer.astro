@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
     <p class="footer__name">{site.name}</p>
     <p>{site.role} · {site.location}</p>
     <p>
-      Built with Astro, tested with Playwright on every push.
+      Built with Astro, tested with Playwright on every push.{' '}
       <a href="/qa/">See this site's QA report</a>.
     </p>
     <a class="footer__live tap" href="/qa/" data-visitors hidden><span class="dot" aria-hidden="true"></span> <span data-visitors-text></span></a>
@@ -18,7 +18,8 @@ const year = new Date().getFullYear();
     <ul>
       <li><a class="tap" href="/about/">About</a></li>
       <li><a class="tap" href="/projects/">Projects</a></li>
-      <li><a class="tap" href="/writing/">Writing</a></li>
+      <li><a class="tap" href="/writing/">Blog</a></li>
+      <li><a class="tap" href="/certificates/">Certificates</a></li>
       <li><a class="tap" href="/cv/">CV</a></li>
     </ul>
   </nav>
@@ -28,6 +29,7 @@ const year = new Date().getFullYear();
       <li><a class="tap" href={`mailto:${site.email}`}>Email</a></li>
       <li><a class="tap" href={site.links.github} rel="me noopener" target="_blank">GitHub</a></li>
       <li><a class="tap" href={site.links.linkedin} rel="me noopener" target="_blank">LinkedIn</a></li>
+      <li><a class="tap" href={site.links.medium} rel="me noopener" target="_blank">Medium</a></li>
     </ul>
   </nav>
   <p class="footer__copy">© {year} {site.name}</p>

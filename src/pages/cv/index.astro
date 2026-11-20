@@ -85,6 +85,22 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
         }
       </section>
 
+      <section class="cv__sec">
+        <h2>Certificates</h2>
+        <ul class="cv__certs">
+          {
+            site.certifications.map((c) => (
+              <li>
+                <a href={c.verify ?? `${Astro.site?.origin ?? ''}${c.image}`}>{c.title}</a>
+                <span class="cv__when">
+                  {c.issuer} · {new Date(c.date).getUTCFullYear()}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
       <div class="cv__cols">
         <section class="cv__sec">
           <h2>Skills</h2>
@@ -213,6 +229,19 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
   }
   .cv p {
     margin: 4px 0 0;
+  }
+  .cv .cv__certs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .cv .cv__certs li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 16px;
   }
   .cv__cols {
     display: grid;

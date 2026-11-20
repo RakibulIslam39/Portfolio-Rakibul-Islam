@@ -17,13 +17,13 @@ async function sitemapPaths(request: import('@playwright/test').APIRequestContex
   return urls.map(local);
 }
 
-test('sitemap lists the public pages and leaves out drafts', async ({ request }) => {
+test('sitemap lists the public pages and leaves out external posts', async ({ request }) => {
   const paths = await sitemapPaths(request);
-  for (const p of ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/cv/', '/qa/']) {
+  for (const p of ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/certificates/', '/cv/', '/qa/']) {
     expect(paths).toContain(p);
   }
-  // Lorem-ipsum posts are `placeholder: true` and must not be indexed.
-  expect(paths).not.toContain('/writing/page-objects-that-age-well/');
+  // Posts published elsewhere (Medium) have no local page.
+  expect(paths.filter((p) => p.startsWith('/writing/') && p !== '/writing/')).toEqual([]);
   expect(new Set(paths).size).toBe(paths.length);
 });
 
@@ -37,7 +37,7 @@ test('robots.txt points to the sitemap on the configured site', async ({ request
 });
 
 test('every page has a canonical URL and a 1200x630 PNG share image', async ({ page, request }) => {
-  const paths = [...(await sitemapPaths(request)), '/writing/page-objects-that-age-well/', '/404/'];
+  const paths = [...(await sitemapPaths(request)), '/404/'];
   for (const p of paths) {
     await page.goto(p);
     const expectedPath = p === '/404/' ? '/404' : p;
@@ -53,9 +53,7 @@ test('every page has a canonical URL and a 1200x630 PNG share image', async ({ p
   }
 });
 
-test('drafts are noindex, finished pages are indexable', async ({ page }) => {
-  await page.goto('/writing/page-objects-that-age-well/');
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+test('finished pages are indexable', async ({ page }) => {
   await page.goto('/projects/flexorder-e2e/');
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
 });

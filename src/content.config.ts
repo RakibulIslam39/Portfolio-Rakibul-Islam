@@ -27,6 +27,12 @@ const writing = defineCollection({
     excerpt: z.string(),
     date: z.coerce.date(),
     category: z.enum(['Playwright', 'CI/CD', 'API testing', 'Career']),
+    /** Set for posts published elsewhere (e.g. Medium): the list links out and no local page is built. */
+    url: z.string().url().optional(),
+    /** Where an external post lives, shown next to it ("Medium"). */
+    source: z.string().optional(),
+    /** Reading time for external posts, whose body isn't stored here. */
+    minutes: z.number().optional(),
     /** true while the post is lorem ipsum; shows a "Draft" label. */
     placeholder: z.boolean().default(false),
   }),

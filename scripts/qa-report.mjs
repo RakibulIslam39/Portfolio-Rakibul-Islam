@@ -17,7 +17,7 @@ import { join, extname, normalize, resolve } from 'node:path';
 const args = process.argv.slice(2);
 const resultsPath = args.includes('--results') ? args[args.indexOf('--results') + 1] : 'reports/results.json';
 const withLighthouse = !args.includes('--no-lighthouse');
-const PAGES = ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/cv/'];
+const PAGES = ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/certificates/', '/cv/'];
 /**
  * Minimum Lighthouse scores (mobile). A measured page below any of these fails the run
  * after the report is written. Pages Lighthouse could not measure are not judged.

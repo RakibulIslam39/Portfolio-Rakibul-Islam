@@ -7,7 +7,8 @@
   "email": "rakibul.cse.bubt@gmail.com",
   "links": {
     "github": "https://github.com/RakibulIslam39",
-    "linkedin": "https://www.linkedin.com/in/TODO-your-linkedin-handle/"
+    "linkedin": "https://www.linkedin.com/in/rakibul-islam08/",
+    "medium": "https://medium.com/@rakib.cse.bubt"
   },
   "tagline": "I break things on purpose, so your users don't.",
   "intro": [
@@ -83,7 +84,7 @@
       "role": "Jr. SQA Engineer",
       "company": "WPPOOL",
       "period": "Oct 2024 – now",
-      "place": "Remote",
+      "place": "Dhaka",
       "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins.",
       "bullets": [
         "Designed and executed end-to-end manual and automated test suites for WordPress plugins, including FlexOrder, FlexStock, EchoRewards, FlexTable, FormyChat, WP Dark Mode and Jitsi Meet.",
@@ -110,10 +111,10 @@
       ]
     },
     {
-      "role": "Software QA Engineer, intern",
+      "role": "Software QA Engineer",
       "company": "Edutechs",
-      "period": "Jan 2018 – Jan 2021",
-      "place": "San Diego, California",
+      "period": "Mar 2023 – Aug 2023",
+      "place": "Dhaka",
       "summary": "Test plans, test cases and first automation scripts in an Agile squad.",
       "bullets": [
         "Worked with developers and designers in an Agile, squad-based team on usability, security and quality for new features.",
@@ -142,13 +143,13 @@
         "Docker",
         "GitHub Actions"
       ],
-      "url": "https://github.com/RakibulIslam39",
+      "url": "https://github.com/RakibulIslam39/FlexOrder-e2e-Automation-with-CI-CD",
       "slug": "flexorder-e2e"
     },
     {
       "name": "Traffic Flow Prediction",
       "hook": "R² ≈ 0.94 on real freeway data",
-      "summary": "Compared LSTM, GRU and stacked autoencoder models to forecast short-term traffic flow from Caltrans PeMS sensor data (RMSE ≈ 9.6 vehicles).",
+      "summary": "Compared LSTM, GRU and stacked autoencoder models to forecast short-term traffic flow from Caltrans PeMS sensor data. Stacked autoencoders won (RMSE ≈ 9.6 vehicles per 5 min).",
       "stack": [
         "Python",
         "Keras",
@@ -160,12 +161,13 @@
     },
     {
       "name": "AI Face Analyzer",
-      "hook": "Runs entirely in the browser",
-      "summary": "A face-analysis web app that runs in the browser with no backend, deployed as a free Hugging Face Static Space.",
+      "hook": "Age, emotion and gender from one photo",
+      "summary": "A FastAPI web app that uses DeepFace and OpenCV to analyse every face in a photo, with a Bengali interface, API tests and load tests.",
       "stack": [
-        "Static web app",
-        "In-browser ML",
-        "Hugging Face Spaces"
+        "Python",
+        "FastAPI",
+        "DeepFace",
+        "OpenCV"
       ],
       "url": "https://github.com/RakibulIslam39/ai-face-analyzer",
       "slug": "ai-face-analyzer"
@@ -232,6 +234,188 @@
     {
       "title": "Engineered a zero-touch CI/CD pipeline",
       "detail": "A Dockerized GitHub Actions pipeline, triggered on every plugin commit via repository_dispatch, provisions a fresh WordPress + WooCommerce environment and validates the exact pushed version before release."
+    }
+  ],
+  "story": [
+    "I graduated in Computer Science and Engineering from BUBT in December 2022. The course that shaped me most was Software Testing and Quality Assurance: it taught me that quality has to be built into every stage of development, not only checked at the end.",
+    "Since then I've moved from manual testing into automation, and I still enjoy the same thing: finding the scenario nobody thought about, then making sure a test catches it every time."
+  ],
+  "certifications": [
+    {
+      "title": "Advanced Playwright",
+      "issuer": "Test Automation University",
+      "by": "Renata Andrade",
+      "date": "2023-07-28",
+      "length": "1 h 17 min",
+      "credential": "51c0e3a6",
+      "image": "/certificates/tau-advanced-playwright.webp",
+      "thumb": "/certificates/tau-advanced-playwright-thumb.webp",
+      "w": 640,
+      "h": 460
+    },
+    {
+      "title": "Setting a Foundation for Successful Test Automation",
+      "issuer": "Test Automation University",
+      "by": "Angie Jones",
+      "date": "2023-07-10",
+      "length": "47 min",
+      "credential": "10bce764",
+      "image": "/certificates/tau-foundation-test-automation.webp",
+      "thumb": "/certificates/tau-foundation-test-automation-thumb.webp",
+      "w": 640,
+      "h": 460
+    },
+    {
+      "title": "Introduction to Playwright",
+      "issuer": "Test Automation University",
+      "by": "Renata Andrade",
+      "date": "2023-06-18",
+      "length": "1 h 24 min",
+      "credential": "30190d74",
+      "image": "/certificates/tau-introduction-to-playwright.webp",
+      "thumb": "/certificates/tau-introduction-to-playwright-thumb.webp",
+      "w": 640,
+      "h": 460
+    },
+    {
+      "title": "MySQL Database Development Mastery",
+      "issuer": "Udemy",
+      "by": "Trevoir Williams, Learn IT University, Andrii Piatakha",
+      "date": "2022-03-14",
+      "length": "4.5 h",
+      "credential": "UC-b8d8ed09-00e1-4b62-93ed-548fa86bb55b",
+      "image": "/certificates/udemy-mysql-database-development.webp",
+      "thumb": "/certificates/udemy-mysql-database-development-thumb.webp",
+      "verify": "https://www.udemy.com/certificate/UC-b8d8ed09-00e1-4b62-93ed-548fa86bb55b/",
+      "w": 640,
+      "h": 475
+    },
+    {
+      "title": "Complete JavaScript with HTML5, CSS3 from Zero to Expert",
+      "issuer": "Udemy",
+      "by": "Hemanth Kumar Gurrala",
+      "date": "2022-03-09",
+      "length": "17 h",
+      "credential": "UC-9e2159bd-2105-41ef-a649-2130b1ab8e20",
+      "image": "/certificates/udemy-complete-javascript-html5-css3.webp",
+      "thumb": "/certificates/udemy-complete-javascript-html5-css3-thumb.webp",
+      "verify": "https://www.udemy.com/certificate/UC-9e2159bd-2105-41ef-a649-2130b1ab8e20/",
+      "w": 640,
+      "h": 475
+    },
+    {
+      "title": "Learn JavaScript for Beginners",
+      "issuer": "Udemy",
+      "by": "YouAccel Training",
+      "date": "2022-02-13",
+      "length": "1.5 h",
+      "credential": "UC-601f93af-809d-4450-913e-20a7bb66f9ab",
+      "image": "/certificates/udemy-learn-javascript-beginners.webp",
+      "thumb": "/certificates/udemy-learn-javascript-beginners-thumb.webp",
+      "verify": "https://www.udemy.com/certificate/UC-601f93af-809d-4450-913e-20a7bb66f9ab/",
+      "w": 640,
+      "h": 475
+    }
+  ],
+  "repos": [
+    {
+      "name": "FlexOrder-e2e-Automation-with-CI-CD",
+      "group": "Test automation",
+      "language": "TypeScript",
+      "updated": "2026-07",
+      "case": "/projects/flexorder-e2e/",
+      "description": "End-to-end suite for the FlexOrder plugin: Playwright and TypeScript, a throwaway Dockerized WordPress, and a GitHub Actions pipeline triggered from the plugin repos.",
+      "url": "https://github.com/RakibulIslam39/FlexOrder-e2e-Automation-with-CI-CD"
+    },
+    {
+      "name": "connector-platform-e2e-automation",
+      "group": "Test automation",
+      "language": "JavaScript",
+      "updated": "2026-07",
+      "description": "Playwright framework for a connector platform and its partner hubs: UI and API tests, page objects, shared fixtures, and tagged smoke and regression runs.",
+      "url": "https://github.com/RakibulIslam39/connector-platform-e2e-automation"
+    },
+    {
+      "name": "wpdarkmode-e2e-automation",
+      "group": "Test automation",
+      "language": "JavaScript",
+      "updated": "2025-11",
+      "description": "WordPress E2E suite built on Playwright and the Gutenberg e2e-test-utils, with tag-based runs for core and plugin tests in GitHub Actions.",
+      "url": "https://github.com/RakibulIslam39/wpdarkmode-e2e-automation"
+    },
+    {
+      "name": "flexorder-e2e-CI",
+      "group": "Test automation",
+      "language": "HTML",
+      "updated": "2026-04",
+      "description": "CI/CD pipeline for FlexOrder with WooCommerce and Google Sheets: a fresh Docker WordPress, E2E tests and step-by-step setup guides.",
+      "url": "https://github.com/RakibulIslam39/flexorder-e2e-CI"
+    },
+    {
+      "name": "flexorder-e2e-automation-CI-template",
+      "group": "Test automation",
+      "language": "JavaScript",
+      "updated": "2025-08",
+      "description": "Reusable CI template for the FlexOrder plugin: Playwright E2E, PHPUnit, ESLint and PHPCS, Trivy security scans and automated Free and Pro builds.",
+      "url": "https://github.com/RakibulIslam39/flexorder-e2e-automation-CI-template"
+    },
+    {
+      "name": "automation_excercise",
+      "group": "Test automation",
+      "language": "JavaScript",
+      "updated": "2025-01",
+      "description": "Playwright practice suite against the Automation Exercise demo store.",
+      "url": "https://github.com/RakibulIslam39/automation_excercise"
+    },
+    {
+      "name": "liverecover_automation_testing",
+      "group": "Test automation",
+      "language": "JavaScript",
+      "updated": "2024-11",
+      "description": "An early Playwright test suite for LiveRecover.",
+      "url": "https://github.com/RakibulIslam39/liverecover_automation_testing"
+    },
+    {
+      "name": "traffic-flow-prediction-Python",
+      "group": "Apps & research",
+      "language": "Python",
+      "updated": "2026-11",
+      "case": "/projects/traffic-flow-prediction/",
+      "description": "LSTM, GRU and stacked autoencoders for short-term freeway traffic forecasting on PeMS data. My capstone project, now moving to Keras 3.",
+      "url": "https://github.com/RakibulIslam39/traffic-flow-prediction-Python"
+    },
+    {
+      "name": "ai-face-analyzer",
+      "group": "Apps & research",
+      "language": "Python",
+      "updated": "2026-11",
+      "case": "/projects/ai-face-analyzer/",
+      "description": "FastAPI and DeepFace app that estimates age, emotion and gender for every face in a photo, with pytest API tests and a Locust load test.",
+      "url": "https://github.com/RakibulIslam39/ai-face-analyzer"
+    },
+    {
+      "name": "Portfolio-Rakibul-Islam",
+      "group": "Apps & research",
+      "language": "Astro",
+      "updated": "2026-11",
+      "description": "This website: Astro, checked by Playwright, axe and Lighthouse on every push, deployed to Cloudflare Pages.",
+      "url": "https://github.com/RakibulIslam39/Portfolio-Rakibul-Islam"
+    },
+    {
+      "name": "portfolio",
+      "group": "Apps & research",
+      "language": "Python",
+      "updated": "2024-11",
+      "description": "My earlier portfolio site, built with Django.",
+      "url": "https://github.com/RakibulIslam39/portfolio"
+    },
+    {
+      "name": "JavaScript-ES6-practice",
+      "group": "Learning",
+      "language": "JavaScript",
+      "updated": "2024-11",
+      "description": "Short exercises on modern JavaScript: array methods, destructuring, spread and rest, modules and template literals.",
+      "url": "https://github.com/RakibulIslam39/JavaScript-ES6-practice"
     }
   ]
 }

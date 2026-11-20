@@ -62,13 +62,8 @@ const groups = Object.entries(
             <h2>About me</h2>
             <p><strong>{site.tagline}</strong></p>
             <p>{site.summary}</p>
+            {site.story.map((p) => <p>{p}</p>)}
             <p>{site.intro[1]}</p>
-            <!-- TODO: replace with your own story: how you got into QA and what you enjoy about it. -->
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat.
-            </p>
           </section>
 
           <section class="note prose" role="tabpanel" id="note-experience" aria-labelledby="tab-experience" data-note="experience">
@@ -131,6 +126,7 @@ const groups = Object.entries(
                 </>
               ))
             }
+            <p><a href="/certificates/">See my {site.certifications.length} course certificates →</a></p>
             <h3>Languages</h3>
             <ul>
               {
@@ -146,10 +142,9 @@ const groups = Object.entries(
           <section class="note prose" role="tabpanel" id="note-now" aria-labelledby="tab-now" data-note="now">
             <h2>Now</h2>
             <p><strong>{site.status.headline}.</strong> {site.status.detail}</p>
-            <!-- TODO: what you're learning or building right now. -->
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate
-              velit esse cillum dolore eu fugiat nulla pariatur.
+              At WPPOOL I'm extending Playwright coverage and CI pipelines across our WordPress and WooCommerce plugins, and
+              writing up what I learn along the way.
             </p>
             <p>
               <a href={`mailto:${site.email}`}>Email me</a> · <a href="/cv/">View my CV</a>

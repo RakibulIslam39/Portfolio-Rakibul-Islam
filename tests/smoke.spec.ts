@@ -8,7 +8,7 @@ const pages = [
   '/projects/traffic-flow-prediction/',
   '/projects/ai-face-analyzer/',
   '/writing/',
-  '/writing/page-objects-that-age-well/',
+  '/certificates/',
   '/cv/',
   '/qa/',
 ];

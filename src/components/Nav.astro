@@ -1,9 +1,12 @@
 ---
-const items = [
+const items: { href: string; label: string; short?: string; desktopOnly?: boolean }[] = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
   { href: '/projects/', label: 'Projects' },
-  { href: '/qa/', label: 'QA' },
+  { href: '/writing/', label: 'Blog' },
+  { href: '/certificates/', label: 'Certificates', short: 'Certs' },
+  // On phones /qa/ stays reachable from the footer and the home Report tile.
+  { href: '/qa/', label: 'QA', desktopOnly: true },
 ];
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
@@ -20,9 +23,16 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       <ul>
         {
           items.map((item) => (
-            <li>
+            <li class:list={{ 'nav__desk': item.desktopOnly }}>
               <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                {item.label}
+                {item.short ? (
+                  <>
+                    <span class="nav__long">{item.label}</span>
+                    <span class="nav__short" aria-hidden="true">{item.short}</span>
+                  </>
+                ) : (
+                  item.label
+                )}
               </a>
             </li>
           ))
@@ -89,6 +99,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     box-shadow: var(--shadow);
     border-radius: 999px;
     padding: 5px;
+  }
+  .nav__short {
+    display: none;
   }
   .nav ul {
     display: flex;
@@ -174,9 +187,35 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       width: calc(100% - 16px);
       gap: 6px;
     }
+    .nav {
+      min-width: 0;
+    }
+    .nav ul {
+      position: relative;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav ul::-webkit-scrollbar {
+      display: none;
+    }
     .nav a {
-      padding: 7px 9px;
+      padding: 7px 8px;
       font-size: 13px;
+      white-space: nowrap;
+    }
+    .nav .nav__long {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .nav .nav__short {
+      display: inline;
+    }
+    .nav .nav__desk {
+      display: none;
     }
   }
 </style>
@@ -184,4 +223,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <script>
   import { initTheme } from '../scripts/theme';
   initTheme();
+  // On narrow phones the bar can scroll sideways: keep the current page in view.
+  const bar = document.querySelector<HTMLElement>('.nav ul');
+  const current = bar?.querySelector<HTMLElement>('a[aria-current="page"]');
+  if (bar && current && bar.scrollWidth > bar.clientWidth) {
+    bar.scrollLeft = current.offsetLeft - (bar.clientWidth - current.offsetWidth) / 2;
+  }
 </script>

@@ -12,6 +12,8 @@ import Timeline from '../components/tiles/Timeline.astro';
 import Skills from '../components/tiles/Skills.astro';
 import Plugins from '../components/tiles/Plugins.astro';
 import BugHunt from '../components/tiles/BugHunt.astro';
+import Certificates from '../components/tiles/Certificates.astro';
+import Blog from '../components/tiles/Blog.astro';
 ---
 
 <BaseLayout>
@@ -25,6 +27,8 @@ import BugHunt from '../components/tiles/BugHunt.astro';
     <Projects />
     <Timeline />
     <Skills />
+    <Certificates />
+    <Blog />
     <Contact />
     <BugHunt />
     <Plugins />
@@ -52,6 +56,8 @@ import BugHunt from '../components/tiles/BugHunt.astro';
         'proj proj'
         'tl tl'
         'skills skills'
+        'certs certs'
+        'blog blog'
         'contact map'
         'bug bug'
         'plugins plugins';
@@ -70,6 +76,7 @@ import BugHunt from '../components/tiles/BugHunt.astro';
         'report report ci ci'
         'proj proj tl tl'
         'proj proj skills skills'
+        'certs certs blog blog'
         'bug bug plugins contact';
     }
   }

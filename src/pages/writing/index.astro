@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate, readingTime, slugify } from '../../lib/format';
+import site from '../../content/site.json';
 
 const posts = (await getCollection('writing')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const counts = posts.reduce<Record<string, number>>((acc, p) => {
@@ -10,15 +11,19 @@ const counts = posts.reduce<Record<string, number>>((acc, p) => {
 }, {});
 const categories = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 const [latest, ...rest] = posts;
+const href = (p: (typeof posts)[number]) => p.data.url ?? `/writing/${p.id}/`;
+const minutes = (p: (typeof posts)[number]) => p.data.minutes ?? readingTime(p.body ?? '');
+const ext = (p: (typeof posts)[number]) => (p.data.url ? { target: '_blank', rel: 'noopener' } : {});
 ---
 
-<BaseLayout title="Writing | Rakibul Islam" description="Notes on Playwright, CI/CD, API testing and a QA career.">
+<BaseLayout title="Blog | Rakibul Islam" description="Posts by Rakibul Islam on Playwright, test automation, CI/CD and API testing.">
   <div class="container">
     <header class="page-head">
-      <h1>Writing</h1>
-      <p>Notes on Playwright, CI pipelines, API testing and growing from manual tester to SDET.</p>
+      <h1>Blog</h1>
+      <p>What I learn while automating tests: Playwright, CI pipelines and API testing. I publish on <a href={site.links.medium} target="_blank" rel="noopener">Medium ↗</a>.</p>
     </header>
 
+    {categories.length > 1 && (
     <div class="chips" role="group" aria-label="Filter by category" data-filter>
       <button type="button" class="chip" aria-pressed="true" data-cat="all">All <b>{posts.length}</b></button>
       {
@@ -29,13 +34,15 @@ const [latest, ...rest] = posts;
         ))
       }
     </div>
+    )}
     <p class="sr-only" aria-live="polite" data-filter-status></p>
 
     {
       latest && (
-        <a class="featured" href={`/writing/${latest.id}/`} data-post data-cat={slugify(latest.data.category)}>
+        <a class="featured" href={href(latest)} {...ext(latest)} data-post data-cat={slugify(latest.data.category)}>
           <span class="featured__meta">
-            Latest · {latest.data.category} · {readingTime(latest.body ?? '')} min read
+            Latest · {latest.data.category} · {minutes(latest)} min read
+            {latest.data.source && <span class="source">on {latest.data.source} ↗</span>}
             {latest.data.placeholder && <span class="draft-badge">Draft</span>}
           </span>
           <h2>{latest.data.title}</h2>
@@ -45,13 +52,15 @@ const [latest, ...rest] = posts;
       )
     }
 
+    {rest.length > 0 && (
     <ul class="posts">
       {
         rest.map((p) => (
           <li data-post data-cat={slugify(p.data.category)}>
-            <a href={`/writing/${p.id}/`}>
+            <a href={href(p)} {...ext(p)}>
               <span class="posts__meta">
-                {p.data.category} · {readingTime(p.body ?? '')} min
+                {p.data.category} · {minutes(p)} min
+                {p.data.source && <span>· {p.data.source} ↗</span>}
                 {p.data.placeholder && <span class="draft-badge">Draft</span>}
               </span>
               <span class="posts__title">{p.data.title}</span>
@@ -61,6 +70,7 @@ const [latest, ...rest] = posts;
         ))
       }
     </ul>
+    )}
     <p class="empty" data-empty hidden>No posts in this category yet.</p>
   </div>
 </BaseLayout>
@@ -128,6 +138,10 @@ const [latest, ...rest] = posts;
     gap: 8px;
     font-size: 13px;
     color: var(--muted);
+  }
+  .source {
+    color: var(--text);
+    font-weight: 600;
   }
   .featured time,
   .posts time {

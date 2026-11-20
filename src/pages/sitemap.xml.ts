@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
-const STATIC_PAGES = ['/', '/about/', '/projects/', '/writing/', '/cv/', '/qa/'];
+const STATIC_PAGES = ['/', '/about/', '/projects/', '/writing/', '/certificates/', '/cv/', '/qa/'];
 
 export const GET: APIRoute = async ({ site }) => {
   const projects = await getCollection('projects');
@@ -10,7 +10,7 @@ export const GET: APIRoute = async ({ site }) => {
     ...STATIC_PAGES.map((path) => ({ path })),
     ...projects.map((p) => ({ path: `/projects/${p.id}/` })),
     // Lorem-ipsum drafts stay out of search engines until `placeholder: false`.
-    ...posts.filter((p) => !p.data.placeholder).map((p) => ({ path: `/writing/${p.id}/`, lastmod: p.data.date })),
+    ...posts.filter((p) => !p.data.placeholder && !p.data.url).map((p) => ({ path: `/writing/${p.id}/`, lastmod: p.data.date })),
   ];
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

@@ -1,6 +1,6 @@
 ---
 /** Original app-style icons: a coloured rounded square with a simple white glyph. */
-type Name = 'terminal' | 'report' | 'ci' | 'map' | 'contact' | 'projects' | 'timeline' | 'skills' | 'plugins' | 'cv' | 'bug' | 'status' | 'portrait';
+type Name = 'terminal' | 'report' | 'ci' | 'map' | 'contact' | 'projects' | 'timeline' | 'skills' | 'plugins' | 'cv' | 'bug' | 'status' | 'portrait' | 'certificates' | 'blog';
 interface Props {
   name: Name;
 }
@@ -20,6 +20,8 @@ const colours: Record<Name, [string, string]> = {
   bug: ['#ff5a7a', '#d81b4a'],
   status: ['#36d399', '#0f9e66'],
   portrait: ['#8e8e96', '#55555c'],
+  certificates: ['#ffcf4d', '#e09a00'],
+  blog: ['#2bb3a3', '#0b7a6e'],
 };
 const [c1, c2] = colours[name];
 const gid = `g-${name}`;
@@ -46,6 +48,8 @@ const gid = `g-${name}`;
     {name === 'plugins' && <><path d="M11 7v4M17 7v4M9 11h10v3a5 5 0 0 1-10 0zM14 19v3" /></>}
     {name === 'cv' && <><path d="M10 6.5h6l3.5 3.5v11.5h-9.5z" /><path d="M16 6.5V10h3.5M12.5 15h5M12.5 18h3.5" /></>}
     {name === 'bug' && <><ellipse cx="14" cy="15.5" rx="4" ry="5" /><path d="M14 10.5V20.5M10 13H7M21 13h-3M10 17H7M21 17h-3M11.5 9l-1.5-2M16.5 9l1.5-2" /></>}
+    {name === 'certificates' && <><circle cx="14" cy="12" r="4.5" /><path d="M11.2 15.5 10 21.5l4-2 4 2-1.2-6" /></>}
+    {name === 'blog' && <><path d="M8 20l1-4 9-9 3 3-9 9z" /><path d="M16 9l3 3" /></>}
     {name === 'portrait' && <><circle cx="14" cy="11.5" r="3.2" /><path d="M8 21c1.2-3.3 3.4-4.6 6-4.6s4.8 1.3 6 4.6" /></>}
   </g>
 </svg>

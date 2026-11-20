@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import site from '../../content/site.json';
+import { formatDate } from '../../lib/format';
+
+const certs = [...site.certifications].sort((a, b) => b.date.localeCompare(a.date));
+const issuers = [...new Set(certs.map((c) => c.issuer))];
+---
+
+<BaseLayout
+  title="Certificates | Rakibul Islam"
+  description={`${certs.length} course certificates from ${issuers.join(' and ')}, covering Playwright, test automation, JavaScript and MySQL.`}
+>
+  <div class="container">
+    <header class="page-head">
+      <h1>Certificates</h1>
+      <p>
+        {certs.length} courses from {issuers.join(' and ')}. Open any certificate to see it full size. Udemy certificates can also be
+        checked on Udemy.
+      </p>
+    </header>
+
+    <ul class="certs">
+      {
+        certs.map((c, i) => (
+          <li class="cert" data-cert>
+            <a class="cert__img" href={c.image} target="_blank" rel="noopener">
+              <img
+                src={c.thumb}
+                width={c.w}
+                height={c.h}
+                alt={`${c.title} certificate from ${c.issuer}, awarded to ${site.name}`}
+                loading={i < 3 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+              <span class="sr-only">Open full size</span>
+            </a>
+            <div class="cert__body">
+              <p class="cert__issuer">{c.issuer}</p>
+              <h2 class="cert__title">{c.title}</h2>
+              <p class="cert__meta">
+                {c.by}
+                <br />
+                <time datetime={c.date}>{formatDate(new Date(c.date))}</time> · {c.length}
+              </p>
+              <p class="cert__links">
+                {c.verify ? (
+                  <a href={c.verify} target="_blank" rel="noopener">
+                    Verify on Udemy ↗<span class="sr-only">: {c.title}</span>
+                  </a>
+                ) : (
+                  <a href={c.image} target="_blank" rel="noopener">
+                    View certificate ↗<span class="sr-only">: {c.title}</span>
+                  </a>
+                )}
+                <span class="cert__id">ID {c.credential}</span>
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .certs {
+    list-style: none;
+    margin: 0 0 64px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: var(--gap);
+  }
+  .cert {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    overflow: hidden;
+  }
+  .cert__img {
+    display: block;
+    padding: 14px 14px 0;
+  }
+  .cert__img img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    border-radius: calc(var(--radius) - 8px);
+    background: var(--bg);
+    transition: transform 0.3s var(--ease-arrive);
+  }
+  .cert__img:hover img {
+    transform: scale(1.02);
+  }
+  .cert__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 22px 22px;
+    flex: 1;
+  }
+  .cert__issuer {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pass);
+  }
+  .cert__title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .cert__meta {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .cert__links {
+    margin: auto 0 0;
+    padding-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    font-size: 14px;
+  }
+  .cert__links a {
+    color: var(--text);
+    font-weight: 600;
+    display: inline-block;
+    line-height: 24px;
+  }
+  .cert__id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+</style>

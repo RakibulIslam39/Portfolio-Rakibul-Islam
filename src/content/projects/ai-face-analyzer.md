@@ -1,31 +1,36 @@
 ---
 title: AI Face Analyzer
-hook: Runs entirely in the browser
-summary: A face-analysis web app that runs in the browser with no backend, deployed as a free Hugging Face Static Space.
+hook: Age, emotion and gender from one photo
+summary: A FastAPI web app that uses DeepFace and OpenCV to analyse every face in an uploaded or camera photo, with a Bengali interface, API tests and a load-test scenario.
 order: 3
 role: Solo side project
 period: 'Side project · 2026'
-context: Face analysis without sending photos to a server.
-stack: [Static web app, In-browser ML, Hugging Face Spaces]
+context: A face-analysis web app with a tested API behind it.
+stack: [Python, FastAPI, DeepFace, OpenCV, pytest, Locust, Docker]
+metrics:
+  - { value: '7', label: emotion categories }
+  - { value: '5', label: image formats validated }
+  - { value: 'Multi', label: faces per photo }
 links:
-  - { label: Live demo, url: 'https://huggingface.co/spaces/rakibul008/ai-face-analyzer' }
   - { label: Source code, url: 'https://github.com/RakibulIslam39/ai-face-analyzer' }
-placeholder: true
 ---
 
-## The problem
+## What it does
 
-Most face-analysis demos upload your photo to someone else's server. I wanted one that works entirely in the browser, costs nothing to host and keeps images on the user's device.
+Upload a photo, drag one in or take one with the camera. The app finds every face and estimates age, emotion (angry, disgust, fear, happy, sad, surprise or neutral) and gender for each one, with confidence scores, the face region and a thumbnail.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <!-- TODO -->
+Labels and error messages are in Bengali, in both the interface and the API responses.
 
-## What I built
+## How it's built
 
-- A static web app where the models run in the browser, with no backend to pay for or secure.
-- Deployed for free as a Hugging Face Static Space.
+- **Backend:** Python, FastAPI and Uvicorn.
+- **Analysis:** DeepFace on TensorFlow/Keras, with OpenCV for face detection.
+- **Frontend:** a single page in plain HTML, CSS and JavaScript.
+- **Deployment:** a Docker image that preloads the models at build time, with a Render service config.
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <!-- TODO: features, models used, how you tested it. -->
+## How it's tested
 
-## What I'd do next
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. <!-- TODO -->
+- **Input validation.** Only JPEG, PNG, WebP, GIF and BMP files get through, and there are limits on file size and image dimensions.
+- **API tests** with pytest and HTTPX cover the routes and the validation rules.
+- **Load testing** with a Locust scenario.
+- **Hardening:** per-IP rate limiting and security response headers.

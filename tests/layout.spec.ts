@@ -4,7 +4,7 @@
  */
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/writing/page-objects-that-age-well/', '/cv/', '/qa/', '/does-not-exist/'];
+const pages = ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/certificates/', '/cv/', '/qa/', '/does-not-exist/'];
 
 test.describe('narrow screens', () => {
   test.use({ viewport: { width: 320, height: 640 } });

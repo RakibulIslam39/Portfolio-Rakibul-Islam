@@ -5,9 +5,9 @@ const slugs = ['flexorder-e2e', 'traffic-flow-prediction', 'ai-face-analyzer'];
 test('projects index lists every case study', async ({ page }) => {
   await page.goto('/projects/');
   await expect(page.getByRole('heading', { level: 1, name: 'Projects' })).toBeVisible();
-  const cards = page.getByRole('main').getByRole('listitem');
+  const cards = page.locator('.plist > li');
   await expect(cards).toHaveCount(slugs.length);
-  for (const slug of slugs) await expect(page.locator(`main a[href="/projects/${slug}/"]`)).toHaveCount(1);
+  for (const slug of slugs) await expect(cards.locator(`a[href="/projects/${slug}/"]`)).toHaveCount(1);
 });
 
 test('a case study has its sections, metrics and stack', async ({ page }) => {
@@ -45,4 +45,15 @@ test('home tiles link to the case studies', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('link', { name: 'Read the FlexOrder E2E Automation case study' }).click();
   await expect(page).toHaveURL(/\/projects\/flexorder-e2e\/$/);
+});
+
+test('lists every public GitHub repository with a link', async ({ page }) => {
+  await page.goto('/projects/');
+  const section = page.getByRole('region', { name: 'All GitHub repositories' });
+  const repos = section.locator('[data-repo]');
+  await expect(repos).toHaveCount(12);
+  for (const name of ['FlexOrder-e2e-Automation-with-CI-CD', 'connector-platform-e2e-automation', 'traffic-flow-prediction-Python', 'ai-face-analyzer']) {
+    await expect(section.getByRole('link', { name: `${name} on GitHub` })).toHaveAttribute('href', `https://github.com/RakibulIslam39/${name}`);
+  }
+  await expect(section.getByRole('link', { name: /^Case study ?: FlexOrder-e2e-Automation-with-CI-CD$/ })).toHaveAttribute('href', '/projects/flexorder-e2e/');
 });
