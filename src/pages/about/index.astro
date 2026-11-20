@@ -21,6 +21,10 @@ const groups = Object.entries(
 
 <BaseLayout title="About | Rakibul Islam" description={`About ${site.name}: ${site.summary}`}>
   <div class="container">
+    <header class="page-head">
+      <h1>About {site.firstName}</h1>
+      <p>{site.role} in {site.location}. Pick a note to read more.</p>
+    </header>
     <div class="notes" data-notes>
       <div class="notes__bar">
         <span class="notes__lights" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -53,7 +57,6 @@ const groups = Object.entries(
         </aside>
 
         <div class="notes__content">
-          <h1 class="notes__h1">About {site.firstName}</h1>
 
           <section class="note prose" role="tabpanel" id="note-about" aria-labelledby="tab-about" data-note="about">
             <h2>About me</h2>
@@ -194,19 +197,18 @@ const groups = Object.entries(
   .notes__body {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
-    min-height: 560px;
+    align-items: start;
   }
   .notes__side {
+    align-self: stretch;
     border-right: 1px solid var(--line);
     background: var(--card);
     padding: 16px 12px;
   }
   .notes__folder {
     margin: 0 8px 10px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--muted);
   }
   .notes__list {
@@ -249,13 +251,6 @@ const groups = Object.entries(
   .notes__content {
     padding: 36px 44px 48px;
     min-width: 0;
-  }
-  .notes__h1 {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0;
-    color: var(--muted);
-    margin-bottom: 20px;
   }
   .note + .note {
     margin-top: 48px;

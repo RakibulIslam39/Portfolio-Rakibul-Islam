@@ -19,7 +19,7 @@ const pixels = [
 const colour: Record<string, string> = { x: '#2a2018', h: '#3a2b20', s: '#c98d66', e: '#1b1b1f', m: '#9a4f3c', b: '#2fd08a' };
 ---
 
-<Tile id="portrait" size="1x1" class="portrait" flush>
+<Tile id="portrait" size="1x1" area="photo" class="portrait" flush>
   <button class="portrait__stage" type="button" data-portrait>
     <span class="sr-only">Show next portrait style</span>
     <figure class="portrait__frame is-active" data-portrait-frame aria-hidden="true">
@@ -28,7 +28,7 @@ const colour: Record<string, string> = { x: '#2a2018', h: '#3a2b20', s: '#c98d66
           <linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fd08a"></stop><stop offset="1" stop-color="#0a84ff"></stop></linearGradient>
         </defs>
         <rect width="200" height="200" fill="url(#pg1)"></rect>
-        <text x="100" y="122" text-anchor="middle" font-size="64" font-weight="700" fill="#fff" font-family="Inter Variable, sans-serif" letter-spacing="-2">RI</text>
+        <text x="100" y="122" text-anchor="middle" font-size="64" font-weight="700" fill="#fff" font-family="Mona Sans Variable, sans-serif" letter-spacing="-2">RI</text>
       </svg>
     </figure>
     <figure class="portrait__frame" data-portrait-frame aria-hidden="true">

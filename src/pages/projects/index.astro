@@ -8,7 +8,6 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 <BaseLayout title="Projects | Rakibul Islam" description="Test automation frameworks, CI pipelines and side projects by Rakibul Islam.">
   <div class="container">
     <header class="page-head">
-      <p class="pill page-head__eyebrow">{projects.length} projects</p>
       <h1>Projects</h1>
       <p>Test frameworks, pipelines and a few side projects. Each one has a short case study: the problem, what I built and how it turned out.</p>
     </header>
@@ -18,19 +17,9 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
         projects.map((p, i) => (
           <li class:list={['pcard', { 'pcard--lead': i === 0 }]}>
             <a href={`/projects/${p.id}/`} class="pcard__link">
-              <span class="pcard__hook">{p.data.hook}</span>
               <h2 class="pcard__title">{p.data.title}</h2>
+              <span class="pcard__hook">{p.data.hook}</span>
               <p class="pcard__summary">{p.data.summary}</p>
-              {p.data.metrics.length > 0 && (
-                <dl class="pcard__metrics">
-                  {p.data.metrics.slice(0, 3).map((m) => (
-                    <div>
-                      <dt>{m.label}</dt>
-                      <dd>{m.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
               <span class="pcard__stack">
                 {p.data.stack.slice(0, 5).map((s) => (
                   <span class="pill">{s}</span>
@@ -76,10 +65,8 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
     box-shadow: 0 0 0 1px var(--outline) inset, var(--shadow);
   }
   .pcard__hook {
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
     color: var(--pass);
   }
   .pcard__title {

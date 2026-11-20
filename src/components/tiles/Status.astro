@@ -4,14 +4,18 @@ import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
 ---
 
-<Tile id="status" size="1x1" app="Status" class="status">
+<Tile id="status" size="2x1" area="status" app="Status" class="status">
   <AppIcon name="status" slot="icon" />
-  <p class="status__head"><span class="dot" aria-hidden="true"></span>{site.status.headline}</p>
-  <p class="status__detail">{site.status.detail}</p>
-  <p class="status__time">
-    Dhaka · <time data-local-time>--:--</time> <span>({site.timezone})</span>
-  </p>
-  <a class="btn btn--primary status__cta" href={`mailto:${site.email}?subject=${encodeURIComponent('A role you might like')}`}>{site.status.cta}</a>
+  <div class="status__body">
+    <p class="status__head"><span class="dot" aria-hidden="true"></span>{site.status.headline}</p>
+    <p class="status__detail">{site.status.detail}</p>
+  </div>
+  <div class="status__foot">
+    <p class="status__time">
+      Dhaka · <time data-local-time>--:--</time> <span>({site.timezone})</span>
+    </p>
+    <a class="btn btn--primary" href={`mailto:${site.email}?subject=${encodeURIComponent('A role you might like')}`}>{site.status.cta}</a>
+  </div>
 </Tile>
 
 <style>
@@ -20,28 +24,34 @@ import site from '../../content/site.json';
     align-items: center;
     gap: 10px;
     color: var(--text);
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
+    font-stretch: var(--display-stretch);
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin-bottom: 8px;
   }
   .status__detail {
-    font-size: 14px;
-    line-height: 1.45;
+    font-size: 15px;
+    max-width: 40ch;
+  }
+  .status__foot {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
   .status__time {
-    font-size: 13px;
+    margin: 0;
+    font-size: 14px;
     color: var(--muted);
-    margin-top: auto;
-    margin-bottom: 12px;
   }
   .status__time time {
     color: var(--text);
     font-variant-numeric: tabular-nums;
     font-weight: 600;
-  }
-  .status__cta {
-    justify-content: center;
   }
 </style>
 

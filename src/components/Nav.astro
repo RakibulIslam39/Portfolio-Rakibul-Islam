@@ -3,7 +3,6 @@ const items = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
   { href: '/projects/', label: 'Projects' },
-  { href: '/writing/', label: 'Writing' },
   { href: '/qa/', label: 'QA' },
 ];
 const path = Astro.url.pathname;
@@ -139,7 +138,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     cursor: pointer;
   }
   .kbd {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--muted);
     border: 1px solid var(--outline);
     border-radius: 6px;
@@ -160,8 +159,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       inset: auto 0 12px;
     }
     .logo,
-    .search-btn .kbd,
-    [data-theme-toggle] {
+    .search-btn .kbd {
       display: none;
     }
     .actions .icon-btn {

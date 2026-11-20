@@ -28,11 +28,32 @@ h3 {
   line-height: 1.1;
   margin: 0;
   font-weight: 600;
+  font-stretch: var(--display-stretch);
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 p {
   margin: 0 0 0.9em;
+  text-wrap: pretty;
+}
+
+/* Browser surfaces carry the design too. */
+::selection {
+  background: var(--pass-soft);
+  color: var(--text);
+}
+html {
+  scrollbar-color: var(--outline) var(--bg);
+  accent-color: var(--pass);
+  caret-color: var(--pass);
+}
+a,
+button,
+summary,
+[role='tab'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -102,6 +123,12 @@ main {
   padding-top: 96px;
   padding-bottom: 48px;
 }
+/* On phones the nav sits at the bottom, so the top needs no room for it. */
+@media (max-width: 640px) {
+  main {
+    padding-top: 24px;
+  }
+}
 
 /* Shared small UI pieces */
 .pill {
@@ -116,6 +143,14 @@ main {
   font-size: 13px;
   line-height: 1.4;
   white-space: nowrap;
+}
+
+/* A comfortable hit area for standalone links (back links, table links, list links). */
+.tap {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  min-width: var(--tap);
 }
 
 .btn {

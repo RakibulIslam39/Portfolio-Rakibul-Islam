@@ -7,7 +7,8 @@ The site is tested like a product: E2E, accessibility and visual tests run on ev
 ## Stack
 
 - [Astro](https://astro.build) (static output) + TypeScript (strict)
-- Plain CSS with design tokens (`src/styles/tokens.css`), dark/light theme
+- Plain CSS with design tokens (`src/styles/tokens.css`), dark/light theme; rules in `DESIGN.md`, audience in `PRODUCT.md`
+- Mona Sans (variable, weight + width) for text, JetBrains Mono for code only
 - One small vanilla TypeScript file per interactive widget (`src/scripts/`)
 - Playwright + axe-core for tests, GitHub Actions for CI
 - Hosting: Cloudflare Pages, deployed by CI only when every test passes
@@ -58,6 +59,7 @@ Things still marked TODO (search the repo for `TODO` and `Lorem`):
 | `tests/cv.spec.ts` | All CV sections, PDF download, print layout |
 | `tests/qa.spec.ts` | /qa report, live CI and visitor cards (APIs mocked), fallbacks, footer and hero widgets |
 | `tests/api.spec.ts` | Unit tests for `/api/ci` and `/api/stats` logic with a fake fetch |
+| `tests/layout.spec.ts` | No sideways scroll at 320 px on any page; tap targets ≥ 24 px (WCAG 2.2 AA), buttons/standalone links ≥ 36–44 px |
 | `tests/seo.spec.ts` | Sitemap, robots.txt, canonical URLs, a 1200×630 share image per page, noindex drafts, headers |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
 
@@ -170,3 +172,7 @@ tests/             Playwright specs
 - [x] Phase 5: About, Projects, Writing, CV pages
 - [x] Phase 6: Cloudflare Pages Functions (`/api/stats`, `/api/ci`), live `/qa` dashboard, deploy only when green
 - [x] Phase 7: correct site URL, sitemap, share images, Lighthouse budgets, security headers, custom-domain guide
+- [x] v2 design pass: Mona Sans, PRODUCT.md + DESIGN.md, hero with live terminal, named-area bento,
+      no kickers/rings/nested cards, 44 px tap targets, 320 px layout test, app icons + manifest
+- [ ] v2 content: real photo, LinkedIn, case-study write-ups, screenshots, posts
+- [ ] v2.5 extras: Uses page, contact form, drag-to-rearrange tiles, click sounds

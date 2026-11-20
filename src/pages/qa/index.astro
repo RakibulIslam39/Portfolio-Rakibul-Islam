@@ -24,7 +24,12 @@ const avg = (k: (typeof categories)[number]['key']) =>
 <BaseLayout title="QA report | Rakibul Islam" description="This site's own test results, Lighthouse scores and live CI status.">
   <div class="container qa">
     <header class="page-head">
-      <p class="pill page-head__eyebrow">
+      <h1>This site's QA report</h1>
+      <p>
+        Every push runs the full Playwright suite on {t.projects.length} browser setups, an accessibility scan and Lighthouse.
+        Only a green build gets deployed.
+      </p>
+      <p class="qa__source">
         {
           qa.sample ? (
             <span data-qa-source>Sample data from a local run · {formatDate(generated)}</span>
@@ -35,11 +40,6 @@ const avg = (k: (typeof categories)[number]['key']) =>
             </span>
           )
         }
-      </p>
-      <h1>This site's QA report</h1>
-      <p>
-        Every push runs the full Playwright suite on {t.projects.length} browser setups, an accessibility scan and Lighthouse.
-        Only a green build gets deployed.
       </p>
     </header>
 
@@ -67,15 +67,11 @@ const avg = (k: (typeof categories)[number]['key']) =>
       <h2 id="tests-h" class="section-h">Tests</h2>
       <div class="summary__grid">
         <article class="card card--big">
-          <div class="ring" style={`--p:${passRate}`} role="img" aria-label={`${passRate}% of tests passed`}>
-            <span>{passRate}%</span>
-          </div>
-          <div>
-            <p class="big"><strong data-qa-passed>{t.passed}</strong> / {ran} passed</p>
-            <p class="card__meta">
-              {t.failed} failed · {t.flaky} flaky · {t.skipped} skipped on purpose
-            </p>
-          </div>
+          <h3 class="card__label">Result</h3>
+          <p class="big"><strong data-qa-passed>{t.passed}</strong> / {ran} passed <span class="big__rate">({passRate}%)</span></p>
+          <p class="card__meta">
+            {t.failed} failed · {t.flaky} flaky · {t.skipped} skipped on purpose
+          </p>
         </article>
         <article class="card">
           <h3 class="card__label">Duration</h3>
@@ -120,16 +116,15 @@ const avg = (k: (typeof categories)[number]['key']) =>
       qa.lighthouse.length > 0 && (
         <section aria-labelledby="lh-h">
           <h2 id="lh-h" class="section-h">Lighthouse (mobile)</h2>
-          <ul class="lh-avg">
-            {categories.map((c) => (
-              <li class={`score score--${grade(avg(c.key))}`}>
-                <span class="score__ring" style={`--p:${avg(c.key)}`}>
-                  {avg(c.key)}
-                </span>
-                <span class="score__label">{c.label}</span>
-              </li>
+          <p class="lh-avg">
+            Average across {qa.lighthouse.length} pages:
+            {categories.map((c, k) => (
+              <>
+                {k > 0 && ' · '}
+                {c.label} <strong class={`num num--${grade(avg(c.key))}`}>{avg(c.key)}</strong>
+              </>
             ))}
-          </ul>
+          </p>
           <div class="table-wrap" role="region" aria-label="Lighthouse scores per page" tabindex="0">
             <table>
               <caption class="sr-only">Lighthouse scores per page</caption>
@@ -145,7 +140,7 @@ const avg = (k: (typeof categories)[number]['key']) =>
                 {qa.lighthouse.map((row) => (
                   <tr>
                     <th scope="row">
-                      <a href={row.path}>
+                      <a class="tap" href={row.path}>
                         <code>{row.path}</code>
                       </a>
                     </th>
@@ -199,14 +194,17 @@ const avg = (k: (typeof categories)[number]['key']) =>
     background: var(--tile);
     box-shadow: 0 0 0 1px var(--tile-edge) inset;
   }
+  .qa__source {
+    margin-top: 14px !important;
+    font-size: 14px !important;
+    color: var(--muted);
+  }
   .card__label {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 10px;
   }
@@ -228,7 +226,7 @@ const avg = (k: (typeof categories)[number]['key']) =>
     border-radius: 999px;
     background: var(--pass-soft);
     color: var(--pass);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.02em;
   }
   .ci-status {
@@ -283,27 +281,9 @@ const avg = (k: (typeof categories)[number]['key']) =>
     gap: var(--gap);
     margin-bottom: var(--gap);
   }
-  .card--big {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-  }
-  .ring {
-    --size: 88px;
-    flex: none;
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background:
-      radial-gradient(closest-side, var(--tile) 78%, transparent 80% 100%),
-      conic-gradient(var(--pass) calc(var(--p) * 1%), var(--line) 0);
-  }
-  .ring span {
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--text);
+  .big__rate {
+    color: var(--pass);
+    font-weight: 600;
   }
   .big {
     margin: 0;
@@ -324,6 +304,8 @@ const avg = (k: (typeof categories)[number]['key']) =>
     gap: 6px;
   }
   .table-wrap {
+    /* Contains the absolutely positioned sr-only caption so it can't widen the page. */
+    position: relative;
     overflow-x: auto;
     border-radius: var(--radius);
     background: var(--tile);
@@ -342,11 +324,13 @@ const avg = (k: (typeof categories)[number]['key']) =>
     white-space: nowrap;
   }
   thead th {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 13px;
     color: var(--muted);
     font-weight: 600;
+  }
+  th,
+  td {
+    vertical-align: middle;
   }
   tbody tr:last-child > * {
     border-bottom: 0;
@@ -393,46 +377,12 @@ const avg = (k: (typeof categories)[number]['key']) =>
     color: var(--fail);
   }
   .lh-avg {
-    list-style: none;
     margin: 0 0 var(--gap);
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--gap);
+    color: var(--muted);
+    font-size: 15px;
   }
-  .score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 22px 12px;
-    border-radius: var(--radius);
-    background: var(--tile);
-    box-shadow: 0 0 0 1px var(--tile-edge) inset;
-  }
-  .score__ring {
-    --c: var(--pass);
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    font-size: 22px;
-    color: var(--text);
-    background:
-      radial-gradient(closest-side, var(--tile) 80%, transparent 82% 100%),
-      conic-gradient(var(--c) calc(var(--p) * 1%), var(--line) 0);
-  }
-  .score--ok .score__ring {
-    --c: var(--warn);
-  }
-  .score--poor .score__ring {
-    --c: var(--fail);
-  }
-  .score__label {
-    font-size: 14px;
-    color: var(--body-text);
+  .lh-avg strong {
+    margin-right: 2px;
   }
   .how {
     margin: 0 0 16px;
@@ -449,9 +399,6 @@ const avg = (k: (typeof categories)[number]['key']) =>
     .live,
     .summary__grid {
       grid-template-columns: 1fr;
-    }
-    .lh-avg {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

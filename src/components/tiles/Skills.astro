@@ -4,7 +4,7 @@ import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
 ---
 
-<Tile id="skills" size="2x1" app="Toolkit" class="skills">
+<Tile id="skills" size="2x1" area="skills" app="Toolkit" class="skills">
   <AppIcon name="skills" slot="icon" />
   <ul class="skills__list">
     {site.skills.map((s) => <li class="pill" title={s.group}>{s.name}</li>)}

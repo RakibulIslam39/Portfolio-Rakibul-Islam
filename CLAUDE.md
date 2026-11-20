@@ -34,3 +34,9 @@ Every line of code, copy, icon and image is original (no Apple icons, no copied 
 - The site address is `SITE` in `astro.config.mjs`; keep `public/robots.txt` in sync (a test checks).
 - Every page needs a share image: `npm run build && npm run og` writes `public/og/<slug>.png`.
 - Lighthouse budgets live in `scripts/qa-report.mjs`; don't lower them to make CI pass, fix the page.
+
+## Design (v2)
+- Read `PRODUCT.md` (who visits, the main action) and `DESIGN.md` (tokens, type, motion, bans) before any UI change.
+- Bans: kicker labels above headings, progress rings/hero-metric blocks, nested cards, mono as decoration,
+  identical entrance animations. One motion moment per page (the hero terminal on Home).
+- Home tiles are placed with named grid areas in `src/pages/index.astro`; give new tiles an `area`.

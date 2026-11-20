@@ -15,7 +15,7 @@ const d = post.data;
 
 <BaseLayout title={`${d.title} | Rakibul Islam`} description={d.excerpt} noindex={d.placeholder}>
   <article class="container post">
-    <a class="back-link" href="/writing/">← All writing</a>
+    <a class="back-link tap" href="/writing/">← All writing</a>
     <header class="page-head">
       <p class="post__meta">
         {d.category} · <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time> · {readingTime(post.body ?? '')} min read

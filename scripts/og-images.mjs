@@ -43,19 +43,19 @@ function pageInfo(file) {
   return { pathname, slug: ogSlug(pathname), title: pathname === '/' ? 'Rakibul Islam' : title, description, section };
 }
 
-const font = readFileSync(resolve('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')).toString('base64');
+const font = readFileSync(resolve('node_modules/@fontsource-variable/mona-sans/files/mona-sans-latin-wdth-normal.woff2')).toString('base64');
 
 const template = ({ title, description, section }) => `<!doctype html>
 <html><head><meta charset="utf-8"><style>
-@font-face { font-family: Inter; src: url(data:font/woff2;base64,${font}) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mona; src: url(data:font/woff2;base64,${font}) format('woff2'); font-weight: 200 900; font-stretch: 75% 125%; }
 * { box-sizing: border-box; margin: 0; }
-body { width: 1200px; height: 630px; background: #0e0e10; font-family: Inter, sans-serif; padding: 48px; }
+body { width: 1200px; height: 630px; background: #0e0e10; font-family: Mona, sans-serif; padding: 48px; }
 .card { height: 100%; border-radius: 40px; background: #1a1a1d; box-shadow: inset 0 0 0 2px rgba(255,255,255,.07);
   padding: 56px 64px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 .glow { position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 50%;
   background: radial-gradient(circle, rgba(47,208,138,.22), transparent 65%); }
 .eyebrow { color: #2fd08a; font-size: 24px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
-h1 { color: #f2f2f4; font-size: ${title.length > 42 ? 58 : 72}px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; margin-top: 20px;
+h1 { font-stretch: 108%; color: #f2f2f4; font-size: ${title.length > 42 ? 58 : 72}px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; margin-top: 20px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 p { color: #b8b8c2; font-size: 28px; line-height: 1.4; margin-top: 22px; max-width: 900px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

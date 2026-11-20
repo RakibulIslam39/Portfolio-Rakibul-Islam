@@ -160,6 +160,12 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
   .cv h3 a:hover {
     text-decoration: underline;
   }
+  .cv h3 a,
+  .cv__contact a {
+    display: inline-block;
+    padding: 12px 0;
+    margin: -12px 0;
+  }
   .cv__sec {
     margin-top: 28px;
   }

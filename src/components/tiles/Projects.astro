@@ -4,21 +4,17 @@ import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
 ---
 
-<Tile id="projects" size="2x2" app="Projects" href="/projects/" hrefLabel="See all projects" class="projects">
+<Tile id="projects" size="2x2" area="proj" app="Projects" href="/projects/" hrefLabel="See all projects" class="projects">
   <AppIcon name="projects" slot="icon" />
   <ul class="proj">
     {
       site.projects.map((p) => (
         <li>
-          <a class="proj__card" href={`/projects/${p.slug}/`}>
-            <span class="proj__hook">{p.hook}</span>
+          <a class="proj__row" href={`/projects/${p.slug}/`}>
             <span class="proj__name">{p.name}</span>
+            <span class="proj__hook">{p.hook}</span>
             <span class="proj__summary">{p.summary}</span>
-            <span class="proj__stack">
-              {p.stack.map((s) => (
-                <span class="pill">{s}</span>
-              ))}
-            </span>
+            <span class="proj__stack">{p.stack.join(' · ')}</span>
           </a>
         </li>
       ))
@@ -31,51 +27,43 @@ import site from '../../content/site.json';
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 10px;
   }
-  .proj__card {
+  .proj li + li {
+    border-top: 1px solid var(--line);
+  }
+  .proj__row {
     display: grid;
     gap: 4px;
-    padding: 14px 16px;
-    border-radius: var(--radius-sm);
-    background: var(--card);
+    padding: 16px 0;
     text-decoration: none;
-    transition: transform 0.25s var(--ease-arrive), background-color 0.2s;
   }
-  .proj__card:hover {
-    transform: translateY(-2px);
-  }
-  .proj__hook {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--pass);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+  .proj li:first-child .proj__row {
+    padding-top: 0;
   }
   .proj__name {
     color: var(--text);
     font-weight: 600;
-    font-size: 16px;
+    font-size: 18px;
+    font-stretch: var(--display-stretch);
+    letter-spacing: -0.015em;
+  }
+  .proj__row:hover .proj__name {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+  .proj__hook {
+    color: var(--pass);
+    font-size: 14px;
+    font-weight: 500;
   }
   .proj__summary {
-    font-size: 13px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.5;
     color: var(--body-text);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
   .proj__stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-  }
-  .proj__stack .pill {
-    font-size: 11.5px;
-    padding: 2px 8px;
-    background: var(--tile);
+    font-size: 13px;
+    color: var(--muted);
   }
 </style>

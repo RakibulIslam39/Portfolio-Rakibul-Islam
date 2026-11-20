@@ -2,10 +2,10 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
-/* Phase 6 will replace this static run with live data from /api/ci. */
+/* The FlexOrder pipeline, shown as a finished run. */
 ---
 
-<Tile id="ci" size="2x1" app="GitHub Actions" class="ci">
+<Tile id="ci" size="2x1" area="ci" app="GitHub Actions" class="ci">
   <AppIcon name="ci" slot="icon" />
   <div class="ci__head">
     <p class="ci__title">Zero-touch E2E pipeline</p>
@@ -79,8 +79,7 @@ import site from '../../content/site.json';
   }
   .ci__detail {
     color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -127,32 +126,4 @@ import site from '../../content/site.json';
   }
 </style>
 
-<script>
-  /* Replays the pipeline once when the tile comes into view. */
-  const root = document.querySelector<HTMLElement>('[data-ci]');
-  const badge = document.querySelector<HTMLElement>('[data-ci-badge]');
-  const label = document.querySelector<HTMLElement>('[data-ci-status]');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (root && badge && label && !reduce) {
-    const steps = Array.from(root.querySelectorAll<HTMLElement>('[data-ci-step]'));
-    const run = async () => {
-      steps.forEach((s) => s.classList.remove('is-done', 'is-running'));
-      badge.dataset.state = 'running';
-      label.textContent = 'In progress';
-      for (const s of steps) {
-        s.classList.add('is-running');
-        await new Promise((r) => setTimeout(r, 650));
-        s.classList.replace('is-running', 'is-done');
-      }
-      badge.dataset.state = 'done';
-      label.textContent = 'Success';
-    };
-    const io = new IntersectionObserver((e) => {
-      if (e.some((x) => x.isIntersecting)) {
-        io.disconnect();
-        void run();
-      }
-    }, { threshold: 0.5 });
-    io.observe(root);
-  }
-</script>
+<!-- Static on purpose: the hero terminal is the page's one motion moment. -->

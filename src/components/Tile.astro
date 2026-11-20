@@ -13,16 +13,18 @@ interface Props {
   hrefLabel?: string;
   id: string;
   class?: string;
-  tone?: 'default' | 'dark';
+  tone?: 'default' | 'dark' | 'plain';
   /** Remove inner padding so media can run edge to edge. */
   flush?: boolean;
+  /** Named grid area on the home bento (see src/pages/index.astro). */
+  area?: string;
 }
 
-const { size = '1x1', app, href, hrefLabel, id, class: extra = '', tone = 'default', flush = false } = Astro.props;
+const { size = '1x1', app, href, hrefLabel, id, class: extra = '', tone = 'default', flush = false, area } = Astro.props;
 const external = href ? /^https?:/.test(href) : false;
 ---
 
-<section class:list={['tile', `tile--${size}`, `tile--${tone}`, { 'tile--flush': flush }, extra]} id={id} aria-labelledby={app ? `${id}-app` : undefined} data-tile={id}>
+<section class:list={['tile', `tile--${size}`, `tile--${tone}`, { 'tile--flush': flush }, extra]} style={area ? `--area: ${area}` : undefined} id={id} aria-labelledby={app ? `${id}-app` : undefined} data-tile={id}>
   {
     (app || href) && (
       <header class="tile__head">
@@ -65,29 +67,31 @@ const external = href ? /^https?:/.test(href) : false;
     box-shadow: 0 0 0 1px var(--tile-edge) inset;
     overflow: hidden;
     transition: transform 0.35s var(--ease-arrive), box-shadow 0.35s var(--ease-arrive);
-    animation: tile-in 0.6s var(--ease-arrive) both;
   }
   .tile--flush {
     padding: 0;
+  }
+  /* Plain: content sits on the page itself (the hero), so the terminal window is the only box. */
+  .tile--plain {
+    background: none;
+    box-shadow: none;
+    padding: 24px 0 32px;
+    border-radius: 0;
+    overflow: visible;
   }
   .tile--dark {
     background: #101012;
     color: #d6d6dc;
   }
-  @keyframes tile-in {
-    from {
-      opacity: 0;
-      transform: translateY(12px) scale(0.985);
-    }
-  }
-  .tile--2x1,
-  .tile--2x2 {
+  /* Size classes only apply outside the named-area grid (tiles with --area set). */
+  .tile--2x1:not([style*='--area']),
+  .tile--2x2:not([style*='--area']) {
     grid-column: span 2;
   }
-  .tile--2x2 {
+  .tile--2x2:not([style*='--area']) {
     grid-row: span 2;
   }
-  .tile--4x1 {
+  .tile--4x1:not([style*='--area']) {
     grid-column: 1 / -1;
   }
   .tile__head {
@@ -144,11 +148,6 @@ const external = href ? /^https?:/.test(href) : false;
     flex-direction: column;
   }
 
-  @media (max-width: 1023px) {
-    .tile--4x1 {
-      grid-column: 1 / -1;
-    }
-  }
   @media (max-width: 699px) {
     .tile--2x1,
     .tile--2x2,

@@ -17,12 +17,15 @@ const d = project.data;
 
 <BaseLayout title={`${d.title} | Rakibul Islam`} description={d.summary}>
   <article class="container case">
-    <a class="back-link" href="/projects/">← All projects</a>
+    <a class="back-link tap" href="/projects/">← All projects</a>
 
     <header class="page-head">
-      <p class="case__hook">{d.hook} {d.placeholder && <span class="draft-badge">Draft</span>}</p>
-      <h1>{d.title}</h1>
+      <div class="case__title">
+        <h1>{d.title}</h1>
+        {d.placeholder && <span class="draft-badge">Draft</span>}
+      </div>
       <p>{d.summary}</p>
+      <p class="case__hook">{d.hook}</p>
     </header>
 
     <dl class="case__meta">
@@ -50,8 +53,7 @@ const d = project.data;
         <ul class="case__metrics" aria-label="Results">
           {d.metrics.map((m) => (
             <li>
-              <strong>{m.value}</strong>
-              <span>{m.label}</span>
+              <strong>{m.value}</strong> {m.label}
             </li>
           ))}
         </ul>
@@ -79,32 +81,33 @@ const d = project.data;
   .case {
     padding-bottom: 48px;
   }
-  .case__hook {
+  .case__title {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 14px !important;
-    font-size: 13px !important;
+    gap: 8px 14px;
+    margin-bottom: 14px;
+  }
+  .case__title :global(h1) {
+    margin-bottom: 0 !important;
+  }
+  .case__hook {
+    margin-top: 12px !important;
+    font-size: 16px !important;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
     color: var(--pass);
   }
   .case__meta {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px 32px;
-    margin: 0 0 32px;
-    padding: 24px var(--tile-pad);
-    border-radius: var(--radius);
-    background: var(--tile);
-    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    gap: 16px 32px;
+    margin: 0 0 28px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
   }
   .case__meta dt {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 13px;
     color: var(--muted);
     margin-bottom: 4px;
   }
@@ -116,11 +119,15 @@ const d = project.data;
   .case__links {
     display: flex;
     flex-direction: column;
-    gap: 2px;
   }
   .case__links a {
     color: var(--link);
     text-decoration: none;
+    padding: 10px 0;
+    margin: -10px 0;
+  }
+  .case__links a + a {
+    margin-top: 0;
   }
   .case__links a:hover {
     text-decoration: underline;
@@ -129,27 +136,18 @@ const d = project.data;
     list-style: none;
     margin: 0 0 40px;
     padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--gap);
-  }
-  .case__metrics li {
-    padding: 22px var(--tile-pad);
-    border-radius: var(--radius);
-    background: var(--tile);
-    box-shadow: 0 0 0 1px var(--tile-edge) inset;
-    display: grid;
-    gap: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    font-size: 15px;
+    color: var(--muted);
   }
   .case__metrics strong {
-    font-size: 36px;
-    letter-spacing: -0.03em;
     color: var(--pass);
-    line-height: 1.1;
-  }
-  .case__metrics span {
-    color: var(--muted);
-    font-size: 14px;
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-right: 4px;
   }
   .case__layout {
     display: grid;
@@ -162,10 +160,7 @@ const d = project.data;
     top: 96px;
   }
   .case__stack h2 {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 15px;
     color: var(--muted);
     margin-bottom: 12px;
   }
@@ -189,6 +184,9 @@ const d = project.data;
     font-size: 14px;
   }
   .case__next a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
     color: var(--text);
     font-size: 20px;
     font-weight: 600;

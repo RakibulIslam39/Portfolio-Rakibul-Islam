@@ -11,7 +11,7 @@ const bugs = [
 ];
 ---
 
-<Tile id="bughunt" size="2x1" app="Bug Hunt" class="bughunt">
+<Tile id="bughunt" size="2x1" area="bug" app="Bug Hunt" class="bughunt">
   <AppIcon name="bug" slot="icon" />
   <div class="bh" data-bughunt data-total={bugs.length}>
     <div class="bh__ui" aria-label="A checkout form with planted bugs">
@@ -45,6 +45,7 @@ const bugs = [
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 20px;
+    align-items: start;
   }
   .bh__ui {
     display: flex;
@@ -53,6 +54,7 @@ const bugs = [
     padding: 14px;
     border-radius: var(--radius-sm);
     background: #fff;
+    box-shadow: 0 0 0 1px var(--line);
     color: #222;
     font-size: 12.5px;
   }
@@ -62,6 +64,9 @@ const bugs = [
     position: relative;
     border-radius: 6px;
     outline-offset: 2px;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
   }
   .bug:focus-visible {
     outline: 2px dashed var(--link);
@@ -92,6 +97,14 @@ const bugs = [
   .bh__row .bug {
     color: #111;
     font-weight: 600;
+  }
+  .bh__input-wrap,
+  .bh__pay-wrap {
+    display: flex;
+  }
+  .bh__input-wrap > span,
+  .bh__pay-wrap > span:first-child {
+    flex: 1;
   }
   .bh__input-wrap {
     margin-left: 14px;
