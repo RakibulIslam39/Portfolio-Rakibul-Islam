@@ -8,6 +8,8 @@ import site from '../../content/site.json';
     <img
       class="portrait__img portrait__img--photo"
       src="/portrait/photo.webp"
+      srcset="/portrait/photo-400.webp 400w, /portrait/photo-640.webp 640w, /portrait/photo.webp 800w"
+      sizes="(min-width: 1024px) 340px, (min-width: 700px) 50vw, 100vw"
       width="800"
       height="800"
       alt={site.name}
@@ -17,6 +19,8 @@ import site from '../../content/site.json';
     <img
       class="portrait__img portrait__img--avatar"
       src="/portrait/avatar.webp"
+      srcset="/portrait/avatar-400.webp 400w, /portrait/avatar-640.webp 640w, /portrait/avatar.webp 800w"
+      sizes="(min-width: 1024px) 340px, (min-width: 700px) 50vw, 100vw"
       width="800"
       height="800"
       alt=""

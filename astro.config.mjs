@@ -11,6 +11,8 @@ export default defineConfig({
   site: SITE,
   output: 'static',
   trailingSlash: 'always',
+  // Inline the (small) CSS so it doesn't block the first paint.
+  build: { inlineStylesheets: 'always' },
   markdown: {
     // High-contrast theme so code comments pass WCAG AA on the dark code background.
     shikiConfig: { theme: 'github-dark-high-contrast' },

@@ -16,6 +16,8 @@ interface Props {
   image?: string;
   /** Keep the page out of search results (e.g. lorem-ipsum drafts). */
   noindex?: boolean;
+  /** An above-the-fold image to fetch early (the home portrait). */
+  preloadImage?: { srcset: string; sizes: string };
 }
 
 const {
@@ -23,6 +25,7 @@ const {
   description = `${site.name} is a ${site.role} who builds Playwright frameworks, API tests and CI pipelines. ${site.tagline}`,
   image,
   noindex = false,
+  preloadImage,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -50,6 +53,7 @@ const personLd = {
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {preloadImage && <link rel="preload" as="image" imagesrcset={preloadImage.srcset} imagesizes={preloadImage.sizes} fetchpriority="high" />}
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap.xml" />

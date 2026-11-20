@@ -21,7 +21,12 @@ import Certificates from '../components/tiles/Certificates.astro';
 import Blog from '../components/tiles/Blog.astro';
 ---
 
-<BaseLayout>
+<BaseLayout
+  preloadImage={{
+    srcset: '/portrait/photo-400.webp 400w, /portrait/photo-640.webp 640w, /portrait/photo.webp 800w',
+    sizes: '(min-width: 1024px) 340px, (min-width: 700px) 50vw, 100vw',
+  }}
+>
   <!-- DOM order is the phone order; named areas place tiles on wider screens. -->
   <div class="bento container" data-bento>
     <Hero />
