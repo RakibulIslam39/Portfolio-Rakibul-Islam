@@ -12,7 +12,16 @@ for (const theme of ['dark', 'light'] as const) {
     await page.evaluate(async () => {
       const imgs = Array.from(document.images);
       imgs.forEach((img) => (img.loading = 'eager'));
-      await Promise.all(imgs.map((img) => (img.complete ? null : new Promise((r) => img.addEventListener('load', r, { once: true }) || img.addEventListener('error', r, { once: true })))));
+      await Promise.all(
+        imgs.map((img) =>
+          img.complete
+            ? null
+            : new Promise<void>((done) => {
+                img.addEventListener('load', () => done(), { once: true });
+                img.addEventListener('error', () => done(), { once: true });
+              }),
+        ),
+      );
     });
     await expect(page).toHaveScreenshot(`home-${theme}.png`, {
       fullPage: true,

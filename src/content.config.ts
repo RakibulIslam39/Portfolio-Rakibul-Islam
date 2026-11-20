@@ -14,7 +14,7 @@ const projects = defineCollection({
     context: z.string(),
     stack: z.array(z.string()),
     metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
-    links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+    links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
     /** true while the write-up still contains lorem ipsum. */
     placeholder: z.boolean().default(false),
   }),
@@ -28,7 +28,7 @@ const writing = defineCollection({
     date: z.coerce.date(),
     category: z.enum(['Playwright', 'CI/CD', 'API testing', 'Career']),
     /** Set for posts published elsewhere (e.g. Medium): the list links out and no local page is built. */
-    url: z.string().url().optional(),
+    url: z.url().optional(),
     /** Where an external post lives, shown next to it ("Medium"). */
     source: z.string().optional(),
     /** Reading time for external posts, whose body isn't stored here. */
