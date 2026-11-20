@@ -13,6 +13,10 @@ export interface Stats {
   today: number;
   week: number;
   countries: number;
+  /** Visits yesterday up to the same time of day, to compare with `today`. */
+  yesterday: number;
+  /** Visits in the 7 days before this week, to compare with `week`. */
+  prevWeek: number;
   updatedAt: string;
 }
 
@@ -23,13 +27,19 @@ export const isConfigured = (env: StatsEnv): boolean => !!(env.CF_ANALYTICS_TOKE
  * GraphQL Analytics API. If Cloudflare renames fields, test the query in the GraphiQL explorer
  * (https://graphql.cloudflare.com) and adjust it here; the endpoint returns 502 until it works.
  */
-export const QUERY = `query Stats($account: String!, $site: String!, $dayStart: Time!, $weekStart: Time!, $now: Time!) {
+export const QUERY = `query Stats($account: String!, $site: String!, $dayStart: Time!, $weekStart: Time!, $now: Time!, $yStart: Time!, $yNow: Time!, $pwStart: Time!) {
   viewer {
     accounts(filter: { accountTag: $account }) {
       today: rumPageloadEventsAdaptiveGroups(limit: 1, filter: { siteTag: $site, datetime_geq: $dayStart, datetime_leq: $now }) {
         sum { visits }
       }
       week: rumPageloadEventsAdaptiveGroups(limit: 1, filter: { siteTag: $site, datetime_geq: $weekStart, datetime_leq: $now }) {
+        sum { visits }
+      }
+      yesterday: rumPageloadEventsAdaptiveGroups(limit: 1, filter: { siteTag: $site, datetime_geq: $yStart, datetime_leq: $yNow }) {
+        sum { visits }
+      }
+      prevWeek: rumPageloadEventsAdaptiveGroups(limit: 1, filter: { siteTag: $site, datetime_geq: $pwStart, datetime_lt: $weekStart }) {
         sum { visits }
       }
       countries: rumPageloadEventsAdaptiveGroups(limit: 250, filter: { siteTag: $site, datetime_geq: $weekStart, datetime_leq: $now }) {
@@ -45,6 +55,8 @@ interface GqlResponse {
       accounts?: Array<{
         today?: Array<{ sum?: { visits?: number } }>;
         week?: Array<{ sum?: { visits?: number } }>;
+        yesterday?: Array<{ sum?: { visits?: number } }>;
+        prevWeek?: Array<{ sum?: { visits?: number } }>;
         countries?: Array<{ dimensions?: { countryName?: string } }>;
       }>;
     };
@@ -69,6 +81,9 @@ export async function fetchStats(env: StatsEnv, now = new Date(), f: Fetch = fet
         dayStart: dayStart.toISOString(),
         weekStart: weekStart.toISOString(),
         now: now.toISOString(),
+        yStart: new Date(dayStart.getTime() - 864e5).toISOString(),
+        yNow: new Date(now.getTime() - 864e5).toISOString(),
+        pwStart: new Date(weekStart.getTime() - 7 * 864e5).toISOString(),
       },
     }),
   });
@@ -78,5 +93,12 @@ export async function fetchStats(env: StatsEnv, now = new Date(), f: Fetch = fet
   const account = body.data?.viewer?.accounts?.[0];
   if (!account) throw new Error('Cloudflare GraphQL: no account data');
   const countries = new Set((account.countries ?? []).map((r) => r.dimensions?.countryName).filter(Boolean));
-  return { today: sumVisits(account.today), week: sumVisits(account.week), countries: countries.size, updatedAt: now.toISOString() };
+  return {
+    today: sumVisits(account.today),
+    week: sumVisits(account.week),
+    countries: countries.size,
+    yesterday: sumVisits(account.yesterday),
+    prevWeek: sumVisits(account.prevWeek),
+    updatedAt: now.toISOString(),
+  };
 }

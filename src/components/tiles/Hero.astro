@@ -4,6 +4,8 @@ import site from '../../content/site.json';
 import qa from '../../data/qa-report.json';
 
 const ran = qa.tests.total - qa.tests.skipped;
+// A flaky test failed once and then passed on retry, so it counts as passing (the /qa page lists it).
+const passing = qa.tests.passed + (qa.tests.flaky ?? 0);
 const green = qa.tests.failed === 0;
 ---
 
@@ -22,7 +24,7 @@ const green = qa.tests.failed === 0;
         {
           !qa.sample && green && (
             <a class="pill hero__qa" href="/qa/">
-              <span class="dot" aria-hidden="true" /> This site: {qa.tests.passed}/{ran} tests passing
+              <span class="dot" aria-hidden="true" /> This site: {passing}/{ran} tests passing
             </a>
           )
         }

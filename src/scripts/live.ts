@@ -14,6 +14,8 @@ export interface Stats {
   today: number;
   week: number;
   countries: number;
+  yesterday?: number;
+  prevWeek?: number;
   updatedAt: string;
 }
 

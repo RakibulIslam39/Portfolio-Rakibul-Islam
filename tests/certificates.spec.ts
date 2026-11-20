@@ -33,7 +33,7 @@ test('Udemy certificates link to Udemy verification; the rest open the full imag
   }
 });
 
-test('home has Certificates and Blog tiles that lead to their pages', async ({ page }) => {
+test('home has Certificates and Blog tiles that lead to their pages', async ({ page, isMobile }) => {
   await page.goto('/');
   const certs = page.getByRole('region', { name: 'Certificates' });
   await expect(certs).toContainText('6');
@@ -43,7 +43,8 @@ test('home has Certificates and Blog tiles that lead to their pages', async ({ p
   await page.goto('/');
   const blog = page.getByRole('region', { name: 'Blog' });
   await expect(blog.getByRole('link', { name: /Automating bulk stock sync/ })).toHaveAttribute('href', /^https:\/\/medium\.com\//);
-  await expect(blog.getByRole('link', { name: 'See all blog posts' })).toHaveAttribute('href', '/writing/');
+  // The mailbox sidebar only shows on wider screens.
+  if (!isMobile) await expect(blog.getByRole('link', { name: /^Inbox/ })).toHaveAttribute('href', '/writing/');
 });
 
 test('Blog and Certificates are in the main navigation', async ({ page }) => {

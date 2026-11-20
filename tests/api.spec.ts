@@ -91,6 +91,8 @@ test.describe('visitor stats', () => {
             {
               today: [{ sum: { visits: 38 } }],
               week: [{ sum: { visits: 417 } }],
+              yesterday: [{ sum: { visits: 30 } }],
+              prevWeek: [{ sum: { visits: 380 } }],
               countries: [
                 { dimensions: { countryName: 'BD' } },
                 { dimensions: { countryName: 'DE' } },
@@ -101,13 +103,13 @@ test.describe('visitor stats', () => {
         },
       },
     });
-    expect(await fetchStats(env, now, f)).toEqual({ today: 38, week: 417, countries: 2, updatedAt: now.toISOString() });
+    expect(await fetchStats(env, now, f)).toEqual({ today: 38, week: 417, countries: 2, yesterday: 30, prevWeek: 380, updatedAt: now.toISOString() });
 
     const req = calls[0]!;
     expect(req.url).toBe('https://api.cloudflare.com/client/v4/graphql');
     const body = JSON.parse(req.init!.body as string);
     expect(body.query).toBe(QUERY);
-    expect(body.variables).toMatchObject({ account: 'acc', site: 'site', dayStart: '2026-11-19T00:00:00.000Z' });
+    expect(body.variables).toMatchObject({ account: 'acc', site: 'site', dayStart: '2026-11-19T00:00:00.000Z', yStart: '2026-11-18T00:00:00.000Z', yNow: '2026-11-18T15:30:00.000Z' });
     expect((req.init!.headers as Record<string, string>).authorization).toBe('Bearer t');
   });
 

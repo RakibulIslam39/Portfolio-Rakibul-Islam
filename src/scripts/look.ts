@@ -16,9 +16,14 @@ export function savedLook(): Look {
 
 export function applyLook(look: Look): void {
   document.documentElement.dataset.look = look;
-  document.querySelectorAll<HTMLImageElement>('img[data-me]').forEach((img) => {
-    const src = img.dataset[look];
-    if (src && img.getAttribute('src') !== src) img.src = src;
+  document.querySelectorAll<HTMLElement | SVGElement>('[data-me]').forEach((el) => {
+    const src = el.dataset[look];
+    if (!src) return;
+    if (el instanceof HTMLImageElement) {
+      if (el.getAttribute('src') !== src) el.src = src;
+    } else if (el.getAttribute('href') !== src) {
+      el.setAttribute('href', src);
+    }
   });
 }
 

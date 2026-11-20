@@ -45,7 +45,10 @@ const look: Record<Glyph, [string, string, string]> = {
   githubactions: ['#4fa0ff', '#1a5fd6', '#fff'],
 };
 const [top, bottom, ink] = look[name];
-const uid = `ai-${name}-${size}`;
+// Unique per instance: a gradient inside a hidden panel can't be borrowed by a visible icon.
+const seq = globalThis as { __appIconSeq?: number };
+seq.__appIconSeq = (seq.__appIconSeq ?? 0) + 1;
+const uid = `ai-${name}-${seq.__appIconSeq}`;
 const medium = name === 'medium' || name === 'blog';
 const brand = medium ? undefined : brandPaths[name];
 ---

@@ -16,6 +16,12 @@ import site from '../../content/site.json';
     <li><a class="tap" href={site.links.github} target="_blank" rel="me noopener"><AppIcon name="github" size={22} /><span>GitHub</span></a></li>
     <li><a class="tap" href={site.links.medium} target="_blank" rel="me noopener"><AppIcon name="medium" size={22} /><span>Medium</span></a></li>
   </ul>
+  <div class="contact__copy">
+    <span class="contact__copy-label">Email</span>
+    <span class="contact__copy-value">{site.email}</span>
+    <button class="contact__copy-btn" type="button" data-copy-email={site.email} hidden>Copy</button>
+    <span class="sr-only" aria-live="polite" data-copy-status></span>
+  </div>
   <div class="contact__actions">
     <a class="btn" href="/Rakibul-Islam-CV.pdf" download>Download CV</a>
     <a class="btn" href="/rakibul-islam.vcf" download>Save contact</a>
@@ -69,6 +75,41 @@ import site from '../../content/site.json';
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+  .contact__copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2px 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: var(--hover);
+  }
+  .contact__copy-label {
+    grid-column: 1;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .contact__copy-value {
+    grid-column: 1;
+    font-size: 13.5px;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .contact__copy-btn {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--tile);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--line) inset;
+    cursor: pointer;
+  }
   .contact__actions {
     margin-top: auto;
     display: grid;
@@ -83,4 +124,21 @@ import site from '../../content/site.json';
 <script>
   import { applyLook, savedLook } from '../../scripts/look';
   applyLook(savedLook());
+
+  // The Copy button needs the Clipboard API (https or localhost); without it the button stays hidden.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach((btn) => {
+    if (!navigator.clipboard) return;
+    btn.hidden = false;
+    const status = btn.parentElement!.querySelector('[data-copy-status]')!;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copyEmail!);
+        btn.textContent = 'Copied';
+        status.textContent = 'Email address copied';
+        window.setTimeout(() => (btn.textContent = 'Copy'), 1800);
+      } catch {
+        status.textContent = 'Could not copy. The address is shown above.';
+      }
+    });
+  });
 </script>

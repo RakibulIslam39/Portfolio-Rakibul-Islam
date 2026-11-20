@@ -1,0 +1,132 @@
+---
+import Tile from '../Tile.astro';
+import site from '../../content/site.json';
+
+/* "Book a QA chat", styled as the macOS Calendar "Up Next" widget. It shows the visitor's
+ * today, then the next three working days in Dhaka (Sunday to Thursday) as free 30-minute
+ * slots. Each slot is an email link with the day already in the subject. */
+---
+
+<Tile id="book" size="1x1" area="book" class="book">
+  <div class="cal" data-cal data-email={site.email}>
+    <p class="cal__day" data-cal-weekday>Today</p>
+    <p class="cal__date" data-cal-date></p>
+    <h2 class="cal__title">Book a QA chat</h2>
+    <ul class="cal__list" data-cal-list>
+      <li>
+        <a class="cal__slot" href={`mailto:${site.email}?subject=${encodeURIComponent('QA chat (via your portfolio)')}`}>
+          <strong>Open slot · 30 min</strong>
+          <span>Pick a day by email</span>
+        </a>
+      </li>
+    </ul>
+    <p class="cal__foot">Free video call · test strategy, Playwright or CI</p>
+  </div>
+</Tile>
+
+<style>
+  .cal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .cal__day {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ff453a;
+  }
+  :global([data-theme='light']) .cal__day {
+    color: #d70015;
+  }
+  .cal__date {
+    margin: 0;
+    min-height: 1em;
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--text);
+  }
+  .cal__title {
+    margin: 10px 0 8px;
+    font-size: 14px;
+    letter-spacing: 0;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .cal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .cal__slot {
+    display: grid;
+    gap: 1px;
+    min-height: var(--tap);
+    padding: 6px 10px;
+    border-left: 3px solid var(--pass);
+    border-radius: 6px;
+    background: var(--pass-soft);
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  .cal__slot:hover {
+    background: color-mix(in srgb, var(--pass) 24%, transparent);
+  }
+  .cal__slot strong {
+    font-size: 13px;
+    color: var(--text);
+  }
+  .cal__slot span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .cal__slot.is-sent strong::after {
+    content: ' ✓ requested';
+    color: var(--pass);
+  }
+  .cal__foot {
+    margin: auto 0 0;
+    padding-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-cal]').forEach((cal) => {
+    const now = new Date();
+    cal.querySelector('[data-cal-weekday]')!.textContent = now.toLocaleDateString('en-GB', { weekday: 'long' });
+    cal.querySelector('[data-cal-date]')!.textContent = String(now.getDate());
+
+    // The next three working days in Dhaka (Bangladesh works Sunday to Thursday).
+    const email = cal.dataset.email!;
+    const dhakaDay = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', weekday: 'short' });
+    const days: Date[] = [];
+    const d = new Date(now);
+    while (days.length < 3) {
+      d.setDate(d.getDate() + 1);
+      if (!['Fri', 'Sat'].includes(dhakaDay.format(d))) days.push(new Date(d));
+    }
+    const list = cal.querySelector<HTMLElement>('[data-cal-list]')!;
+    const template = list.querySelector('li')!;
+    list.replaceChildren(
+      ...days.map((day) => {
+        const long = day.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Dhaka' });
+        const short = day.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Dhaka' });
+        const subject = `QA chat: ${long} (via your portfolio)`;
+        const body = `Hi Rakibul,\n\nI'd like the open slot on ${long}. Here's what I'm working on:\n\n`;
+        const li = template.cloneNode(true) as HTMLLIElement;
+        const a = li.querySelector('a')!;
+        a.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        a.querySelector('span')!.textContent = `${short} · Dhaka time`;
+        a.addEventListener('click', () => a.classList.add('is-sent'));
+        return li;
+      }),
+    );
+  });
+</script>

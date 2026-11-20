@@ -1,0 +1,353 @@
+---
+import Tile from '../Tile.astro';
+
+/* Career, as a little Apple Freeform board: sticky notes over a timeline from 2018 to now.
+ * Drag the background to look around, drag a note to move it. Moves are kept in this browser
+ * (localStorage) until "Reset". Everything is also a plain list for screen readers. */
+const Y0 = 2018;
+const PX = 170; // pixels per year
+const x = (year: number, month = 1) => 40 + (year - Y0 + (month - 1) / 12) * PX;
+const years = Array.from({ length: 2027 - Y0 + 1 }, (_, i) => Y0 + i);
+
+const bars = [
+  { label: 'BSc in CSE · BUBT', from: x(2018, 6), to: x(2022, 12), tone: 'edu' },
+  { label: 'Edutechs', from: x(2023, 3), to: x(2023, 8), tone: 'job' },
+  { label: 'Zaimah', from: x(2023, 12), to: x(2024, 4), tone: 'job' },
+  { label: 'WPPOOL', from: x(2024, 10), to: x(2026, 12), tone: 'now' },
+];
+
+const notes = [
+  { id: 'bubt', x: x(2018, 9), y: 30, tone: 'yellow', title: 'Started CSE at BUBT', body: 'Jun 2018. The Software Testing & QA course hooked me.' },
+  { id: 'js', x: x(2021, 9), y: 20, tone: 'blue', title: 'JavaScript + MySQL', body: '3 Udemy courses, early 2022' },
+  { id: 'traffic', x: x(2022, 5), y: 108, tone: 'green', title: 'Capstone: traffic flow', body: 'LSTM vs GRU vs SAEs. R² ≈ 0.94' },
+  { id: 'edu', x: x(2023, 1), y: 18, tone: 'pink', title: 'Software QA Engineer', body: 'Edutechs · test plans, first automation' },
+  { id: 'tau', x: x(2023, 6), y: 112, tone: 'blue', title: 'Playwright courses', body: '3 Test Automation University certificates' },
+  { id: 'zaimah', x: x(2023, 12), y: 26, tone: 'pink', title: 'SQA Engineer', body: 'Zaimah · Postman API + JMeter load tests' },
+  { id: 'wppool', x: x(2024, 10), y: 104, tone: 'yellow', title: 'Jr. SQA Engineer', body: 'WPPOOL · 7 WordPress plugins' },
+  { id: 'flexorder', x: x(2025, 4), y: 14, tone: 'green', title: 'FlexOrder E2E', body: '38 tests, 100% pass, CI on every commit' },
+  { id: 'medium', x: x(2025, 11), y: 110, tone: 'blue', title: 'First blog post', body: 'Bulk stock sync with Google Sheets' },
+  { id: 'now', x: x(2026, 6), y: 30, tone: 'yellow', title: 'Now', body: 'Open to QA Automation / SDET roles' },
+];
+const width = x(2027, 6);
+---
+
+<Tile id="timeline" size="2x1" area="tl" flush class="career">
+  <section class="ff" aria-labelledby="career-title" data-ff>
+    <header class="ff__bar">
+      <span class="ff__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <h2 class="ff__title" id="career-title">Career</h2>
+      <span class="ff__hint" aria-hidden="true">Drag to explore</span>
+      <button class="ff__reset" type="button" data-ff-reset>Reset</button>
+    </header>
+    <div class="ff__board" data-ff-board tabindex="0" role="group" aria-label="Career board. Use the left and right arrow keys to move along the timeline.">
+      <div class="ff__world" data-ff-world style={`width:${width}px`}>
+        <div class="ff__axis" aria-hidden="true">
+          {
+            years.map((y) => (
+              <span class="ff__year" style={`left:${x(y)}px`}>
+                {y}
+              </span>
+            ))
+          }
+          {
+            bars.map((b) => (
+              <span class:list={['ff__bar-role', `ff__bar-role--${b.tone}`]} style={`left:${b.from}px;width:${b.to - b.from}px`}>
+                {b.label}
+              </span>
+            ))
+          }
+        </div>
+        <ol class="ff__notes">
+          {
+            notes.map((n, i) => (
+              <li
+                class:list={['ff__note', `ff__note--${n.tone}`]}
+                style={`left:${n.x}px;top:${n.y}px;--tilt:${((i % 3) - 1) * 1.5}deg`}
+                data-ff-note={n.id}
+              >
+                <strong>{n.title}</strong>
+                <span>{n.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+</Tile>
+
+<style>
+  .ff {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 360px;
+  }
+  .ff__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ff__lights {
+    display: flex;
+    gap: 7px;
+  }
+  .ff__lights i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff5f57;
+  }
+  .ff__lights i:nth-child(2) {
+    background: #febc2e;
+  }
+  .ff__lights i:nth-child(3) {
+    background: #28c840;
+  }
+  .ff__title {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 0;
+  }
+  .ff__hint {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ff__reset {
+    margin-left: auto;
+    min-height: 28px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--hover);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ff__board {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;
+    background-color: color-mix(in srgb, var(--text) 2%, transparent);
+    background-image: radial-gradient(color-mix(in srgb, var(--text) 16%, transparent) 1px, transparent 1.2px);
+    background-size: 18px 18px;
+  }
+  .ff__board.is-panning {
+    cursor: grabbing;
+  }
+  .ff__world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    will-change: transform;
+  }
+  .ff__axis {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    height: 46px;
+    border-top: 1.5px solid color-mix(in srgb, var(--text) 30%, transparent);
+  }
+  .ff__year {
+    position: absolute;
+    top: 6px;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .ff__year::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -11px;
+    width: 1.5px;
+    height: 8px;
+    background: color-mix(in srgb, var(--text) 30%, transparent);
+  }
+  .ff__bar-role {
+    position: absolute;
+    top: 24px;
+    height: 16px;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    line-height: 16px;
+    font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ff__bar-role--edu {
+    background: #5b3fe0;
+  }
+  .ff__bar-role--job {
+    background: #b8430b;
+  }
+  .ff__bar-role--now {
+    background: #06713f;
+  }
+  .ff__notes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ff__note {
+    position: absolute;
+    width: 140px;
+    display: grid;
+    gap: 4px;
+    padding: 10px 11px 12px;
+    border-radius: 3px;
+    color: #1d1d1f;
+    font-size: 12px;
+    line-height: 1.35;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 0.08), 0 6px 14px -6px rgb(0 0 0 / 0.35);
+    transform: rotate(var(--tilt));
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .ff__note.is-dragging {
+    cursor: grabbing;
+    z-index: 2;
+    transform: rotate(0) scale(1.04);
+    box-shadow: 0 16px 30px -10px rgb(0 0 0 / 0.45);
+  }
+  .ff__note strong {
+    font-size: 13px;
+  }
+  .ff__note--yellow {
+    background: #ffe680;
+  }
+  .ff__note--green {
+    background: #bff0c2;
+  }
+  .ff__note--pink {
+    background: #ffc9d9;
+  }
+  .ff__note--blue {
+    background: #c8e2ff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ff]').forEach((ff) => {
+    const board = ff.querySelector<HTMLElement>('[data-ff-board]')!;
+    const world = ff.querySelector<HTMLElement>('[data-ff-world]')!;
+    const KEY = 'career-board';
+    const home = new Map<string, { x: number; y: number }>();
+    const notes = Array.from(world.querySelectorAll<HTMLElement>('[data-ff-note]'));
+    notes.forEach((n) => home.set(n.dataset.ffNote!, { x: parseFloat(n.style.left), y: parseFloat(n.style.top) }));
+
+    // Start scrolled to the most recent years, like opening the board where you left off.
+    const minX = () => Math.min(0, board.clientWidth - world.offsetWidth);
+    let panX = minX();
+    const applyPan = () => {
+      panX = Math.max(minX(), Math.min(0, panX));
+      world.style.transform = `translateX(${panX}px)`;
+    };
+
+    const save = () => {
+      const moved: Record<string, { x: number; y: number }> = {};
+      notes.forEach((n) => {
+        const h = home.get(n.dataset.ffNote!)!;
+        const p = { x: parseFloat(n.style.left), y: parseFloat(n.style.top) };
+        if (p.x !== h.x || p.y !== h.y) moved[n.dataset.ffNote!] = p;
+      });
+      try {
+        if (Object.keys(moved).length) localStorage.setItem(KEY, JSON.stringify(moved));
+        else localStorage.removeItem(KEY);
+      } catch {
+        /* storage blocked: moves just aren't kept */
+      }
+    };
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Record<string, { x: number; y: number }>;
+      notes.forEach((n) => {
+        const p = saved[n.dataset.ffNote!];
+        if (p) {
+          n.style.left = `${p.x}px`;
+          n.style.top = `${p.y}px`;
+        }
+      });
+    } catch {
+      /* ignore broken data */
+    }
+    applyPan();
+    new ResizeObserver(applyPan).observe(board);
+
+    ff.querySelector('[data-ff-reset]')!.addEventListener('click', () => {
+      notes.forEach((n) => {
+        const h = home.get(n.dataset.ffNote!)!;
+        n.style.left = `${h.x}px`;
+        n.style.top = `${h.y}px`;
+      });
+      panX = minX();
+      applyPan();
+      save();
+    });
+
+    // One pointer handler for both: on a note it moves the note, on the board it pans.
+    board.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const note = (e.target as Element).closest<HTMLElement>('[data-ff-note]');
+      const sx = e.clientX;
+      const sy = e.clientY;
+      const start = note ? { x: parseFloat(note.style.left), y: parseFloat(note.style.top) } : { x: panX, y: 0 };
+      let moved = false;
+      board.setPointerCapture(e.pointerId);
+      (note ?? board).classList.add(note ? 'is-dragging' : 'is-panning');
+      const move = (ev: PointerEvent) => {
+        const dx = ev.clientX - sx;
+        const dy = ev.clientY - sy;
+        if (!moved && Math.hypot(dx, dy) < 3) return;
+        moved = true;
+        if (note) {
+          const maxY = board.clientHeight - note.offsetHeight - 8;
+          note.style.left = `${Math.max(0, Math.min(world.offsetWidth - note.offsetWidth, start.x + dx))}px`;
+          note.style.top = `${Math.max(0, Math.min(maxY, start.y + dy))}px`;
+        } else {
+          panX = start.x + dx;
+          applyPan();
+        }
+      };
+      const up = () => {
+        board.removeEventListener('pointermove', move);
+        board.removeEventListener('pointerup', up);
+        board.removeEventListener('pointercancel', up);
+        (note ?? board).classList.remove('is-dragging', 'is-panning');
+        if (note && moved) save();
+      };
+      board.addEventListener('pointermove', move);
+      board.addEventListener('pointerup', up);
+      board.addEventListener('pointercancel', up);
+    });
+
+    board.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      panX += e.key === 'ArrowLeft' ? 120 : -120;
+      applyPan();
+    });
+
+    // Trackpad / wheel sideways scrolling pans the board too.
+    board.addEventListener(
+      'wheel',
+      (e) => {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        panX -= e.deltaX;
+        applyPan();
+      },
+      { passive: false },
+    );
+  });
+</script>

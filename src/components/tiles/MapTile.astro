@@ -2,32 +2,69 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
+import map from '../../data/findmy.json';
+
+/* Find My: Rakibul's pin walks a loop around Road No. 5, Rupnagar Road (Dhaka 1216).
+ * Streets come from OpenStreetMap (src/data/findmy.json); the walk is drawn in code. */
+const [x0, y0] = map.route[0] as [number, number, string];
+const view = { x: 220, y: 204, w: 250, h: 250 };
+const label = (a: [number, number], b: [number, number]) => {
+  const ang = (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
+  return ang > 90 || ang < -90 ? ang + 180 : ang;
+};
 ---
 
-<Tile id="map" size="1x1" area="map" class="map" flush>
+<Tile id="map" size="1x1" area="map" class="findmy" flush>
   <div class="map__canvas" data-map>
-    <svg class="map__svg" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" data-map-svg>
-      <rect width="240" height="240" class="m-land"></rect>
-      <path class="m-river" d="M-10 170 C40 150 70 190 110 175 S170 120 250 135" />
-      <path class="m-river m-river--thin" d="M120 -10 C110 40 140 70 130 110 S150 160 140 250" />
-      <g class="m-road">
-        <path d="M0 60 H240 M0 120 H240 M60 0 V240 M180 0 V240 M20 0 L230 230 M0 210 L210 0" />
+    <svg
+      class="map__svg"
+      viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+      data-map-svg
+      data-zoom="1"
+    >
+      <rect x="-200" y="-200" width="1100" height="1100" class="m-land"></rect>
+      {map.parks.map((d) => <path class="m-park" d={d} />)}
+      {map.water.map((d) => <path class="m-water" d={d} />)}
+      {map.streams.map((d) => <path class="m-stream" d={d} />)}
+      {map.roads.filter((r) => r[0] !== 'm').map((r) => <path class:list={['m-road', `m-road--${r[0]}`]} d={r[1]} />)}
+      {map.roads.filter((r) => r[0] === 'm').map((r) => <path class="m-road m-road--m" d={r[1]} />)}
+      <path class="m-route" d={'M' + map.route.map((p) => `${p[0]} ${p[1]}`).join('L')} />
+      <text class="m-label m-label--main" transform={`translate(258 345) rotate(${label([297, 395], [268, 291])})`}>Rupnagar Rd</text>
+      <text class="m-label" transform={`translate(356 330) rotate(${label([287, 359], [423, 318])})`}>Road No. 5</text>
+      <g class="m-pin" data-pin transform={`translate(${x0} ${y0})`}>
+        <circle class="m-pin__ring" r="9"></circle>
+        <circle r="7.2" fill="#fff"></circle>
+        <clipPath id="pin-clip"><circle r="6.2"></circle></clipPath>
+        <image
+          data-me
+          href="/portrait/photo-192.webp"
+          data-photo="/portrait/photo-192.webp"
+          data-avatar="/portrait/avatar-192.webp"
+          x="-6.2"
+          y="-6.2"
+          width="12.4"
+          height="12.4"
+          clip-path="url(#pin-clip)"
+          preserveAspectRatio="xMidYMid slice"
+        ></image>
       </g>
-      <g class="m-park"><rect x="150" y="40" width="40" height="28" rx="6"></rect><rect x="30" y="80" width="26" height="22" rx="6"></rect></g>
     </svg>
-    <div class="map__pin" aria-hidden="true"><span></span></div>
     <div class="map__zoom">
       <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
       <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
     </div>
+    <a class="map__credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
   </div>
   <div class="map__label">
     <AppIcon name="map" />
     <div>
-      <strong>{site.location}</strong>
-      <span>Remote · {site.timezone}</span>
+      <strong>{site.firstName} · <span data-street>Road No. 5</span></strong>
+      <span>Rupnagar, Dhaka 1216 · {site.timezone}</span>
     </div>
   </div>
+  <script type="application/json" data-route set:html={JSON.stringify(map.route)} />
 </Tile>
 
 <style>
@@ -46,59 +83,105 @@ import site from '../../content/site.json';
     transition: transform 0.45s var(--ease-arrive);
   }
   .m-land {
-    fill: #1f2a22;
+    fill: #1c2026;
   }
-  .m-river {
+  .m-park {
+    fill: #1f3527;
+  }
+  .m-water {
+    fill: #17324a;
+  }
+  .m-stream {
     fill: none;
-    stroke: #1f4f73;
-    stroke-width: 16;
+    stroke: #17324a;
+    stroke-width: 6;
     stroke-linecap: round;
   }
-  .m-river--thin {
-    stroke-width: 8;
-  }
-  .m-road path {
+  .m-road {
     fill: none;
-    stroke: #3a463e;
-    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke: #353b45;
+    stroke-width: 7;
   }
-  .m-park rect {
-    fill: #27452f;
+  .m-road--s,
+  .m-road--f {
+    stroke-width: 3.5;
+    stroke: #2c3139;
   }
-  :global([data-theme='light']) .m-land {
-    fill: #eef1ea;
+  .m-road--f {
+    stroke-dasharray: 3 4;
   }
-  :global([data-theme='light']) .m-river {
-    stroke: #a9d2f2;
+  .m-road--m {
+    stroke: #6b5a33;
+    stroke-width: 11;
   }
-  :global([data-theme='light']) .m-road path {
-    stroke: #ffffff;
+  .m-route {
+    fill: none;
+    stroke: #3a8bff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 2 6;
+    opacity: 0.85;
   }
-  :global([data-theme='light']) .m-park rect {
-    fill: #cfe8c9;
+  .m-label {
+    font: 600 9px/1 var(--font-sans, system-ui);
+    fill: #aeb4bf;
+    paint-order: stroke;
+    stroke: #1c2026;
+    stroke-width: 3px;
+    text-anchor: middle;
   }
-  .map__pin {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
-    border-radius: 50%;
-    background: var(--link);
-    border: 3px solid #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  .m-label--main {
+    font-size: 10px;
+    fill: #e0c27a;
   }
-  .map__pin span {
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    border: 2px solid var(--link);
+  .m-pin__ring {
+    fill: #3a8bff;
+    opacity: 0.35;
+    transform-origin: 0 0;
     animation: ping 2s var(--ease-travel) infinite;
   }
+  .m-pin {
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5));
+  }
+  :global([data-theme='light']) .m-land {
+    fill: #f2efe9;
+  }
+  :global([data-theme='light']) .m-park {
+    fill: #cfe8c9;
+  }
+  :global([data-theme='light']) .m-water {
+    fill: #aad3f0;
+  }
+  :global([data-theme='light']) .m-stream {
+    stroke: #aad3f0;
+  }
+  :global([data-theme='light']) .m-road {
+    stroke: #ffffff;
+  }
+  :global([data-theme='light']) .m-road--s,
+  :global([data-theme='light']) .m-road--f {
+    stroke: #e3ded4;
+  }
+  :global([data-theme='light']) .m-road--m {
+    stroke: #f7d58a;
+  }
+  :global([data-theme='light']) .m-label {
+    fill: #5d6470;
+    stroke: #f2efe9;
+  }
+  :global([data-theme='light']) .m-label--main {
+    fill: #8a6a1f;
+  }
   @keyframes ping {
+    from {
+      transform: scale(1);
+      opacity: 0.45;
+    }
     to {
-      transform: scale(3);
+      transform: scale(2.2);
       opacity: 0;
     }
   }
@@ -127,6 +210,20 @@ import site from '../../content/site.json';
   .map__zoom button + button {
     border-top: 1px solid var(--line);
   }
+  .map__credit {
+    position: absolute;
+    left: 8px;
+    bottom: 6px;
+    font-size: 10px;
+    color: var(--muted);
+    text-decoration: none;
+    background: var(--glass);
+    padding: 0 6px;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+  }
   .map__label {
     display: flex;
     align-items: center;
@@ -142,11 +239,21 @@ import site from '../../content/site.json';
   .map__label span {
     color: var(--muted);
   }
+  .map__label strong span {
+    color: var(--text);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .m-pin__ring {
+      animation: none;
+    }
+  }
 </style>
 
 <script>
+  import { applyLook, savedLook } from '../../scripts/look';
+
   document.querySelectorAll<HTMLElement>('[data-map]').forEach((map) => {
-    const svg = map.querySelector<SVGElement>('[data-map-svg]')!;
+    const svg = map.querySelector<SVGSVGElement>('[data-map-svg]')!;
     let zoom = 1;
     map.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) =>
       b.addEventListener('click', () => {
@@ -155,5 +262,38 @@ import site from '../../content/site.json';
         svg.dataset.zoom = String(zoom);
       }),
     );
+
+    // The walk: the pin moves along the route at a steady pace, one loop every 45 s.
+    const tile = map.closest('.tile')!;
+    const route = JSON.parse(tile.querySelector('[data-route]')!.textContent!) as [number, number, string][];
+    const pin = svg.querySelector<SVGGElement>('[data-pin]')!;
+    const street = tile.querySelector<HTMLElement>('[data-street]')!;
+    const legs = route.slice(1).map((p, i) => {
+      const a = route[i]!;
+      return { a, b: p, len: Math.hypot(p[0] - a[0], p[1] - a[1]), name: p[2] };
+    });
+    const total = legs.reduce((n, l) => n + l.len, 0);
+    const LOOP = 45000;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let visible = true;
+    new IntersectionObserver(([e]) => (visible = !!e?.isIntersecting)).observe(map);
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      if (visible && !document.hidden) {
+        let d = (((now - t0) % LOOP) / LOOP) * total;
+        for (const leg of legs) {
+          if (d <= leg.len) {
+            const k = leg.len ? d / leg.len : 0;
+            pin.setAttribute('transform', `translate(${(leg.a[0] + (leg.b[0] - leg.a[0]) * k).toFixed(1)} ${(leg.a[1] + (leg.b[1] - leg.a[1]) * k).toFixed(1)})`);
+            if (street.textContent !== leg.name) street.textContent = leg.name;
+            break;
+          }
+          d -= leg.len;
+        }
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   });
+  applyLook(savedLook());
 </script>

@@ -1,0 +1,262 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+import site from '../../content/site.json';
+import { getCollection } from 'astro:content';
+
+/* "Where to find me": the macOS app switcher (Cmd+Tab). It cycles through the apps by itself;
+ * hovering, tapping or tabbing to an app shows that app's link cards above the dock. */
+const posts = (await getCollection('writing')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const certs = [...site.certifications].sort((a, b) => b.date.localeCompare(a.date));
+const topRepos = site.repos.filter((r) => r.case).slice(0, 3);
+
+type Card = { title: string; sub: string; href: string };
+const apps: { id: string; label: string; icon: 'github' | 'linkedin' | 'medium' | 'gmail' | 'certificates'; cards: Card[] }[] = [
+  {
+    id: 'github',
+    label: 'GitHub',
+    icon: 'github',
+    cards: [
+      ...topRepos.map((r) => ({ title: r.name, sub: r.language, href: r.url })),
+      { title: `All ${site.repos.length} repositories`, sub: 'github.com/RakibulIslam39', href: `${site.links.github}?tab=repositories` },
+    ],
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'linkedin',
+    cards: [
+      { title: site.name, sub: `${site.experience[0]!.role} at ${site.experience[0]!.company}`, href: site.links.linkedin },
+      { title: 'Experience', sub: `${site.experience.length} QA roles since 2023`, href: site.links.linkedin },
+    ],
+  },
+  {
+    id: 'medium',
+    label: 'Medium',
+    icon: 'medium',
+    cards: [
+      ...posts.slice(0, 2).map((p) => ({ title: p.data.title, sub: `${p.data.minutes ?? ''} min read`.trim(), href: p.data.url ?? `/writing/${p.id}/` })),
+      { title: 'All posts', sub: 'medium.com/@rakib.cse.bubt', href: site.links.medium },
+    ],
+  },
+  {
+    id: 'mail',
+    label: 'Mail',
+    icon: 'gmail',
+    cards: [
+      { title: site.email, sub: 'Usually replies within a day', href: `mailto:${site.email}` },
+      { title: 'Download my CV', sub: 'PDF', href: '/Rakibul-Islam-CV.pdf' },
+    ],
+  },
+  {
+    id: 'certs',
+    label: 'Certificates',
+    icon: 'certificates',
+    cards: [
+      ...certs.slice(0, 2).map((c) => ({ title: c.title, sub: c.issuer, href: '/certificates/' })),
+      { title: `All ${certs.length} certificates`, sub: 'Udemy · Test Automation University', href: '/certificates/' },
+    ],
+  },
+];
+---
+
+<Tile id="switcher" size="2x1" area="switch" app="Where to find me" class="switcher">
+  <AppIcon name="contact" slot="icon" />
+  <div class="sw" data-switcher>
+    <div class="sw__panels">
+      {
+        apps.map((a, i) => (
+          <div class="sw__panel" role="tabpanel" id={`sw-panel-${a.id}`} aria-labelledby={`sw-tab-${a.id}`} hidden={i !== 0} data-sw-panel>
+            {a.cards.map((c) => (
+              <a class="sw__card" href={c.href} target={/^https?:/.test(c.href) ? '_blank' : undefined} rel={/^https?:/.test(c.href) ? 'noopener' : undefined}>
+                <AppIcon name={a.icon} size={22} />
+                <span class="sw__card-text">
+                  <span class="sw__card-title">{c.title}</span>
+                  <span class="sw__card-sub">{c.sub}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+    <div class="sw__dock" role="tablist" aria-label="Apps">
+      {
+        apps.map((a, i) => (
+          <button
+            class="sw__app"
+            type="button"
+            role="tab"
+            id={`sw-tab-${a.id}`}
+            aria-controls={`sw-panel-${a.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-sw-tab
+          >
+            <AppIcon name={a.icon} size={48} />
+            <span class="sr-only">{a.label}</span>
+            <span class="sw__tip" aria-hidden="true">{a.label}</span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</Tile>
+
+<style>
+  .sw {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100%;
+  }
+  .sw__panels {
+    flex: 1;
+    min-height: 0;
+  }
+  .sw__panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+    gap: 8px;
+    animation: sw-in 0.3s var(--ease-arrive);
+  }
+  .sw__panel[hidden] {
+    display: none;
+  }
+  @keyframes sw-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .sw__card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--tap);
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--hover);
+    box-shadow: 0 0 0 1px var(--line) inset;
+    text-decoration: none;
+    min-width: 0;
+    transition: box-shadow 0.2s, transform 0.2s var(--ease-arrive);
+  }
+  .sw__card:hover {
+    box-shadow: 0 0 0 1px var(--outline) inset;
+    transform: translateY(-1px);
+  }
+  .sw__card-text {
+    display: grid;
+    min-width: 0;
+  }
+  .sw__card-title,
+  .sw__card-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sw__card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .sw__card-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .sw__dock {
+    align-self: center;
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 22px;
+    background: var(--glass);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset, var(--shadow);
+  }
+  .sw__app {
+    position: relative;
+    padding: 4px;
+    border: 0;
+    border-radius: 16px;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-arrive), background-color 0.2s;
+  }
+  .sw__app:hover {
+    transform: translateY(-3px);
+  }
+  .sw__app[aria-selected='true'] {
+    background: color-mix(in srgb, var(--text) 14%, transparent);
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--text) 30%, transparent) inset;
+  }
+  .sw__tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .sw__app:hover .sw__tip,
+  .sw__app:focus-visible .sw__tip {
+    opacity: 1;
+  }
+  @media (max-width: 479px) {
+    .sw__app :global(.app-icon) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sw__panel {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-switcher]').forEach((sw) => {
+    const tabs = Array.from(sw.querySelectorAll<HTMLButtonElement>('[data-sw-tab]'));
+    const panels = Array.from(sw.querySelectorAll<HTMLElement>('[data-sw-panel]'));
+    let current = 0;
+    const select = (i: number, focus = false) => {
+      current = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, j) => {
+        t.setAttribute('aria-selected', String(j === current));
+        t.tabIndex = j === current ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = j !== current));
+      if (focus) tabs[current]!.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('mouseenter', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') select(current + 1, true);
+        else if (e.key === 'ArrowLeft') select(current - 1, true);
+        else return;
+        e.preventDefault();
+      });
+    });
+
+    // Cycle like Cmd+Tab held down, until the visitor touches it.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let paused = false;
+    let visible = false;
+    const stop = () => (paused = true);
+    sw.addEventListener('pointerenter', stop);
+    sw.addEventListener('focusin', stop);
+    new IntersectionObserver(([e]) => (visible = !!e?.isIntersecting)).observe(sw);
+    window.setInterval(() => {
+      if (!paused && visible && !document.hidden) select(current + 1);
+    }, 3500);
+  });
+</script>

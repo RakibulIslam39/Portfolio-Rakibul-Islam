@@ -1,0 +1,271 @@
+---
+import site from '../content/site.json';
+
+/* A macOS-style iMessage notification from Rakibul. It slides in at the top right 10 s after
+ * the visitor first scrolls, once per visit (tab session). Close it with ×, Escape, or a swipe
+ * to the right. "Reply" opens a box; "Send" opens the visitor's email app with their words. Like
+ * a real Mac it slides away after 8 s unless the visitor is hovering, swiping or replying.
+ * Automated browsers (navigator.webdriver) don't get it, so it can't sit on top of a test. */
+const message = "Hey, I'm Rakibul. Need someone to break your release before your users do?";
+---
+
+<aside class="imsg" data-imsg data-email={site.email} hidden aria-labelledby="imsg-from">
+  <div class="imsg__card" data-imsg-card>
+    <img class="imsg__me" data-me src="/portrait/photo-192.webp" data-photo="/portrait/photo-192.webp" data-avatar="/portrait/avatar-192.webp" width="40" height="40" alt="" />
+    <div class="imsg__text" role="status">
+      <p class="imsg__head">
+        <strong id="imsg-from">{site.name}</strong>
+        <span>now</span>
+      </p>
+      <p class="imsg__msg">{message}</p>
+    </div>
+    <button class="imsg__close" type="button" data-imsg-close aria-label="Close notification">
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+    </button>
+    <button class="imsg__reply" type="button" data-imsg-reply>Reply</button>
+    <form class="imsg__form" data-imsg-form hidden>
+      <label class="sr-only" for="imsg-input">Your reply to {site.firstName}</label>
+      <input id="imsg-input" name="reply" type="text" autocomplete="off" placeholder="iMessage" required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</aside>
+
+<style>
+  .imsg {
+    position: fixed;
+    top: 84px;
+    right: 20px;
+    z-index: 60;
+    width: min(360px, calc(100vw - 32px));
+  }
+  .imsg[hidden] {
+    display: none;
+  }
+  .imsg__card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 4px 12px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: var(--glass);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset, 0 18px 40px -12px rgb(0 0 0 / 0.45);
+    animation: imsg-in 0.45s var(--ease-arrive);
+    touch-action: pan-y;
+  }
+  .imsg.is-leaving .imsg__card {
+    transition: transform 0.3s var(--ease-travel), opacity 0.3s;
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  @keyframes imsg-in {
+    from {
+      transform: translateX(110%);
+      opacity: 0;
+    }
+  }
+  .imsg__me {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    grid-row: span 2;
+  }
+  .imsg__head {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    margin: 0;
+    font-size: 13px;
+  }
+  .imsg__head strong {
+    color: var(--text);
+  }
+  .imsg__head span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .imsg__msg {
+    margin: 2px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--body-text);
+  }
+  .imsg__close {
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--tile);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--tile-edge), var(--shadow);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .imsg__card:hover .imsg__close,
+  .imsg__close:focus-visible {
+    opacity: 1;
+  }
+  .imsg__reply {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 6px;
+    min-height: 30px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--hover);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .imsg__form {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .imsg__form[hidden] {
+    display: none;
+  }
+  .imsg__form input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--tile);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+  }
+  .imsg__form button {
+    height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: #1677f0;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  @media (max-width: 640px) {
+    .imsg {
+      top: 16px;
+      right: 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .imsg__card {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { applyLook, savedLook } from '../scripts/look';
+
+  const box = document.querySelector<HTMLElement>('[data-imsg]');
+  const KEY = 'imsg-seen';
+  const seen = () => {
+    try {
+      return sessionStorage.getItem(KEY) === '1';
+    } catch {
+      return true;
+    }
+  };
+
+  if (box && !navigator.webdriver && !seen()) {
+    const card = box.querySelector<HTMLElement>('[data-imsg-card]')!;
+    const form = box.querySelector<HTMLFormElement>('[data-imsg-form]')!;
+    const replyBtn = box.querySelector<HTMLButtonElement>('[data-imsg-reply]')!;
+    let hideTimer = 0;
+    let busy = false;
+
+    const close = () => {
+      window.clearTimeout(hideTimer);
+      box.classList.add('is-leaving');
+      window.setTimeout(() => (box.hidden = true), 320);
+      document.removeEventListener('keydown', onKey);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    const autoHide = () => {
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => {
+        if (!busy) close();
+      }, 8000);
+    };
+    const show = () => {
+      try {
+        sessionStorage.setItem(KEY, '1');
+      } catch {
+        /* fine */
+      }
+      applyLook(savedLook());
+      box.hidden = false;
+      document.addEventListener('keydown', onKey);
+      autoHide();
+    };
+
+    card.addEventListener('pointerenter', () => (busy = true));
+    card.addEventListener('pointerleave', () => {
+      busy = !form.hidden;
+      autoHide();
+    });
+    box.querySelector('[data-imsg-close]')!.addEventListener('click', close);
+    replyBtn.addEventListener('click', () => {
+      busy = true;
+      replyBtn.hidden = true;
+      form.hidden = false;
+      form.querySelector('input')!.focus();
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = String(new FormData(form).get('reply') ?? '').trim();
+      if (text) {
+        const email = box.dataset.email!;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent('Re: your message on the portfolio')}&body=${encodeURIComponent(text)}`;
+      }
+      close();
+    });
+
+    // Swipe it away to the right.
+    let startX: number | null = null;
+    card.addEventListener('pointerdown', (e) => {
+      if ((e.target as Element).closest('button, input')) return;
+      startX = e.clientX;
+      busy = true;
+    });
+    card.addEventListener('pointermove', (e) => {
+      if (startX === null) return;
+      const dx = Math.max(0, e.clientX - startX);
+      card.style.transform = `translateX(${dx}px)`;
+    });
+    const end = (e: PointerEvent) => {
+      if (startX === null) return;
+      const dx = e.clientX - startX;
+      startX = null;
+      card.style.transform = '';
+      if (dx > 80) close();
+      else autoHide();
+    };
+    card.addEventListener('pointerup', end);
+    card.addEventListener('pointercancel', end);
+
+    // 10 seconds after the first scroll.
+    window.addEventListener('scroll', () => window.setTimeout(show, 10000), { once: true, passive: true });
+  }
+</script>

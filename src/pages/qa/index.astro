@@ -88,7 +88,7 @@ const avg = (k: (typeof categories)[number]['key']) =>
         <table>
           <caption class="sr-only">Results per test file</caption>
           <thead>
-            <tr><th scope="col">Spec file</th><th scope="col">Tests</th><th scope="col">Passed</th><th scope="col">Failed</th><th scope="col">Skipped</th><th scope="col"><span class="sr-only">Pass bar</span></th></tr>
+            <tr><th scope="col">Spec file</th><th scope="col">Tests</th><th scope="col">Passed</th><th scope="col">Failed</th><th scope="col">Flaky</th><th scope="col">Skipped</th><th scope="col"><span class="sr-only">Pass bar</span></th></tr>
           </thead>
           <tbody>
             {
@@ -98,10 +98,11 @@ const avg = (k: (typeof categories)[number]['key']) =>
                   <td>{f.total}</td>
                   <td class="ok">{f.passed}</td>
                   <td class:list={{ bad: f.failed > 0 }}>{f.failed}</td>
+                  <td>{f.flaky ?? 0}</td>
                   <td>{f.skipped}</td>
                   <td>
                     <span class="bar" aria-hidden="true">
-                      <span style={`width:${f.total - f.skipped ? Math.round((f.passed / (f.total - f.skipped)) * 100) : 0}%`} />
+                      <span style={`width:${f.total - f.skipped ? Math.round(((f.passed + (f.flaky ?? 0)) / (f.total - f.skipped)) * 100) : 0}%`} />
                     </span>
                   </td>
                 </tr>

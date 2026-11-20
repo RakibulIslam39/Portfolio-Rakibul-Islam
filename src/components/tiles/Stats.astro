@@ -1,0 +1,169 @@
+---
+import Tile from '../Tile.astro';
+import AppIcon from '../AppIcon.astro';
+
+/* Live stats, styled as the macOS Stocks widget: the site's visitor numbers in place of share
+ * prices, each compared with the same period before. Data: GET /api/stats (Cloudflare Web
+ * Analytics), asked for when the tile scrolls into view and every five minutes after. */
+const rows = [
+  { key: 'today', label: 'Visitors', sub: 'Today', vs: 'yesterday' },
+  { key: 'countries', label: 'Countries', sub: 'This week', vs: '' },
+  { key: 'week', label: 'Visitors', sub: 'This week', vs: 'prevWeek' },
+];
+---
+
+<Tile id="stats" size="1x1" area="stats" app="Live stats" href="/qa/" hrefLabel="Open the QA page with all the stats" class="stats">
+  <AppIcon name="report" slot="icon" />
+  <ul class="st" data-stats>
+    {
+      rows.map((r) => (
+        <li class="st__row" data-stat={r.key} data-vs={r.vs}>
+          <span class="st__name">
+            <strong>{r.label}</strong>
+            <span>{r.sub}</span>
+          </span>
+          <svg class="st__spark" viewBox="0 0 60 24" aria-hidden="true">
+            <path d="M0 12 H60" />
+          </svg>
+          <span class="st__num">
+            <strong data-value>–</strong>
+            <span class="st__chg" data-change hidden></span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="st__off" data-stats-off hidden>Visitor numbers are taking a break. The QA page has the rest.</p>
+</Tile>
+
+<style>
+  .st {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .st__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 46px auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .st__row + .st__row {
+    border-top: 1px solid var(--line);
+  }
+  .st__name {
+    display: grid;
+    line-height: 1.25;
+    min-width: 0;
+  }
+  .st__name strong {
+    font-size: 14px;
+    color: var(--text);
+  }
+  .st__name span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .st__spark path {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.5;
+  }
+  .st__row[data-trend='up'] .st__spark path {
+    stroke: var(--pass);
+    opacity: 1;
+  }
+  .st__row[data-trend='down'] .st__spark path {
+    stroke: #ff453a;
+    opacity: 1;
+  }
+  .st__num {
+    display: grid;
+    justify-items: end;
+    gap: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .st__num strong {
+    font-size: 17px;
+    color: var(--text);
+  }
+  .st__chg {
+    min-width: 54px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: right;
+    color: #fff;
+    background: var(--muted);
+  }
+  .st__row[data-trend='up'] .st__chg {
+    background: #0a8a52;
+  }
+  .st__row[data-trend='down'] .st__chg {
+    background: #d6362c;
+  }
+  .st__off {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  import { getJSON, type Stats } from '../../scripts/live';
+
+  const list = document.querySelector<HTMLElement>('[data-stats]');
+  const off = document.querySelector<HTMLElement>('[data-stats-off]');
+  const fmt = new Intl.NumberFormat('en-GB');
+
+  // A small made-up path from the previous value to the current one, like a Stocks sparkline.
+  const spark = (from: number, to: number) => {
+    const hi = Math.max(from, to, 1);
+    const y = (v: number) => (22 - (v / hi) * 18).toFixed(1);
+    const mid = (from + to) / 2;
+    return `M0 ${y(from)} L15 ${y(mid * 0.92)} L30 ${y(mid * 1.05)} L45 ${y((mid + to) / 2)} L60 ${y(to)}`;
+  };
+
+  const render = (s: Stats) => {
+    list!.querySelectorAll<HTMLElement>('[data-stat]').forEach((row) => {
+      const value = s[row.dataset.stat as keyof Stats] as number;
+      row.querySelector('[data-value]')!.textContent = fmt.format(value);
+      const before = row.dataset.vs ? (s[row.dataset.vs as keyof Stats] as number | undefined) : undefined;
+      const chg = row.querySelector<HTMLElement>('[data-change]')!;
+      if (typeof before === 'number') {
+        const pct = before > 0 ? ((value - before) / before) * 100 : value > 0 ? 100 : 0;
+        row.dataset.trend = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+        chg.textContent = `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
+        chg.hidden = false;
+        row.querySelector('.st__spark path')!.setAttribute('d', spark(before, value));
+      }
+    });
+  };
+
+  const load = async () => {
+    const s = await getJSON<Stats>('/api/stats');
+    if (s && typeof s.today === 'number') {
+      render(s);
+      off!.hidden = true;
+    } else {
+      off!.hidden = false;
+    }
+  };
+
+  if (list) {
+    let timer = 0;
+    new IntersectionObserver(([e]) => {
+      if (e?.isIntersecting && !timer) {
+        void load();
+        timer = window.setInterval(() => void load(), 5 * 60 * 1000);
+      }
+    }).observe(list);
+  }
+</script>

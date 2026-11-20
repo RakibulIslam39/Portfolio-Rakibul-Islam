@@ -9,7 +9,11 @@ import CiRun from '../components/tiles/CiRun.astro';
 import MapTile from '../components/tiles/MapTile.astro';
 import Contact from '../components/tiles/Contact.astro';
 import Projects from '../components/tiles/Projects.astro';
-import Timeline from '../components/tiles/Timeline.astro';
+import Career from '../components/tiles/Career.astro';
+import Switcher from '../components/tiles/Switcher.astro';
+import Stats from '../components/tiles/Stats.astro';
+import Book from '../components/tiles/Book.astro';
+import IMessage from '../components/IMessage.astro';
 import Skills from '../components/tiles/Skills.astro';
 import Plugins from '../components/tiles/Plugins.astro';
 import BugHunt from '../components/tiles/BugHunt.astro';
@@ -22,20 +26,24 @@ import Blog from '../components/tiles/Blog.astro';
   <div class="bento container" data-bento>
     <Hero />
     <Portrait />
-    <Status />
+    <MapTile />
+    <Switcher />
     <TerminalTile />
+    <Status />
     <Report />
     <CiRun />
     <Projects />
-    <Timeline />
+    <Career />
     <Skills />
-    <Certificates />
     <Blog />
-    <Contact />
+    <Certificates />
     <BugHunt />
+    <Book />
+    <Stats />
     <Plugins />
-    <MapTile />
+    <Contact />
   </div>
+  <IMessage />
 </BaseLayout>
 
 <style>
@@ -54,16 +62,18 @@ import Blog from '../components/tiles/Blog.astro';
       grid-template-areas:
         'hero hero'
         'photo map'
-        'status status'
+        'switch switch'
         'term term'
-        'ci ci'
+        'status status'
         'report report'
-        'tl tl'
+        'ci ci'
         'proj proj'
+        'tl tl'
         'skills skills'
-        'certs certs'
         'blog blog'
+        'certs certs'
         'bug bug'
+        'book stats'
         'plugins contact';
     }
     .bento > :global(.tile) {
@@ -76,13 +86,14 @@ import Blog from '../components/tiles/Blog.astro';
       grid-auto-rows: minmax(240px, auto);
       grid-template-areas:
         'hero hero photo map'
-        'hero hero status status'
-        'term term ci ci'
-        'report report tl tl'
+        'hero hero switch switch'
+        'term term status status'
+        'report report ci ci'
+        'proj proj tl tl'
         'proj proj skills skills'
-        'proj proj certs certs'
-        'blog blog plugins contact'
-        'bug bug plugins contact';
+        'blog blog certs certs'
+        'bug bug plugins contact'
+        'book stats plugins contact';
     }
   }
 </style>
