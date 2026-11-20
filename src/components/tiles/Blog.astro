@@ -267,7 +267,10 @@ const short = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month
     const rect = mail.getBoundingClientRect();
     if (rect.top < window.innerHeight) return; // already on screen at load: just show it
     mail.dataset.arriving = '';
+    let done = false;
     const arrive = () => {
+      if (done) return;
+      done = true;
       io.disconnect();
       window.removeEventListener('beforeprint', arrive);
       window.setTimeout(() => {
@@ -279,5 +282,7 @@ const short = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month
     const io = new IntersectionObserver(([e]) => e?.isIntersecting && arrive(), { threshold: 0.1 });
     io.observe(mail);
     window.addEventListener('beforeprint', arrive);
+    // Never leave the newest post folded away, even if the observer never reports in.
+    window.setTimeout(arrive, 8000);
   });
 </script>

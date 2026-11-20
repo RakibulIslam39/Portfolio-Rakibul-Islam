@@ -133,8 +133,9 @@ import Blog from '../components/tiles/Blog.astro';
       animation: none;
     }
   }
-  /* Tiles below the fold skip style, layout and paint until they come near the screen. */
-  .bento > :global(.tile:nth-child(n + 5)) {
+  /* Tiles skip style, layout and paint until they come near the screen. Only tiles with no
+     scroll-triggered script: WebKit's IntersectionObserver misses targets inside skipped content. */
+  .bento > :global(:is(#status, #report, #ci, #projects, #timeline, #skills, #certificates, #bughunt, #book, #plugins, #contact)) {
     content-visibility: auto;
     contain-intrinsic-size: auto 320px;
   }

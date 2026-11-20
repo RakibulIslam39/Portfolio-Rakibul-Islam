@@ -22,9 +22,10 @@ test.describe('edit layout', () => {
     await page.reload();
     await expect(page.locator('#hero')).toHaveAttribute('data-slot', 'portrait');
     await page.getByRole('button', { name: 'Edit layout' }).click();
+    await expect(page.locator('#hero')).toHaveAttribute('aria-roledescription', 'movable tile');
     await page.getByRole('button', { name: 'Reset layout' }).click();
-    await page.getByRole('button', { name: 'Done' }).click();
     await expect(page.locator('#hero')).toHaveAttribute('data-slot', 'hero');
+    await page.getByRole('button', { name: 'Done' }).click();
     await page.reload();
     await expect(page.locator('#hero')).not.toHaveAttribute('data-slot', 'portrait');
   });
