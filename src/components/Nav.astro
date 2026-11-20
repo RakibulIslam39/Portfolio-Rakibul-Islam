@@ -46,6 +46,11 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
         <kbd class="kbd" aria-hidden="true">⌘K</kbd>
       </button>
+      <button class="icon-btn sound-btn" type="button" data-sound-toggle aria-pressed="true">
+        <span class="sr-only">Click sounds</span>
+        <svg class="i-sound-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"></path></svg>
+        <svg class="i-sound-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"></path><path d="m16 9 6 6M22 9l-6 6"></path></svg>
+      </button>
       <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch colour theme">
         <svg class="i-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
         <svg class="i-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
@@ -62,7 +67,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     pointer-events: none;
   }
   .topbar__inner {
-    width: min(100% - 32px, var(--max));
+    width: min(100% - 32px, var(--max-wide));
     margin-inline: auto;
     display: flex;
     align-items: center;
@@ -129,6 +134,13 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     background: var(--card);
     view-transition-name: nav-pill;
   }
+  .i-sound-off,
+  :global([data-sound='off']) .i-sound-on {
+    display: none;
+  }
+  :global([data-sound='off']) .i-sound-off {
+    display: block;
+  }
   .actions {
     display: flex;
     gap: 8px;
@@ -168,6 +180,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   }
 
   @media (max-width: 640px) {
+    /* Phones: one glass pill at the bottom holding the links and the three icons. */
     .topbar {
       inset: auto 0 12px;
     }
@@ -175,20 +188,28 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     .search-btn .kbd {
       display: none;
     }
-    .actions .icon-btn {
-      height: 40px;
-      min-width: 40px;
-      padding: 0;
-    }
-    .topbar__inner {
-      justify-content: center;
-    }
     .topbar__inner {
       width: calc(100% - 16px);
-      gap: 6px;
+      max-width: 460px;
+      gap: 0;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--glass);
+      backdrop-filter: blur(16px) saturate(1.6);
+      -webkit-backdrop-filter: blur(16px) saturate(1.6);
+      border: 1px solid var(--tile-edge);
+      box-shadow: var(--shadow);
+      pointer-events: auto;
     }
     .nav {
+      flex: 1;
       min-width: 0;
+      padding: 0;
+      background: none;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     .nav ul {
       position: relative;
@@ -199,9 +220,23 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       display: none;
     }
     .nav a {
-      padding: 7px 8px;
+      padding: 8px 8px;
       font-size: 13px;
       white-space: nowrap;
+    }
+    .actions {
+      gap: 0;
+      flex: none;
+    }
+    .actions .icon-btn {
+      height: 38px;
+      min-width: 36px;
+      padding: 0;
+      background: none;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     .nav .nav__long {
       position: absolute;
@@ -218,11 +253,19 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       display: none;
     }
   }
+  /* Very small phones: the theme switch moves to the ⌘K menu to make room for the links. */
+  @media (max-width: 399px) {
+    .actions [data-theme-toggle] {
+      display: none;
+    }
+  }
 </style>
 
 <script>
   import { initTheme } from '../scripts/theme';
+  import { initSound } from '../scripts/sound';
   initTheme();
+  initSound();
   // On narrow phones the bar can scroll sideways: keep the current page in view.
   const bar = document.querySelector<HTMLElement>('.nav ul');
   const current = bar?.querySelector<HTMLElement>('a[aria-current="page"]');

@@ -45,15 +45,17 @@ test('bug hunt: finding all five bugs passes QA, reset clears it', async ({ page
   await expect(game.getByText('QA passed')).toBeHidden();
 });
 
-test('portrait switcher cycles through three styles', async ({ page }) => {
-  const btn = page.getByRole('button', { name: 'Show next portrait style' });
-  const active = btn.locator('.is-active svg');
-  await expect(active).toHaveAttribute('aria-label', 'Initials avatar');
+test('portrait switches between photo and 3D avatar and remembers it', async ({ page }) => {
+  const btn = page.getByRole('button', { name: '3D avatar' });
+  await expect(btn).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.portrait__img--photo')).toHaveCSS('opacity', '1');
   await btn.click();
-  await expect(active).toHaveAttribute('aria-label', 'Pixel-art avatar');
-  await btn.click();
-  await btn.click();
-  await expect(active).toHaveAttribute('aria-label', 'Initials avatar');
+  await expect(btn).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-look', 'avatar');
+  await page.reload();
+  await expect(page.getByRole('button', { name: '3D avatar' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '3D avatar' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-look', 'photo');
 });
 
 test('map zoom is clamped between 1x and 2.5x', async ({ page }) => {

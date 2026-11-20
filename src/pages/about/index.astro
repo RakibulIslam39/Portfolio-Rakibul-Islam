@@ -21,7 +21,8 @@ const groups = Object.entries(
 
 <BaseLayout title="About | Rakibul Islam" description={`About ${site.name}: ${site.summary}`}>
   <div class="container">
-    <header class="page-head">
+    <header class="page-head about-head">
+      <img class="about-head__me" data-me src="/portrait/photo-192.webp" data-photo="/portrait/photo-192.webp" data-avatar="/portrait/avatar-192.webp" width="96" height="96" alt="" decoding="async" />
       <h1>About {site.firstName}</h1>
       <p>{site.role} in {site.location}. Pick a note to read more.</p>
     </header>
@@ -156,7 +157,20 @@ const groups = Object.entries(
   </div>
 </BaseLayout>
 
+<script>
+  import { applyLook, savedLook } from '../../scripts/look';
+  applyLook(savedLook());
+</script>
+
 <style>
+  .about-head__me {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 16px;
+    box-shadow: 0 0 0 3px var(--tile), 0 0 0 4px var(--line);
+  }
   .notes {
     border-radius: var(--radius);
     background: var(--tile);
@@ -180,7 +194,14 @@ const groups = Object.entries(
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: var(--outline);
+    background: #ff5f57;
+    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.2) inset;
+  }
+  .notes__lights i:nth-child(2) {
+    background: #febc2e;
+  }
+  .notes__lights i:nth-child(3) {
+    background: #28c840;
   }
   .notes__app {
     font-weight: 600;

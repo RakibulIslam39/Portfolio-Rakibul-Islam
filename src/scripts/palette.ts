@@ -1,3 +1,4 @@
+import { setSound } from './sound';
 import { toggleTheme } from './theme';
 
 /** Cmd/Ctrl+K command palette: filter, arrow-key selection, Enter to run. */
@@ -50,6 +51,11 @@ export function initPalette(): void {
     const { href, action } = li.dataset;
     if (action === 'toggle-theme') {
       toggleTheme();
+      dialog.close();
+    } else if (action === 'toggle-sound') {
+      const on = document.documentElement.dataset.sound === 'off';
+      setSound(on);
+      status.textContent = on ? 'Click sounds on' : 'Click sounds off';
       dialog.close();
     } else if (action === 'copy-email') {
       const email = dialog.dataset.email ?? '';

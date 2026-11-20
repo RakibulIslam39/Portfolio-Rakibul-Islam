@@ -1,58 +1,37 @@
 ---
 import Tile from '../Tile.astro';
-/*
- * Placeholder portraits. TODO: replace with your own photo and avatar
- * (put files in /public/portraits/ and swap the <svg> for <img>).
- */
-const pixels = [
-  '..xxxxxx..',
-  '.xxxxxxxx.',
-  'xxhhhhhhxx',
-  'xhssssssh.',
-  '.sseesees.',
-  '.ssssssss.',
-  '.sssmmsss.',
-  '..ssssss..',
-  '.bbbbbbbb.',
-  'bbbbbbbbbb',
-];
-const colour: Record<string, string> = { x: '#2a2018', h: '#3a2b20', s: '#c98d66', e: '#1b1b1f', m: '#9a4f3c', b: '#2fd08a' };
+import site from '../../content/site.json';
 ---
 
 <Tile id="portrait" size="1x1" area="photo" class="portrait" flush>
-  <button class="portrait__stage" type="button" data-portrait>
-    <span class="sr-only">Show next portrait style</span>
-    <figure class="portrait__frame is-active" data-portrait-frame aria-hidden="true">
-      <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Initials avatar">
-        <defs>
-          <linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fd08a"></stop><stop offset="1" stop-color="#0a84ff"></stop></linearGradient>
-        </defs>
-        <rect width="200" height="200" fill="url(#pg1)"></rect>
-        <text x="100" y="122" text-anchor="middle" font-size="64" font-weight="700" fill="#fff" font-family="Mona Sans Variable, sans-serif" letter-spacing="-2">RI</text>
+  <div class="portrait__stage" data-portrait>
+    <img
+      class="portrait__img portrait__img--photo"
+      src="/portrait/photo.webp"
+      width="800"
+      height="800"
+      alt={site.name}
+      fetchpriority="high"
+      decoding="async"
+    />
+    <img
+      class="portrait__img portrait__img--avatar"
+      src="/portrait/avatar.webp"
+      width="800"
+      height="800"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+    <span class="portrait__glow" aria-hidden="true"></span>
+    <button class="portrait__switch" type="button" data-portrait-switch aria-pressed="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"></path><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"></path>
       </svg>
-    </figure>
-    <figure class="portrait__frame" data-portrait-frame aria-hidden="true">
-      <svg viewBox="0 0 10 10" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Pixel-art avatar" shape-rendering="crispEdges">
-        <rect width="10" height="10" fill="#1d2a3a"></rect>
-        {
-          pixels.flatMap((row, y) =>
-            row.split('').map((c, x) => (c === '.' ? null : <rect x={x} y={y} width="1" height="1" fill={colour[c]} />)),
-          )
-        }
-      </svg>
-    </figure>
-    <figure class="portrait__frame" data-portrait-frame aria-hidden="true">
-      <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrated avatar placeholder">
-        <rect width="200" height="200" fill="#26262b"></rect>
-        <circle cx="100" cy="82" r="38" fill="#c98d66"></circle>
-        <path d="M60 70c4-30 76-34 80 0-12-10-24-14-40-14s-28 4-40 14z" fill="#2a2018"></path>
-        <path d="M34 200c8-44 34-64 66-64s58 20 66 64z" fill="#2fd08a"></path>
-        <circle cx="86" cy="84" r="4" fill="#1b1b1f"></circle><circle cx="114" cy="84" r="4" fill="#1b1b1f"></circle>
-        <path d="M88 100c6 6 18 6 24 0" stroke="#7a3a2c" stroke-width="4" fill="none" stroke-linecap="round"></path>
-      </svg>
-    </figure>
-  </button>
-  <p class="portrait__hint" aria-hidden="true">Tap to switch</p>
+      <span class="sr-only">3D avatar</span>
+    </button>
+    <p class="portrait__label" aria-hidden="true"><span class="for-photo">Turn me 3D</span><span class="for-avatar">Back to photo</span></p>
+  </div>
 </Tile>
 
 <style>
@@ -61,58 +40,147 @@ const colour: Record<string, string> = { x: '#2a2018', h: '#3a2b20', s: '#c98d66
     flex: 1;
     min-height: 220px;
     aspect-ratio: 1;
-    border: 0;
-    padding: 0;
-    background: none;
-    cursor: pointer;
     border-radius: var(--radius);
     overflow: hidden;
+    isolation: isolate;
+    background: #1d2430;
   }
-  .portrait__frame {
+  .portrait__img {
     position: absolute;
     inset: 0;
-    margin: 0;
-    opacity: 0;
-    transform: scale(1.04);
-    transition: opacity 0.45s var(--ease-travel), transform 0.6s var(--ease-arrive);
-  }
-  .portrait__frame svg {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    transition: opacity 0.6s var(--ease-travel), transform 0.8s var(--ease-arrive), filter 0.6s;
   }
-  .portrait__frame.is-active {
+  .portrait__img--avatar {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  :global([data-look='avatar']) .portrait__img--avatar {
     opacity: 1;
     transform: none;
   }
-  .portrait__hint {
+  :global([data-look='avatar']) .portrait__img--photo {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  .portrait__stage.is-thinking .portrait__img {
+    filter: saturate(1.4) brightness(1.08) blur(1.5px);
+  }
+  .portrait__glow {
     position: absolute;
-    left: 50%;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    padding: 4px;
+    background: conic-gradient(from var(--spin, 0deg), #ff5f6d, #ffc371, #47e6a0, #3aa0ff, #b36bff, #ff5f6d);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  .portrait__stage.is-thinking .portrait__glow {
+    opacity: 1;
+    animation: spin 1.1s linear;
+  }
+  @property --spin {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes spin {
+    to {
+      --spin: 360deg;
+    }
+  }
+  .portrait__switch {
+    position: absolute;
+    right: 12px;
     bottom: 12px;
-    transform: translateX(-50%);
+    z-index: 2;
+    width: var(--tap);
+    height: var(--tap);
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: rgb(20 20 24 / 0.55);
+    backdrop-filter: blur(12px) saturate(1.6);
+    -webkit-backdrop-filter: blur(12px) saturate(1.6);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18) inset;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-arrive), background-color 0.2s;
+  }
+  .portrait__switch:hover {
+    transform: scale(1.08);
+    background: rgb(20 20 24 / 0.75);
+  }
+  .portrait__label {
+    position: absolute;
+    right: 64px;
+    bottom: 22px;
+    z-index: 2;
     margin: 0;
     padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgb(20 20 24 / 0.55);
     color: #fff;
     font-size: 12px;
-    pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s;
+    transform: translateX(6px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
   }
-  :global(.portrait):hover .portrait__hint,
-  .portrait__stage:focus-visible + .portrait__hint {
+  .for-avatar,
+  :global([data-look='avatar']) .for-photo {
+    display: none;
+  }
+  :global([data-look='avatar']) .for-avatar {
+    display: inline;
+  }
+  :global(.portrait):hover .portrait__label,
+  .portrait__switch:focus-visible + .portrait__label {
     opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portrait__img {
+      transition: none;
+    }
+    .portrait__stage.is-thinking .portrait__glow {
+      animation: none;
+      opacity: 0;
+    }
   }
 </style>
 
 <script>
-  document.querySelectorAll<HTMLButtonElement>('[data-portrait]').forEach((btn) => {
-    const frames = Array.from(btn.querySelectorAll<HTMLElement>('[data-portrait-frame]'));
-    let i = 0;
-    btn.addEventListener('click', () => {
-      frames[i]!.classList.remove('is-active');
-      i = (i + 1) % frames.length;
-      frames[i]!.classList.add('is-active');
-    });
+  import { applyLook, savedLook, setLook } from '../../scripts/look';
+
+  const stage = document.querySelector<HTMLElement>('[data-portrait]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-portrait-switch]');
+  const sync = () => {
+    const avatar = document.documentElement.dataset.look === 'avatar';
+    btn?.setAttribute('aria-pressed', String(avatar));
+  };
+  applyLook(savedLook());
+  sync();
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.look === 'avatar' ? 'photo' : 'avatar';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !stage) {
+      setLook(next);
+      sync();
+      return;
+    }
+    stage.classList.add('is-thinking');
+    window.setTimeout(() => {
+      setLook(next);
+      sync();
+    }, 450);
+    window.setTimeout(() => stage.classList.remove('is-thinking'), 1100);
   });
 </script>

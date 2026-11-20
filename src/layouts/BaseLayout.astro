@@ -78,6 +78,9 @@ const personLd = {
           t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         }
         document.documentElement.dataset.theme = t;
+        var s = null;
+        try { s = localStorage.getItem('sound'); } catch (e) {}
+        document.documentElement.dataset.sound = s === 'off' ? 'off' : 'on';
         var m = document.querySelector('meta[name="theme-color"]');
         if (m) m.setAttribute('content', t === 'light' ? '#f2f2f5' : '#0e0e10');
       })();

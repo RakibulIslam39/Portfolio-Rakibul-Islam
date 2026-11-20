@@ -6,11 +6,15 @@ import site from '../../content/site.json';
 
 <Tile id="contact" size="1x1" area="contact" app="Contact" class="contact">
   <AppIcon name="contact" slot="icon" />
-  <p class="contact__q">Got a release that needs a safety net?</p>
+  <div class="contact__card">
+    <img class="contact__me" data-me src="/portrait/photo-192.webp" data-photo="/portrait/photo-192.webp" data-avatar="/portrait/avatar-192.webp" width="48" height="48" alt="" loading="lazy" decoding="async" />
+    <p class="contact__q">Got a release that needs a safety net?</p>
+  </div>
   <ul class="contact__list">
-    <li><a class="tap" href={`mailto:${site.email}`}>Email</a></li>
-    <li><a class="tap" href={site.links.linkedin} target="_blank" rel="me noopener">LinkedIn</a></li>
-    <li><a class="tap" href={site.links.github} target="_blank" rel="me noopener">GitHub</a></li>
+    <li><a class="tap" href={`mailto:${site.email}`}><AppIcon name="gmail" size={22} /><span>Email</span></a></li>
+    <li><a class="tap" href={site.links.linkedin} target="_blank" rel="me noopener"><AppIcon name="linkedin" size={22} /><span>LinkedIn</span></a></li>
+    <li><a class="tap" href={site.links.github} target="_blank" rel="me noopener"><AppIcon name="github" size={22} /><span>GitHub</span></a></li>
+    <li><a class="tap" href={site.links.medium} target="_blank" rel="me noopener"><AppIcon name="medium" size={22} /><span>Medium</span></a></li>
   </ul>
   <div class="contact__actions">
     <a class="btn" href="/Rakibul-Islam-CV.pdf" download>Download CV</a>
@@ -19,7 +23,22 @@ import site from '../../content/site.json';
 </Tile>
 
 <style>
+  .contact__card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .contact__me {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px var(--tile), 0 0 0 3px var(--line);
+  }
   .contact__q {
+    margin: 0;
     color: var(--text);
     font-weight: 600;
     font-size: 17px;
@@ -36,12 +55,14 @@ import site from '../../content/site.json';
   }
   .contact__list a {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     text-decoration: none;
     color: var(--link);
   }
   .contact__list a::after {
     content: '↗';
+    margin-left: auto;
     color: var(--muted);
   }
   .contact__list a:hover {
@@ -58,3 +79,8 @@ import site from '../../content/site.json';
     min-height: var(--tap);
   }
 </style>
+
+<script>
+  import { applyLook, savedLook } from '../../scripts/look';
+  applyLook(savedLook());
+</script>

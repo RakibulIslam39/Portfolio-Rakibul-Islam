@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/tiles/Hero.astro';
+import TerminalTile from '../components/tiles/TerminalTile.astro';
 import Portrait from '../components/tiles/Portrait.astro';
 import Status from '../components/tiles/Status.astro';
 import Report from '../components/tiles/Report.astro';
@@ -22,6 +23,7 @@ import Blog from '../components/tiles/Blog.astro';
     <Hero />
     <Portrait />
     <Status />
+    <TerminalTile />
     <Report />
     <CiRun />
     <Projects />
@@ -38,6 +40,7 @@ import Blog from '../components/tiles/Blog.astro';
 
 <style>
   .bento {
+    width: min(100% - 32px, var(--max-wide));
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
@@ -50,17 +53,18 @@ import Blog from '../components/tiles/Blog.astro';
       grid-auto-rows: minmax(220px, auto);
       grid-template-areas:
         'hero hero'
-        'photo status'
-        'report report'
+        'photo map'
+        'status status'
+        'term term'
         'ci ci'
-        'proj proj'
+        'report report'
         'tl tl'
+        'proj proj'
         'skills skills'
         'certs certs'
         'blog blog'
-        'contact map'
         'bug bug'
-        'plugins plugins';
+        'plugins contact';
     }
     .bento > :global(.tile) {
       grid-area: var(--area);
@@ -71,12 +75,13 @@ import Blog from '../components/tiles/Blog.astro';
       grid-template-columns: repeat(4, minmax(0, 1fr));
       grid-auto-rows: minmax(240px, auto);
       grid-template-areas:
-        'hero hero hero hero'
-        'photo status status map'
-        'report report ci ci'
-        'proj proj tl tl'
+        'hero hero photo map'
+        'hero hero status status'
+        'term term ci ci'
+        'report report tl tl'
         'proj proj skills skills'
-        'certs certs blog blog'
+        'proj proj certs certs'
+        'blog blog plugins contact'
         'bug bug plugins contact';
     }
   }

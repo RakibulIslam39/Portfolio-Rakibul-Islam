@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import site from '../../content/site.json';
+import AppIcon from '../../components/AppIcon.astro';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const groups = [...new Set(site.repos.map((r) => r.group))].map((g) => ({
@@ -43,7 +44,7 @@ const month = (ym: string) =>
 
     <section class="repos" aria-labelledby="repos-title">
       <header class="repos__head">
-        <h2 id="repos-title">All GitHub repositories</h2>
+        <h2 id="repos-title" class="repos__title"><AppIcon name="github" size={36} />All GitHub repositories</h2>
         <p>
           Every public repository on my GitHub, {site.repos.length} in total.
           <a href={`${site.links.github}?tab=repositories`} target="_blank" rel="noopener">Open my GitHub profile ↗</a>
@@ -171,6 +172,11 @@ const month = (ym: string) =>
   }
   .repos__head {
     margin-bottom: 20px;
+  }
+  .repos__head .repos__title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
   .repos__head h2 {
     font-size: clamp(28px, 4vw, 36px);

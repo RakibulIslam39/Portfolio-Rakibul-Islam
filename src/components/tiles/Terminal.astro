@@ -29,6 +29,7 @@ const staticHtml = lines
 
 <style>
   .window {
+    flex: 1;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -54,10 +55,17 @@ const staticHtml = lines
     gap: 7px;
   }
   .window__lights i {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background: #3a3a41;
+    background: #ff5f57;
+    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.25) inset;
+  }
+  .window__lights i:nth-child(2) {
+    background: #febc2e;
+  }
+  .window__lights i:nth-child(3) {
+    background: #28c840;
   }
   .term {
     padding: 18px 20px 16px;
