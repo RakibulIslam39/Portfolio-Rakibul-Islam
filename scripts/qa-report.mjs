@@ -137,9 +137,24 @@ async function measure(path, env, out) {
         ],
         { env, maxBuffer: 64 * 1024 * 1024 },
       );
-      const c = JSON.parse(readFileSync(out, 'utf8')).categories;
+      const lhr = JSON.parse(readFileSync(out, 'utf8'));
+      const c = lhr.categories;
       const pct = (k) => Math.round((c[k]?.score ?? 0) * 100);
-      return { path, performance: pct('performance'), accessibility: pct('accessibility'), bestPractices: pct('best-practices'), seo: pct('seo') };
+      const result = { path, performance: pct('performance'), accessibility: pct('accessibility'), bestPractices: pct('best-practices'), seo: pct('seo') };
+      // Under budget: say why, so a CI log is enough to find the cause.
+      if (result.performance < BUDGET.performance) {
+        const a = lhr.audits;
+        const m = (id) => `${a[id]?.displayValue ?? '?'} (${Math.round((a[id]?.score ?? 0) * 100)})`;
+        console.log(`  why ${path}: FCP ${m('first-contentful-paint')} · LCP ${m('largest-contentful-paint')} · TBT ${m('total-blocking-time')} · CLS ${m('cumulative-layout-shift')} · SI ${m('speed-index')}`);
+        const lcpEl = a['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.selector;
+        if (lcpEl) console.log(`  LCP element: ${lcpEl}`);
+        const work = a['mainthread-work-breakdown']?.details?.items?.slice(0, 5).map((i) => `${i.groupLabel ?? i.group} ${Math.round(i.duration)} ms`);
+        if (work) console.log(`  main thread: ${work.join(', ')}`);
+        const tasks = (a['long-tasks']?.details?.items ?? []).slice(0, 6).map((i) => `${Math.round(i.duration)} ms @${Math.round(i.startTime)} (${i.url})`);
+        if (tasks.length) console.log(`  long tasks: ${tasks.join('; ')}`);
+        console.log(`  CPU benchmark index: ${lhr.environment?.benchmarkIndex ?? '?'} (this machine; lower = slower)`);
+      }
+      return result;
     } catch (e) {
       const lines = String(e.stderr || e.message).split('\n').filter((l) => l.trim() && !l.startsWith('npm warn'));
       const reason = lines.find((l) => /error/i.test(l)) ?? lines.at(-1);
