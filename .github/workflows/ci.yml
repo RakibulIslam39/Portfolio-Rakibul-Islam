@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets "Update visual snapshots" (or you, from the Actions tab) start CI on the latest main.
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -52,7 +54,7 @@ jobs:
   deploy:
     # Only green builds of main are deployed.
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

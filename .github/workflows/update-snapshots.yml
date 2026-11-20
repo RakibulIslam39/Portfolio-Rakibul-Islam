@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write
+  # To start a fresh CI run once the new baselines are pushed.
+  actions: write
 
 # Only one snapshot update at a time; a second click waits for the first.
 concurrency:
@@ -42,3 +44,21 @@ jobs:
           # touched the same baseline images, keep the ones this run just generated.
           git pull --rebase -X theirs origin "${{ github.ref_name }}"
           git push
+      - name: Start CI on the updated main
+        # Commits pushed with GITHUB_TOKEN don't trigger workflows, but a dispatch does.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          node -e '
+            const url = `https://api.github.com/repos/${process.env.REPO}/actions/workflows/ci.yml/dispatches`;
+            fetch(url, {
+              method: "POST",
+              headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: "application/vnd.github+json" },
+              body: JSON.stringify({ ref: process.env.REF }),
+            }).then(async (r) => {
+              if (r.status !== 204) { console.error(r.status, await r.text()); process.exit(1); }
+              console.log(`Started CI on ${process.env.REF}.`);
+            });
+          '
