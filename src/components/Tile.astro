@@ -24,7 +24,7 @@ const { size = '1x1', app, href, hrefLabel, id, class: extra = '', tone = 'defau
 const external = href ? /^https?:/.test(href) : false;
 ---
 
-<section class:list={['tile', `tile--${size}`, `tile--${tone}`, { 'tile--flush': flush }, extra]} style={area ? `--area: ${area}` : undefined} id={id} aria-labelledby={app ? `${id}-app` : undefined} data-tile={id}>
+<section class:list={['tile', `tile--${size}`, `tile--${tone}`, { 'tile--flush': flush }, extra]} style={area ? `--area: ${area}` : undefined} data-area={area} id={id} aria-labelledby={app ? `${id}-app` : undefined} data-tile={id}>
   {
     (app || href) && (
       <header class="tile__head">

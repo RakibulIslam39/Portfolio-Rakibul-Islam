@@ -48,10 +48,91 @@ import Blog from '../components/tiles/Blog.astro';
     <Plugins />
     <Contact />
   </div>
+  <!-- Put a visitor's saved tile order back before the first paint (see src/scripts/rearrange.ts). -->
+  <script is:inline>
+    (function () {
+      var layout = {};
+      try { layout = JSON.parse(localStorage.getItem('home-layout') || '{}') || {}; } catch (e) {}
+      if (!Object.keys(layout).length) return;
+      var grid = document.querySelector('[data-bento]');
+      var tiles = Array.prototype.slice.call(grid.children).filter(function (t) { return t.classList.contains('tile'); });
+      var home = {};
+      tiles.forEach(function (t, i) { home[t.id] = { area: t.getAttribute('data-area') || '', order: i }; });
+      tiles.forEach(function (t) {
+        var slot = home[layout[t.id]] || home[t.id];
+        t.style.setProperty('--area', slot.area);
+        t.style.order = String(slot.order);
+        t.setAttribute('data-slot', layout[t.id] && home[layout[t.id]] ? layout[t.id] : t.id);
+      });
+    })();
+  </script>
+  <div class="layout-bar container" data-layout-bar>
+    <button class="btn layout-bar__edit" type="button" data-layout-edit>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+      Edit layout
+    </button>
+    <button class="btn" type="button" data-layout-reset hidden>Reset layout</button>
+    <button class="btn btn--primary" type="button" data-layout-done hidden>Done</button>
+    <p class="sr-only" aria-live="polite" data-layout-status></p>
+  </div>
   <IMessage />
 </BaseLayout>
 
+<script>
+  import { initRearrange } from '../scripts/rearrange';
+  const grid = document.querySelector<HTMLElement>('[data-bento]');
+  if (grid) initRearrange(grid);
+  if (location.hash === '#edit-layout') document.querySelector<HTMLButtonElement>('[data-layout-edit]')?.click();
+</script>
+
 <style>
+  .layout-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: -24px auto 48px;
+  }
+  .layout-bar .btn {
+    min-height: var(--tap);
+  }
+  /* Edit mode: tiles jiggle like iPhone widgets and become drag handles. */
+  :global(.bento--editing > .tile) {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    animation: jiggle 0.32s ease-in-out infinite alternate;
+    box-shadow: 0 0 0 1px var(--outline) inset;
+  }
+  :global(.bento--editing > .tile:nth-child(even)) {
+    animation-delay: -0.16s;
+  }
+  :global(.bento--editing > .tile:focus-visible) {
+    outline: 3px solid var(--link);
+    outline-offset: 3px;
+  }
+  :global(.bento > .tile.is-dragging) {
+    z-index: 5;
+    cursor: grabbing;
+    animation: none !important;
+    scale: 1.03;
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.5);
+  }
+  :global(.bento > .tile.is-target) {
+    box-shadow: 0 0 0 3px var(--link) inset !important;
+  }
+  @keyframes jiggle {
+    from {
+      rotate: -0.5deg;
+    }
+    to {
+      rotate: 0.5deg;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.bento--editing > .tile) {
+      animation: none;
+    }
+  }
   .bento {
     width: min(100% - 32px, var(--max-wide));
     display: grid;

@@ -28,6 +28,7 @@ import site from '../../content/site.json';
       decoding="async"
     />
     <span class="portrait__glow" aria-hidden="true"></span>
+    <p class="portrait__siri" aria-hidden="true"><span class="portrait__orb"></span><span data-siri-text></span></p>
     <button class="portrait__switch" type="button" data-portrait-switch aria-pressed="false">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"></path><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"></path>
@@ -87,7 +88,7 @@ import site from '../../content/site.json';
   }
   .portrait__stage.is-thinking .portrait__glow {
     opacity: 1;
-    animation: spin 1.1s linear;
+    animation: spin 1.1s linear infinite;
   }
   @property --spin {
     syntax: '<angle>';
@@ -98,6 +99,45 @@ import site from '../../content/site.json';
     to {
       --spin: 360deg;
     }
+  }
+  .portrait__siri {
+    position: absolute;
+    left: 12px;
+    right: 64px;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    margin: 0;
+    padding: 6px 12px 6px 8px;
+    border-radius: 999px;
+    background: rgb(20 20 24 / 0.6);
+    backdrop-filter: blur(14px) saturate(1.6);
+    -webkit-backdrop-filter: blur(14px) saturate(1.6);
+    color: #fff;
+    font-size: 12.5px;
+    line-height: 1.25;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.25s, transform 0.35s var(--ease-arrive);
+    pointer-events: none;
+  }
+  .portrait__stage.is-thinking .portrait__siri {
+    opacity: 1;
+    transform: none;
+  }
+  .portrait__orb {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border-radius: 50%;
+    background: conic-gradient(from var(--spin, 0deg), #ff5f6d, #ffc371, #47e6a0, #3aa0ff, #b36bff, #ff5f6d);
+    animation: spin 1.1s linear infinite;
+  }
+  .portrait__stage.is-thinking .portrait__label {
+    opacity: 0 !important;
   }
   .portrait__switch {
     position: absolute;
@@ -172,19 +212,35 @@ import site from '../../content/site.json';
   };
   applyLook(savedLook());
   sync();
+  document.addEventListener('look-change', sync);
+  const siri = stage?.querySelector<HTMLElement>('[data-siri-text]');
+  let busy = false;
   btn?.addEventListener('click', () => {
+    if (busy) return;
     const next = document.documentElement.dataset.look === 'avatar' ? 'photo' : 'avatar';
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !stage) {
+    if (reduce || !stage || !siri) {
       setLook(next);
       sync();
       return;
     }
+    // A pretend Siri moment: the glow runs round, the request types itself, then the swap.
+    busy = true;
+    const ask = next === 'avatar' ? 'Turn Rakibul into a 3D avatar' : 'Show Rakibul’s real photo';
+    siri.textContent = '';
     stage.classList.add('is-thinking');
+    let n = 0;
+    const type = window.setInterval(() => {
+      siri.textContent = ask.slice(0, ++n);
+      if (n >= ask.length) window.clearInterval(type);
+    }, 22);
     window.setTimeout(() => {
       setLook(next);
       sync();
-    }, 450);
-    window.setTimeout(() => stage.classList.remove('is-thinking'), 1100);
+    }, 1000);
+    window.setTimeout(() => {
+      stage.classList.remove('is-thinking');
+      busy = false;
+    }, 1700);
   });
 </script>

@@ -1,4 +1,7 @@
 ---
+import { getCollection } from 'astro:content';
+
+const latestPost = (await getCollection('writing')).map((p) => p.data.date.toISOString().slice(0, 10)).sort().at(-1) ?? '';
 const items: { href: string; label: string; short?: string; desktopOnly?: boolean }[] = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
@@ -24,7 +27,11 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         {
           items.map((item) => (
             <li class:list={{ 'nav__desk': item.desktopOnly }}>
-              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                data-latest={item.href === '/writing/' ? latestPost : undefined}
+              >
                 {item.short ? (
                   <>
                     <span class="nav__long">{item.label}</span>
@@ -33,6 +40,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
                 ) : (
                   item.label
                 )}
+                {item.href === '/writing/' && <span class="nav__badge" data-new-badge hidden><span class="sr-only">, new post</span></span>}
               </a>
             </li>
           ))
@@ -106,6 +114,23 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     padding: 5px;
   }
   .nav__short {
+    display: none;
+  }
+  /* A small red dot on Blog, like an app badge, until the visitor has seen the newest post. */
+  .nav a {
+    position: relative;
+  }
+  .nav__badge {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff3b30;
+    box-shadow: 0 0 0 2px var(--glass);
+  }
+  .nav__badge[hidden] {
     display: none;
   }
   .nav ul {
@@ -266,6 +291,22 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   import { initSound } from '../scripts/sound';
   initTheme();
   initSound();
+
+  // New-post badge: shown until this browser has opened the Blog page since the newest post.
+  const blog = document.querySelector<HTMLAnchorElement>('.nav a[data-latest]');
+  if (blog?.dataset.latest) {
+    let seen = '';
+    try {
+      seen = localStorage.getItem('blog-seen') ?? '';
+      if (location.pathname.startsWith('/writing/')) {
+        localStorage.setItem('blog-seen', blog.dataset.latest);
+        seen = blog.dataset.latest;
+      }
+    } catch {
+      seen = blog.dataset.latest; // storage blocked: don't nag
+    }
+    blog.querySelector<HTMLElement>('[data-new-badge]')!.hidden = seen >= blog.dataset.latest;
+  }
   // On narrow phones the bar can scroll sideways: keep the current page in view.
   const bar = document.querySelector<HTMLElement>('.nav ul');
   const current = bar?.querySelector<HTMLElement>('a[aria-current="page"]');
