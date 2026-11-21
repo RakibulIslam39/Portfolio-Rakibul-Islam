@@ -13,6 +13,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, statSync } 
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, extname, normalize, resolve } from 'node:path';
+import { brotliCompressSync, gzipSync, constants as zlib } from 'node:zlib';
 
 const args = process.argv.slice(2);
 const resultsPath = args.includes('--results') ? args[args.indexOf('--results') + 1] : 'reports/results.json';
@@ -100,7 +101,22 @@ function serveDist(port) {
       res.writeHead(404, { 'content-type': TYPES['.html'] }).end(existsSync(notFound) ? readFileSync(notFound) : 'Not found');
       return;
     }
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
+    // Compress text like Cloudflare Pages does in production (brotli, else gzip). Lighthouse
+    // simulates a slow connection from the bytes actually sent, so serving raw files here made
+    // the home page look ~1 s slower to first paint than it is for real visitors.
+    const headers = { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', vary: 'accept-encoding' };
+    let body = readFileSync(file);
+    const accept = String(req.headers['accept-encoding'] ?? '');
+    if (/\.(html|css|js|mjs|json|svg|txt|vcf)$/.test(file)) {
+      if (accept.includes('br')) {
+        body = brotliCompressSync(body, { params: { [zlib.BROTLI_PARAM_QUALITY]: 5 } });
+        headers['content-encoding'] = 'br';
+      } else if (accept.includes('gzip')) {
+        body = gzipSync(body);
+        headers['content-encoding'] = 'gzip';
+      }
+    }
+    res.writeHead(200, headers).end(body);
   });
   return new Promise((ok, fail) => {
     server.once('error', fail);
