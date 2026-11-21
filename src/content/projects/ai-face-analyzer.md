@@ -12,6 +12,7 @@ metrics:
   - { value: '5', label: image formats validated }
   - { value: 'Multi', label: faces per photo }
 links:
+  - { label: View live project, url: 'https://huggingface.co/spaces/rakibul008/ai-face-analyzer' }
   - { label: Source code, url: 'https://github.com/RakibulIslam39/ai-face-analyzer' }
 ---
 

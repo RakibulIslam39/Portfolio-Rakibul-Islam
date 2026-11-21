@@ -50,7 +50,8 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
           {
             moreLinks.map((l) => (
               <a class="app__btn" href={l.url} target="_blank" rel="noopener">
-                {l.label}
+                {l.label === 'Source code' ? 'View code' : l.label}
+                <span class="sr-only">{l.label === 'Source code' ? ' on GitHub' : ''} (opens in a new tab)</span>
               </a>
             ))
           }

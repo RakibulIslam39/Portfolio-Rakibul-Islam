@@ -90,3 +90,12 @@ test('the previous portfolio is a project that links to the old site', async ({ 
   await expect(visit).toHaveAttribute('target', '_blank');
   await expect(page.locator('main')).toContainText('three.js');
 });
+
+test('AI Face Analyzer links to the live app on Hugging Face and to its code', async ({ page }) => {
+  await page.goto('/projects/ai-face-analyzer/');
+  const live = page.locator('.app__actions').getByRole('link', { name: /View live project/ });
+  await expect(live).toHaveAttribute('href', 'https://huggingface.co/spaces/rakibul008/ai-face-analyzer');
+  await expect(live).toHaveAttribute('target', '_blank');
+  await expect(live).toHaveClass(/app__btn--primary/);
+  await expect(page.locator('.app__actions').getByRole('link', { name: /View code/ })).toHaveAttribute('href', /github\.com\/RakibulIslam39\/ai-face-analyzer/);
+});
