@@ -53,3 +53,12 @@ test('WordPress.org profile and contributions are linked', async ({ page, reques
   const vcf = await (await request.get('/rakibul-islam.vcf')).text();
   expect(vcf).toContain('profiles.wordpress.org/rakib03029');
 });
+
+test('phone number is on the contact card, the CV and the saved contact', async ({ page, request }) => {
+  await page.goto('/');
+  await expect(page.locator('#contact a[href="tel:+8801701026708"]')).toContainText('+880 1701-026708');
+  await page.goto('/cv/');
+  await expect(page.locator('a[href="tel:+8801701026708"]')).toHaveText('+880 1701-026708');
+  const vcf = await (await request.get('/rakibul-islam.vcf')).text();
+  expect(vcf).toContain('TEL;TYPE=CELL,VOICE:+8801701026708');
+});

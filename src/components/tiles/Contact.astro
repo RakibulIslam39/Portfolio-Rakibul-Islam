@@ -12,6 +12,7 @@ import site from '../../content/site.json';
   </div>
   <ul class="contact__list">
     <li><a class="tap" href={`mailto:${site.email}`}><AppIcon name="gmail" size={22} /><span>Email</span></a></li>
+    <li><a class="tap" href={`tel:${site.phone.replace(/[^+\d]/g, '')}`}><AppIcon name="contact" size={22} /><span>Phone</span><small class="contact__num">{site.phone}</small></a></li>
     <li><a class="tap" href={site.links.linkedin} target="_blank" rel="me noopener"><AppIcon name="linkedin" size={22} /><span>LinkedIn</span></a></li>
     <li><a class="tap" href={site.links.github} target="_blank" rel="me noopener"><AppIcon name="github" size={22} /><span>GitHub</span></a></li>
     <li><a class="tap" href={site.links.medium} target="_blank" rel="me noopener"><AppIcon name="medium" size={22} /><span>Medium</span></a></li>
@@ -34,6 +35,13 @@ import site from '../../content/site.json';
 </Tile>
 
 <style>
+  .contact__num {
+    margin-left: auto;
+    margin-right: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font);
+  }
   .contact__card {
     display: flex;
     align-items: center;

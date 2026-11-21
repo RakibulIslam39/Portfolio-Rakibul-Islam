@@ -28,3 +28,18 @@ test('print layout hides the site chrome', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Print this page' })).toBeHidden();
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
+
+test('the Europass CV can be viewed in a new tab or downloaded', async ({ page, request }) => {
+  await page.goto('/cv/');
+  const group = page.getByRole('group', { name: 'Europass CV' });
+  const view = group.getByRole('link', { name: /^View/ });
+  await expect(view).toHaveAttribute('href', '/Rakibul-Islam-Europass-CV.pdf');
+  await expect(view).toHaveAttribute('target', '_blank');
+  await expect(group.getByRole('link', { name: /^Download/ })).toHaveAttribute('download', '');
+  const res = await request.get('/Rakibul-Islam-Europass-CV.pdf');
+  expect(res.ok()).toBe(true);
+  const pdf = await res.body();
+  expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+  // The public copy must not carry the embedded Europass XML (it holds passport, ID and home address).
+  expect(pdf.includes(Buffer.from('/EmbeddedFile'))).toBe(false);
+});

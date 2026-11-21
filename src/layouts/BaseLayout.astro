@@ -37,6 +37,7 @@ const personLd = {
   name: site.name,
   jobTitle: site.role,
   email: `mailto:${site.email}`,
+  telephone: site.phone,
   address: { '@type': 'PostalAddress', addressLocality: 'Dhaka', addressCountry: 'BD' },
   sameAs: [site.links.github, site.links.linkedin, site.links.medium, site.links.wordpress],
   url: Astro.site?.toString(),

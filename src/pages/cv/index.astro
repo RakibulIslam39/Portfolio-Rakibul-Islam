@@ -10,6 +10,11 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
 <BaseLayout title="CV | Rakibul Islam" description={`CV of ${site.name}, ${site.role}. ${site.summary}`}>
   <div class="container">
     <div class="cv-actions">
+      <div class="cv-actions__group" role="group" aria-label="Europass CV">
+        <span class="cv-actions__label">Europass CV</span>
+        <a class="btn" href={site.europass} target="_blank" rel="noopener">View<span class="sr-only"> the Europass CV (PDF, opens in a new tab)</span></a>
+        <a class="btn" href={site.europass} download>Download<span class="sr-only"> the Europass CV (PDF)</span></a>
+      </div>
       <a class="btn btn--primary" href="/Rakibul-Islam-CV.pdf" download>Download PDF</a>
       <button class="btn" type="button" data-print>Print this page</button>
     </div>
@@ -22,6 +27,7 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
         </div>
         <ul class="cv__contact">
           <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><a href={`tel:${site.phone.replace(/[^+\d]/g, '')}`}>{site.phone}</a></li>
           <li>{site.location}</li>
           <li><a href={site.links.github}>{host(site.links.github)}</a></li>
           <li><a href={site.links.linkedin}>{host(site.links.linkedin)}</a></li>
@@ -136,9 +142,26 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
   .cv-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
     justify-content: flex-end;
     margin-bottom: 16px;
+  }
+  .cv-actions__group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+    padding: 4px 4px 4px 14px;
+    border-radius: 999px;
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  .cv-actions__label {
+    margin-right: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
   }
   .cv {
     padding: clamp(24px, 5vw, 56px);
