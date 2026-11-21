@@ -127,3 +127,21 @@ test('contact card copies the email address', async ({ page, context, browserNam
   await expect(btn).toHaveText('Copied');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('rakibul.cse.bubt@gmail.com');
 });
+
+test('Plugins I test shows each plugin with its real icon and WordPress.org link', async ({ page }) => {
+  await page.goto('/');
+  const tile = page.locator('#plugins');
+  const rows = tile.getByRole('listitem');
+  await expect(rows).toHaveCount(7);
+  for (const name of ['FlexOrder', 'FlexStock', 'FlexTable', 'WP Dark Mode', 'FormyChat', 'FlexMeeting', 'EchoRewards']) {
+    const link = tile.getByRole('link', { name: new RegExp(`^${name}`) });
+    await expect(link).toHaveAttribute('href', /^https:\/\/wordpress\.org\/plugins\/[a-z0-9-]+\/$/);
+    await expect(link).toHaveAttribute('target', '_blank');
+  }
+  await expect(tile).toContainText('active installs on WordPress.org');
+  // Every icon file loads (including the WP Dark Mode variant for the other theme).
+  const loaded = await tile.locator('img').evaluateAll((imgs) =>
+    Promise.all((imgs as HTMLImageElement[]).map((i) => ((i.loading = 'eager'), i.decode().then(() => true, () => i.getAttribute('src'))))),
+  );
+  expect(loaded.filter((x) => x !== true)).toEqual([]);
+});

@@ -12,6 +12,7 @@
     "wordpress": "https://profiles.wordpress.org/rakib03029/"
   },
   "wordpress": {
+    "pluginsCheckedOn": "Nov 2026",
     "handle": "@rakib03029",
     "joined": "Dec 2021",
     "team": "Test",
@@ -98,11 +99,12 @@
     {
       "role": "Jr. SQA Engineer",
       "company": "WPPOOL",
+      "logo": "/companies/wppool.svg",
       "period": "Oct 2024 – now",
       "place": "Dhaka",
       "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins.",
       "bullets": [
-        "Designed and executed end-to-end manual and automated test suites for WordPress plugins, including FlexOrder, FlexStock, EchoRewards, FlexTable, FormyChat, WP Dark Mode and Jitsi Meet.",
+        "Designed and executed end-to-end manual and automated test suites for WordPress plugins, including FlexOrder, FlexStock, EchoRewards, FlexTable, FormyChat, WP Dark Mode and FlexMeeting (formerly Jitsi Meet).",
         "Designed reusable Playwright (TypeScript) automation frameworks using the Page Object Model for end-to-end, functional and regression testing.",
         "Automated WooCommerce ↔ Google Sheets synchronization testing by integrating the Google Sheets API and WooCommerce REST API, ensuring bi-directional order and stock accuracy.",
         "Performed API testing to validate endpoints, authentication, data integrity and error handling across plugin integrations.",
@@ -115,6 +117,7 @@
     {
       "role": "SQA Engineer",
       "company": "Zaimah Technologies",
+      "logo": "/companies/zaimah.webp",
       "period": "Dec 2023 – Apr 2024",
       "place": "Dhaka",
       "summary": "End-to-end, API (Postman) and performance (JMeter) testing for MacroHealthPlus.",
@@ -128,6 +131,7 @@
     {
       "role": "Software QA Engineer",
       "company": "Edutechs",
+      "logo": "/companies/edutechs.webp",
       "period": "Mar 2023 – Aug 2023",
       "place": "Dhaka",
       "summary": "Test plans, test cases and first automation scripts in an Agile squad.",
@@ -139,13 +143,13 @@
     }
   ],
   "plugins": [
-    "FlexOrder",
-    "FlexStock",
-    "EchoRewards",
-    "FlexTable",
-    "FormyChat",
-    "WP Dark Mode",
-    "Jitsi Meet"
+    { "name": "FlexOrder", "slug": "order-sync-with-google-sheets-for-woocommerce", "icon": "/plugins/flexorder.svg", "does": "Syncs WooCommerce orders with Google Sheets", "installs": 200 },
+    { "name": "FlexStock", "slug": "stock-sync-with-google-sheet-for-woocommerce", "icon": "/plugins/flexstock.webp", "does": "WooCommerce stock sync with Google Sheets", "installs": 600 },
+    { "name": "FlexTable", "slug": "sheets-to-wp-table-live-sync", "icon": "/plugins/flextable.svg", "does": "Turns Google Sheets into live WordPress tables", "installs": 3000 },
+    { "name": "WP Dark Mode", "slug": "wp-dark-mode", "icon": "/plugins/wp-dark-mode.webp", "iconDark": "/plugins/wp-dark-mode-light.webp", "does": "AI-powered dark mode for WordPress", "installs": 20000 },
+    { "name": "FormyChat", "slug": "social-contact-form", "icon": "/plugins/formychat.webp", "does": "Sends contact forms to WhatsApp and Telegram", "installs": 3000 },
+    { "name": "FlexMeeting", "slug": "webinar-and-video-conference-with-jitsi-meet", "icon": "/plugins/flexmeeting.webp", "does": "Webinars and meetings with Jitsi Meet", "installs": 1000 },
+    { "name": "EchoRewards", "slug": "echo-rewards", "icon": "/plugins/echorewards.svg", "does": "Refer-a-friend rewards for WooCommerce", "installs": 300 }
   ],
   "projects": [
     {

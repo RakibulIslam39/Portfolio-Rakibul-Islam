@@ -81,10 +81,14 @@ export function initPalette(): void {
     const src =
       li === special
         ? special.querySelector<HTMLElement>(`[data-kind="${special.dataset.specialKind}"] .app-icon`)
-        : li.querySelector<HTMLElement>('.palette__icon .app-icon');
+        : li.querySelector<HTMLElement>('.palette__icon > .app-icon, .palette__icon > img');
     if (src) {
       const big = src.cloneNode(true) as HTMLElement;
       big.style.setProperty('--size', '72px');
+      if (big instanceof HTMLImageElement) {
+        big.width = 72;
+        big.height = 72;
+      }
       big.querySelector('svg')?.setAttribute('width', '72');
       big.querySelector('svg')?.setAttribute('height', '72');
       icon.append(big);

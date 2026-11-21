@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import site from '../../content/site.json';
+import CompanyLogo from '../../components/CompanyLogo.astro';
 
 const notes = [
   { id: 'about', title: 'About', preview: site.tagline },
@@ -87,6 +88,7 @@ const folder = `About ${site.firstName}`;
               {
                 site.experience.map((e) => (
                   <article class="job">
+                    <CompanyLogo src={e.logo} name={e.company} size={44} />
                     <h3>
                       {e.role} <span class="job__at">· {e.company}</span>
                     </h3>
@@ -471,6 +473,18 @@ const folder = `About ${site.firstName}`;
   }
   .job + .job {
     margin-top: 28px;
+  }
+  .job {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 14px;
+  }
+  .job > :not(.co-logo) {
+    grid-column: 2;
+  }
+  .job > :global(.co-logo) {
+    grid-row: 1 / span 2;
+    margin-top: 2px;
   }
   .job h3 {
     margin: 0 0 4px;

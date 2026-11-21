@@ -1,0 +1,52 @@
+---
+/**
+ * A small logo for a tool or practice: the real brand mark where one exists
+ * (Simple Icons paths, CC0; the official Playwright logo from playwright-core, Apache-2.0), otherwise a simple line glyph.
+ */
+import { tech } from '../lib/tech';
+interface Props {
+  name: string;
+  size?: number;
+}
+const { name, size = 16 } = Astro.props;
+const brand = tech[name];
+// Very dark brand colours (pandas, NumPy) would vanish on the dark theme, so they use the text colour.
+const lum = (hex: string) => {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+};
+const fill = brand ? (lum(brand.hex) < 0.05 ? 'currentColor' : brand.hex) : '';
+const glyph: Record<string, string> = {
+  SQL: 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3',
+  'API testing': 'M8 4c-2 0-3 1-3 3v2c0 1.5-1 3-2 3 1 0 2 1.5 2 3v2c0 2 1 3 3 3M16 4c2 0 3 1 3 3v2c0 1.5 1 3 2 3-1 0-2 1.5-2 3v2c0 2-1 3-3 3',
+  'Cross-browser': 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9M12 3C9.5 5.6 8.2 8.6 8.2 12s1.3 6.4 3.8 9',
+  Regression: 'M20 7v5h-5M4 17v-5h5M5.5 9a7 7 0 0 1 13-1.5L20 12M18.5 15a7 7 0 0 1-13 1.5L4 12',
+  'AI-assisted testing': 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z',
+  Agile: 'M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4',
+};
+---
+
+{
+  name === 'Playwright' ? (
+    <img class="tech-icon" src="/brands/playwright.svg" width={size} height={size} alt="" aria-hidden="true" />
+  ) : brand ? (
+    <svg class="tech-icon" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+      <path d={brand.path} fill={fill} />
+    </svg>
+  ) : glyph[name] ? (
+    <svg class="tech-icon" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+      <path d={glyph[name]} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  ) : null
+}
+
+<style>
+  .tech-icon {
+    flex: none;
+    display: inline-block;
+    vertical-align: -3px;
+  }
+</style>

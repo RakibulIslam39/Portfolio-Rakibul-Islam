@@ -1,0 +1,30 @@
+---
+/** A case study's icon: the tested product's real icon when there is one, otherwise a drawn app icon. */
+import AppIcon from './AppIcon.astro';
+import { projectLook } from '../lib/projects';
+interface Props {
+  id: string;
+  size?: number;
+}
+const { id, size = 40 } = Astro.props;
+const look = projectLook[id];
+---
+
+{
+  look?.image ? (
+    <img class="project-icon" loading="lazy" decoding="async" src={look.image} width={size} height={size} alt="" aria-hidden="true" style={`--size:${size}px`} />
+  ) : (
+    <AppIcon name={look?.icon ?? 'projects'} size={size} />
+  )
+}
+
+<style>
+  .project-icon {
+    flex: none;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.18));
+  }
+</style>

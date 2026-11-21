@@ -2,6 +2,7 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
+import ProjectIcon from '../ProjectIcon.astro';
 ---
 
 <Tile id="projects" size="2x2" area="proj" app="Projects" href="/projects/" hrefLabel="See all projects" class="projects">
@@ -11,6 +12,7 @@ import site from '../../content/site.json';
       site.projects.map((p) => (
         <li>
           <a class="proj__row" href={`/projects/${p.slug}/`}>
+            <span class="proj__icon"><ProjectIcon id={p.slug} size={48} /></span>
             <span class="proj__name">{p.name}</span>
             <span class="proj__hook">{p.hook}</span>
             <span class="proj__summary">{p.summary}</span>
@@ -33,7 +35,9 @@ import site from '../../content/site.json';
   }
   .proj__row {
     display: grid;
-    gap: 4px;
+    grid-template-columns: 48px minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 4px;
     padding: 16px 0;
     text-decoration: none;
   }
@@ -65,5 +69,12 @@ import site from '../../content/site.json';
   .proj__stack {
     font-size: 13px;
     color: var(--muted);
+  }
+  .proj__row > :not(.proj__icon) {
+    grid-column: 2;
+  }
+  .proj__icon {
+    grid-row: 1 / span 4;
+    padding-top: 2px;
   }
 </style>

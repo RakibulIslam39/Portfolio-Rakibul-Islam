@@ -2,12 +2,20 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
+import TechIcon from '../TechIcon.astro';
 ---
 
 <Tile id="skills" size="2x1" area="skills" app="Toolkit" class="skills">
   <AppIcon name="skills" slot="icon" />
   <ul class="skills__list">
-    {site.skills.map((s) => <li class="pill" title={s.group}>{s.name}</li>)}
+    {
+      site.skills.map((s) => (
+        <li class="pill" title={s.group}>
+          <TechIcon name={s.name} />
+          {s.name}
+        </li>
+      ))
+    }
   </ul>
 </Tile>
 
@@ -22,6 +30,9 @@ import site from '../../content/site.json';
     align-content: flex-start;
   }
   .skills__list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     font-size: 14px;
     padding: 6px 12px;
     transition: transform 0.2s var(--ease-arrive), border-color 0.2s;

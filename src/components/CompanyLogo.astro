@@ -1,0 +1,34 @@
+---
+/** A company's own logo mark on a white rounded tile, so it reads on both themes. */
+interface Props {
+  src?: string;
+  name: string;
+  size?: number;
+}
+const { src, name, size = 36 } = Astro.props;
+---
+
+<span class="co-logo" style={`--size:${size}px`} aria-hidden="true">
+  {src ? <img src={src} width={size} height={size} alt="" loading="lazy" decoding="async" /> : <span>{name.slice(0, 1)}</span>}
+</span>
+
+<style>
+  .co-logo {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 24%;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08) inset, 0 1px 2px rgb(0 0 0 / 0.12);
+    overflow: hidden;
+    color: #1a1a1d;
+    font-weight: 700;
+  }
+  .co-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>

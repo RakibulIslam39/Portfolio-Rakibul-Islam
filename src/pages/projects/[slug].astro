@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AppIcon from '../../components/AppIcon.astro';
+import ProjectIcon from '../../components/ProjectIcon.astro';
+import TechIcon from '../../components/TechIcon.astro';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
 import FaceMock from '../../components/mockups/FaceMock.astro';
@@ -28,7 +29,7 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
     <a class="app__back" href="/projects/">‹ Projects</a>
 
     <header class="app__head">
-      <span class="app__icon"><AppIcon name={look.icon} size={128} /></span>
+      <span class="app__icon"><ProjectIcon id={project.id} size={128} /></span>
       <div class="app__text">
         <div class="app__title">
           <h1>{d.title}</h1>
@@ -94,7 +95,16 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
         </div>
         <div class="app__card app__card--plain">
           <p class="app__eyebrow">Built with</p>
-          <ul class="app__stack">{d.stack.map((s) => <li>{s}</li>)}</ul>
+          <ul class="app__stack">
+            {
+              d.stack.map((s) => (
+                <li>
+                  <TechIcon name={s.replace(/ (REST )?API$/, '')} size={14} />
+                  {s}
+                </li>
+              ))
+            }
+          </ul>
         </div>
       </div>
     </section>
@@ -151,10 +161,9 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
       <ul class="app__more">
         {
           others.map((o) => {
-            const ol = projectLook[o.id]!;
             return (
               <li>
-                <AppIcon name={ol.icon} size={56} />
+                <ProjectIcon id={o.id} size={56} />
                 <span class="app__more-text">
                   <strong>{o.data.title}</strong>
                   <span>{o.data.hook}</span>
@@ -363,6 +372,9 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
     gap: 6px;
   }
   .app__stack li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 5px 10px;
     border-radius: 999px;
     background: var(--card);

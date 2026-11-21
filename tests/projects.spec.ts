@@ -67,3 +67,17 @@ test('lists every public GitHub repository with a link', async ({ page }) => {
   }
   await expect(section.getByRole('link', { name: /^Case study ?: FlexOrder-e2e-Automation-with-CI-CD$/ })).toHaveAttribute('href', '/projects/flexorder-e2e/');
 });
+
+test('experience shows each company’s own logo', async ({ page }) => {
+  for (const path of ['/projects/', '/about/']) {
+    await page.goto(path);
+    const logos = page.locator('.co-logo img');
+    await expect(logos, path).toHaveCount(3);
+    const srcs = await logos.evaluateAll((imgs) => imgs.map((i) => i.getAttribute('src')));
+    expect(srcs.sort()).toEqual(['/companies/edutechs.webp', '/companies/wppool.svg', '/companies/zaimah.webp']);
+    const loaded = await logos.evaluateAll((imgs) =>
+      Promise.all((imgs as HTMLImageElement[]).map((i) => (i.loading = 'eager', i.decode().then(() => i.naturalWidth > 0, () => false)))),
+    );
+    expect(loaded, path).toEqual([true, true, true]);
+  }
+});

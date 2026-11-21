@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import site from '../../content/site.json';
 import AppIcon from '../../components/AppIcon.astro';
+import ProjectIcon from '../../components/ProjectIcon.astro';
+import CompanyLogo from '../../components/CompanyLogo.astro';
 import { projectLook } from '../../lib/projects';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
@@ -14,7 +16,6 @@ const groups = [...new Set(site.repos.map((r) => r.group))].map((g) => ({
   repos: site.repos.filter((r) => r.group === g).sort((a, b) => b.updated.localeCompare(a.updated)),
 }));
 const today = projectLook;
-const companyColor: Record<string, string> = { WPPOOL: '#3a6df0', 'Zaimah Technologies': '#0f9e66', Edutechs: '#1aa7ec' };
 const month = (ym: string) =>
   new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
@@ -48,7 +49,7 @@ const month = (ym: string) =>
                 {card.mock === 'face' && <FaceMock />}
               </div>
               <div class="today__strip">
-                <AppIcon name={card.icon} size={40} />
+                <ProjectIcon id={p.id} size={40} />
                 <span class="today__app">
                   <strong>{p.data.title}</strong>
                   <span>{p.data.hook}</span>
@@ -70,9 +71,7 @@ const month = (ym: string) =>
           {
             site.experience.map((e) => (
               <li>
-                <span class="work__icon" style={`--c:${companyColor[e.company] ?? '#8e8e93'}`} aria-hidden="true">
-                  {e.company.slice(0, 1)}
-                </span>
+                <CompanyLogo src={e.logo} name={e.company} size={40} />
                 <span class="work__text">
                   <strong>{e.company}</strong>
                   <span>
@@ -306,19 +305,6 @@ const month = (ym: string) =>
     display: flex;
     align-items: center;
     gap: 12px;
-  }
-  .work__icon {
-    width: 44px;
-    height: 44px;
-    flex: none;
-    display: grid;
-    place-items: center;
-    border-radius: 22.5%;
-    background: var(--c);
-    color: #fff;
-    font-size: 20px;
-    font-weight: 700;
-    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.18) inset, 0 1px 2px rgb(0 0 0 / 0.25);
   }
   .work__text {
     display: grid;
