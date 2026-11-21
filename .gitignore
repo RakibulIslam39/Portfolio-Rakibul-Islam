@@ -10,3 +10,4 @@ reports/
 # Local scratch, not part of the site
 _to_delete/
 Claude outputs/
+.tmp/

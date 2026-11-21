@@ -142,9 +142,10 @@ const rows = [
       const before = row.dataset.vs ? (s[row.dataset.vs as keyof Stats] as number | undefined) : undefined;
       const chg = row.querySelector<HTMLElement>('[data-change]')!;
       if (typeof before === 'number') {
-        const pct = before > 0 ? ((value - before) / before) * 100 : value > 0 ? 100 : 0;
-        row.dataset.trend = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-        chg.textContent = `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
+        // Nothing to compare with yet: say "New" rather than an invented +100%.
+        const pct = before > 0 ? ((value - before) / before) * 100 : 0;
+        row.dataset.trend = pct > 0 || (before === 0 && value > 0) ? 'up' : pct < 0 ? 'down' : 'flat';
+        chg.textContent = before === 0 ? (value > 0 ? 'New' : '0%') : `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
         chg.hidden = false;
         row.querySelector('.st__spark path')!.setAttribute('d', spark(before, value));
       }

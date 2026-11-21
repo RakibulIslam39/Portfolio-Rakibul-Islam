@@ -1,170 +1,360 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppIcon from '../../components/AppIcon.astro';
+import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
+import TrafficMock from '../../components/mockups/TrafficMock.astro';
+import FaceMock from '../../components/mockups/FaceMock.astro';
+import { projectLook } from '../../lib/projects';
 
 export async function getStaticPaths() {
   const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-  return projects.map((project, i) => ({
+  return projects.map((project) => ({
     params: { slug: project.id },
-    props: { project, next: projects[(i + 1) % projects.length]! },
+    props: { project, others: projects.filter((p) => p.id !== project.id) },
   }));
 }
 
-const { project, next } = Astro.props;
+const { project, others } = Astro.props;
 const { Content } = await render(project);
 const d = project.data;
+const look = projectLook[project.id]!;
+const [primary, ...moreLinks] = d.links;
+const year = d.period.match(/\d{4}/)?.[0] ?? '';
 ---
 
 <BaseLayout title={`${d.title} | Rakibul Islam`} description={d.summary}>
-  <article class="container case">
-    <a class="back-link tap" href="/projects/">← All projects</a>
+  <article class="container app">
+    <a class="app__back" href="/projects/">‹ Projects</a>
 
-    <header class="page-head">
-      <div class="case__title">
-        <h1>{d.title}</h1>
-        {d.placeholder && <span class="draft-badge">Draft</span>}
+    <header class="app__head">
+      <span class="app__icon"><AppIcon name={look.icon} size={128} /></span>
+      <div class="app__text">
+        <div class="app__title">
+          <h1>{d.title}</h1>
+          {d.placeholder && <span class="draft-badge">Draft</span>}
+        </div>
+        <p class="app__sub">{d.summary}</p>
+        <p class="app__meta">{d.role} · {look.category}</p>
+        <p class="app__actions">
+          {
+            primary && (
+              <a class="app__btn app__btn--primary" href={primary.url} target="_blank" rel="noopener">
+                {primary.label === 'Source code' ? 'View code' : primary.label}
+                <span class="sr-only"> on GitHub (opens in a new tab)</span>
+              </a>
+            )
+          }
+          {
+            moreLinks.map((l) => (
+              <a class="app__btn" href={l.url} target="_blank" rel="noopener">
+                {l.label}
+              </a>
+            ))
+          }
+          <a class="app__btn" href="#about">Read the case study</a>
+        </p>
       </div>
-      <p>{d.summary}</p>
-      <p class="case__hook">{d.hook}</p>
     </header>
 
-    <dl class="case__meta">
-      <div><dt>Role</dt><dd>{d.role}</dd></div>
-      <div><dt>When</dt><dd>{d.period}</dd></div>
-      <div><dt>Context</dt><dd>{d.context}</dd></div>
+    <dl class="app__facts" aria-label="Key facts">
       {
-        d.links.length > 0 && (
+        d.metrics.map((m) => (
           <div>
-            <dt>Links</dt>
-            <dd class="case__links">
-              {d.links.map((l) => (
-                <a href={l.url} target="_blank" rel="noopener">
-                  {l.label} ↗
-                </a>
-              ))}
-            </dd>
+            <dt>{m.label}</dt>
+            <dd>{m.value}</dd>
           </div>
-        )
+        ))
       }
+      <div>
+        <dt>Stack</dt>
+        <dd>{d.stack.length}</dd>
+        <dd class="app__note">tools and libraries</dd>
+      </div>
+      <div>
+        <dt>Year</dt>
+        <dd>{year}</dd>
+        <dd class="app__note">{d.period.replace(/\s*·?\s*\d{4}.*$/, '') || d.role}</dd>
+      </div>
     </dl>
 
+    <section class="app__section" aria-labelledby="preview">
+      <h2 id="preview">Preview</h2>
+      <div class="app__preview">
+        <figure class:list={['app__shot', `tone--${look.tone}`]}>
+          {look.mock === 'flexorder' && <FlexOrderMock />}
+          {look.mock === 'traffic' && <TrafficMock />}
+          {look.mock === 'face' && <FaceMock />}
+          <figcaption class="sr-only">Drawn mock-up of {d.title}</figcaption>
+        </figure>
+        <div class:list={['app__card', `tone--${look.tone}`]}>
+          <p class="app__eyebrow">The headline</p>
+          <p class="app__big">{d.hook}</p>
+          <p class="app__small">{look.headline}.</p>
+        </div>
+        <div class="app__card app__card--plain">
+          <p class="app__eyebrow">Built with</p>
+          <ul class="app__stack">{d.stack.map((s) => <li>{s}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="app__section app__cols" aria-labelledby="about">
+      <div class="prose app__prose">
+        <h2 id="about">About</h2>
+        <p class="app__context">{d.context}</p>
+        <Content />
+      </div>
+      <aside class="app__info" aria-labelledby="info">
+        <h2 id="info">Information</h2>
+        <dl>
+          <div><dt>Role</dt><dd>{d.role}</dd></div>
+          <div><dt>When</dt><dd>{d.period}</dd></div>
+          <div><dt>Category</dt><dd>{look.category}</dd></div>
+          {
+            d.links.map((l) => (
+              <div>
+                <dt>{l.label}</dt>
+                <dd>
+                  <a href={l.url} target="_blank" rel="noopener">
+                    {l.url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '')} ↗
+                  </a>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </aside>
+    </section>
+
     {
-      d.metrics.length > 0 && (
-        <ul class="case__metrics" aria-label="Results">
-          {d.metrics.map((m) => (
-            <li>
-              <strong>{m.value}</strong> {m.label}
-            </li>
-          ))}
-        </ul>
+      d.history.length > 0 && (
+        <section class="app__section" aria-labelledby="history">
+          <h2 id="history">Version history</h2>
+          <ol class="app__history">
+            {d.history.map((h) => (
+              <li>
+                <p class="app__hv">
+                  <strong>{h.version}</strong>
+                  <span>{h.date}</span>
+                </p>
+                <p>{h.note}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
       )
     }
 
-    <div class="case__layout">
-      <div class="prose">
-        <Content />
-      </div>
-      <aside class="case__stack" aria-label="Tech stack">
-        <h2>Stack</h2>
-        <ul>{d.stack.map((s) => <li class="pill">{s}</li>)}</ul>
-      </aside>
-    </div>
-
-    <nav class="case__next" aria-label="Next project">
-      <span>Next project</span>
-      <a href={`/projects/${next.id}/`}>{next.data.title} →</a>
-    </nav>
+    <section class="app__section" aria-labelledby="more">
+      <h2 id="more">You might also like</h2>
+      <ul class="app__more">
+        {
+          others.map((o) => {
+            const ol = projectLook[o.id]!;
+            return (
+              <li>
+                <AppIcon name={ol.icon} size={56} />
+                <span class="app__more-text">
+                  <strong>{o.data.title}</strong>
+                  <span>{o.data.hook}</span>
+                </span>
+                <a class="app__get" href={`/projects/${o.id}/`}>
+                  View<span class="sr-only"> {o.data.title}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
   </article>
 </BaseLayout>
 
 <style>
-  .case {
+  .app {
     padding-bottom: 48px;
   }
-  .case__title {
+  .app__back {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--link);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .app__back:hover {
+    text-decoration: underline;
+  }
+  .app__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+    margin: 8px 0 28px;
+  }
+  .app__icon {
+    display: block;
+    line-height: 0;
+  }
+  .app__title {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 14px;
-    margin-bottom: 14px;
   }
-  .case__title :global(h1) {
-    margin-bottom: 0 !important;
+  .app__title h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
   }
-  .case__hook {
-    margin-top: 12px !important;
-    font-size: 16px !important;
-    font-weight: 600;
-    color: var(--pass);
+  .app__sub {
+    margin: 8px 0 6px;
+    font-size: 17px;
+    color: var(--text);
+    max-width: 62ch;
   }
-  .case__meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px 32px;
-    margin: 0 0 28px;
-    padding: 20px 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-  }
-  .case__meta dt {
+  .app__meta {
+    margin: 0 0 16px;
     font-size: 13px;
     color: var(--muted);
-    margin-bottom: 4px;
   }
-  .case__meta dd {
-    margin: 0;
-    color: var(--text);
-    font-size: 15px;
-  }
-  .case__links {
-    display: flex;
-    flex-direction: column;
-  }
-  .case__links a {
-    color: var(--link);
-    text-decoration: none;
-    padding: 10px 0;
-    margin: -10px 0;
-  }
-  .case__links a + a {
-    margin-top: 0;
-  }
-  .case__links a:hover {
-    text-decoration: underline;
-  }
-  .case__metrics {
-    list-style: none;
-    margin: 0 0 40px;
-    padding: 0;
+  .app__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 28px;
-    font-size: 15px;
-    color: var(--muted);
+    gap: 10px;
+    margin: 0;
   }
-  .case__metrics strong {
-    color: var(--pass);
-    font-size: 20px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    margin-right: 4px;
+  .app__btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
   }
-  .case__layout {
+  .app__btn--primary {
+    background: #0a64d8;
+    color: #fff;
+  }
+  .app__btn:hover {
+    filter: brightness(1.08);
+  }
+
+  .app__facts {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 240px;
-    gap: 48px;
-    align-items: start;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(130px, 1fr);
+    margin: 0 0 8px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-align: center;
   }
-  .case__stack {
-    position: sticky;
-    top: 96px;
+  .app__facts > div {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 16px;
   }
-  .case__stack h2 {
-    font-size: 15px;
+  .app__facts > div + div {
+    border-left: 1px solid var(--line);
+  }
+  .app__facts dt {
+    min-height: 2.7em;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    line-height: 1.35;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 12px;
   }
-  .case__stack ul {
+  .app__facts dd {
+    margin: 6px 0 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .app__facts dd.app__note {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .app__section {
+    margin-top: 44px;
+  }
+  .app__section h2 {
+    font-size: 24px;
+    margin: 0 0 16px;
+  }
+  .app__preview {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .app__shot,
+  .app__card {
+    margin: 0;
+    border-radius: 22px;
+    min-height: 300px;
+    overflow: hidden;
+  }
+  .app__shot {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  .tone--mint {
+    background: linear-gradient(160deg, #d8f7e6, #b8ecd0);
+    color: #10251a;
+  }
+  .tone--indigo {
+    background: linear-gradient(160deg, #3446c7, #1b2477);
+    color: #fff;
+  }
+  .tone--lilac {
+    background: linear-gradient(160deg, #f6dcff, #e3c4ff);
+    color: #2a1236;
+  }
+  .app__card {
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+  }
+  .app__card--plain {
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    color: var(--text);
+  }
+  .app__eyebrow {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .app__big {
+    margin: auto 0 8px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .app__small {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  .app__stack {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -172,37 +362,163 @@ const d = project.data;
     flex-wrap: wrap;
     gap: 6px;
   }
-  .case__next {
+  .app__stack li {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--card);
+    font-size: 13px;
+  }
+
+  .app__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 48px;
+    align-items: start;
+  }
+  .app__context {
+    font-size: 18px;
+    color: var(--text);
+  }
+  .app__info {
+    position: sticky;
+    top: 96px;
+  }
+  .app__info h2 {
+    font-size: 18px;
+  }
+  .app__info dl {
+    margin: 0;
+  }
+  .app__info dl > div {
+    display: grid;
+    gap: 2px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .app__info dt {
+    color: var(--muted);
+  }
+  .app__info dd {
+    margin: 0;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .app__info a {
+    color: var(--link);
+    text-decoration: none;
+  }
+  .app__info a:hover {
+    text-decoration: underline;
+  }
+
+  .app__history {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .app__hv {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    margin-top: 56px;
-    padding-top: 24px;
-    border-top: 1px solid var(--line);
+    margin: 0 0 4px;
+  }
+  .app__hv span {
     color: var(--muted);
     font-size: 14px;
   }
-  .case__next a {
-    display: inline-flex;
+
+  .app__more {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .app__more li {
+    position: relative;
+    display: flex;
     align-items: center;
-    min-height: var(--tap);
+    gap: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+  }
+  .app__more li:hover {
+    background: var(--card);
+  }
+  .app__more-text {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .app__more-text span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .app__get {
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: var(--card);
     color: var(--text);
-    font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 13px;
     text-decoration: none;
   }
-  .case__next a:hover {
-    text-decoration: underline;
+  .app__more li:hover .app__get {
+    background: var(--tile);
   }
+  /* The whole row is the link's hit area. */
+  .app__get::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
   @media (max-width: 899px) {
-    .case__layout {
+    .app__preview {
+      grid-template-columns: 1fr 1fr;
+    }
+    .app__shot {
+      grid-column: 1 / -1;
+    }
+    .app__cols {
       grid-template-columns: 1fr;
       gap: 24px;
     }
-    .case__stack {
+    .app__info {
       position: static;
-      order: -1;
+    }
+  }
+  @media (max-width: 700px) {
+    .app__facts {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 14px;
+    }
+    .app__facts > div + div {
+      border-left: 0;
+    }
+  }
+  @media (max-width: 560px) {
+    .app__head {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .app__icon :global(*) {
+      --size: 88px;
+    }
+    .app__preview {
+      grid-template-columns: 1fr;
+    }
+    .app__shot,
+    .app__card {
+      min-height: 220px;
     }
   }
 </style>

@@ -72,6 +72,17 @@ test.describe('live stats', () => {
     await expect(stats.locator('[data-stat="countries"] [data-value]')).toHaveText('37');
   });
 
+  test('says "New" instead of a made-up percentage when there is nothing to compare with', async ({ page }) => {
+    await page.route('**/api/stats', (r) =>
+      r.fulfill({ json: { today: 2, week: 2, countries: 1, yesterday: 0, prevWeek: 0, updatedAt: new Date().toISOString() } }),
+    );
+    await page.goto('/');
+    const stats = page.locator('#stats');
+    await stats.scrollIntoViewIfNeeded();
+    await expect(stats.locator('[data-stat="today"] [data-change]')).toHaveText('New');
+    await expect(stats.locator('[data-stat="week"] [data-change]')).toHaveText('New');
+  });
+
   test('says so when the numbers are unavailable', async ({ page }) => {
     await page.route('**/api/stats', (r) => r.fulfill({ status: 204 }));
     await page.goto('/');

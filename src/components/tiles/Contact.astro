@@ -22,6 +22,10 @@ import site from '../../content/site.json';
     <button class="contact__copy-btn" type="button" data-copy-email={site.email} hidden>Copy</button>
     <span class="sr-only" aria-live="polite" data-copy-status></span>
   </div>
+  <dl class="contact__facts">
+    <div><dt>Status</dt><dd><span class="contact__dot" aria-hidden="true"></span>{site.status.headline}</dd></div>
+    <div><dt>Local time</dt><dd><span data-contact-time>Dhaka</span> · UTC+6</dd></div>
+  </dl>
   <div class="contact__actions">
     <a class="btn" href="/Rakibul-Islam-CV.pdf" download>Download CV</a>
     <a class="btn" href="/rakibul-islam.vcf" download>Save contact</a>
@@ -110,6 +114,36 @@ import site from '../../content/site.json';
     box-shadow: 0 0 0 1px var(--line) inset;
     cursor: pointer;
   }
+  .contact__facts {
+    margin: 0 0 14px;
+    display: grid;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .contact__facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .contact__facts dt {
+    color: var(--muted);
+  }
+  .contact__facts dd {
+    margin: 0;
+    color: var(--text);
+    text-align: right;
+  }
+  .contact__dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--pass);
+    vertical-align: 1px;
+  }
   .contact__actions {
     margin-top: auto;
     display: grid;
@@ -122,6 +156,14 @@ import site from '../../content/site.json';
 </style>
 
 <script>
+  // Local time in Dhaka, so visitors know whether I'm likely awake.
+  document.querySelectorAll<HTMLElement>('[data-contact-time]').forEach((el) => {
+    const f = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit' });
+    const tick = () => (el.textContent = `${f.format(new Date())} in Dhaka`);
+    tick();
+    window.setInterval(tick, 30_000);
+  });
+
   import { applyLook, savedLook } from '../../scripts/look';
   applyLook(savedLook());
 

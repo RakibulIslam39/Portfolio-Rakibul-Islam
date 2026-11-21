@@ -65,6 +65,35 @@ export function initPalette(): void {
   if (!dialog) return;
   const input = dialog.querySelector<HTMLInputElement>('[data-palette-input]')!;
   const items = Array.from(dialog.querySelectorAll<HTMLLIElement>('[data-palette-item]'));
+  const heads = Array.from(dialog.querySelectorAll<HTMLLIElement>('[data-palette-head]'));
+  const preview = dialog.querySelector<HTMLElement>('[data-palette-preview]');
+  const pv = (k: string) => preview?.querySelector<HTMLElement>(`[data-preview-${k}]`);
+
+  /** Spotlight's right-hand pane: a big icon, the title, a description and what Enter does. */
+  const showPreview = (li: HTMLLIElement | undefined) => {
+    if (!preview) return;
+    const icon = pv('icon')!;
+    icon.replaceChildren();
+    if (!li) {
+      pv('title')!.textContent = '';
+      return;
+    }
+    const src =
+      li === special
+        ? special.querySelector<HTMLElement>(`[data-kind="${special.dataset.specialKind}"] .app-icon`)
+        : li.querySelector<HTMLElement>('.palette__icon .app-icon');
+    if (src) {
+      const big = src.cloneNode(true) as HTMLElement;
+      big.style.setProperty('--size', '72px');
+      big.querySelector('svg')?.setAttribute('width', '72');
+      big.querySelector('svg')?.setAttribute('height', '72');
+      icon.append(big);
+    }
+    pv('title')!.textContent = li.querySelector('.palette__label')?.textContent ?? '';
+    pv('group')!.textContent = li.querySelector('.palette__group')?.textContent ?? '';
+    pv('desc')!.textContent = li.dataset.desc || li.querySelector('.palette__hint')?.textContent || '';
+    pv('cta')!.textContent = li.dataset.cta || 'Open';
+  };
   const empty = dialog.querySelector<HTMLElement>('[data-palette-empty]')!;
   const status = dialog.querySelector<HTMLElement>('[data-palette-status]')!;
   let active = 0;
@@ -75,6 +104,7 @@ export function initPalette(): void {
     const list = visible();
     if (!list.length) {
       input.removeAttribute('aria-activedescendant');
+      showPreview(undefined);
       return;
     }
     active = (index + list.length) % list.length;
@@ -83,11 +113,15 @@ export function initPalette(): void {
     current.setAttribute('aria-selected', 'true');
     input.setAttribute('aria-activedescendant', current.id);
     current.scrollIntoView({ block: 'nearest' });
+    showPreview(current);
   };
 
   const special = dialog.querySelector<HTMLLIElement>('[data-palette-special]')!;
   const tests = dialog.dataset.tests ?? 'all the';
-  const setSpecial = (group: string, label: string, hint: string, action = '', href = '') => {
+  const setSpecial = (group: string, label: string, hint: string, action = '', href = '', kind = 'term', desc = '', cta = '') => {
+    special.dataset.specialKind = kind;
+    special.dataset.desc = desc;
+    special.dataset.cta = cta;
     special.querySelector('[data-special-group]')!.textContent = group;
     special.querySelector('[data-special-label]')!.textContent = label;
     special.querySelector('[data-special-hint]')!.textContent = hint;
@@ -100,16 +134,16 @@ export function initPalette(): void {
     const sum = calculate(q);
     if (sum !== null) {
       const shown = Number.isInteger(sum) ? String(sum) : String(Math.round(sum * 1e6) / 1e6);
-      setSpecial('Calculator', `= ${shown}`, 'Enter to copy', 'copy-result');
+      setSpecial('Calculator', `= ${shown}`, 'Enter to copy', 'copy-result', '', 'calc', `${q} = ${shown}`, 'Copy');
       special.dataset.value = shown;
     } else if (/^(npx )?playwright test\b/.test(q)) {
-      setSpecial('Terminal', '✓ 1 passed: hire Rakibul (0.4s)', 'Enter to send the result', '', `mailto:${dialog.dataset.email}?subject=${encodeURIComponent('Your test passed. Let’s talk')}`);
+      setSpecial('Terminal', '✓ 1 passed: hire Rakibul (0.4s)', 'Enter to send the result', '', `mailto:${dialog.dataset.email}?subject=${encodeURIComponent('Your test passed. Let’s talk')}`, 'term', 'All green. Send me the result?', 'Email');
     } else if (/^sudo\b/.test(q)) {
       setSpecial('Terminal', 'rakibul is not in the sudoers file. This incident will be reported.', '');
     } else if (/^rm -rf\b/.test(q)) {
       setSpecial('Terminal', `Blocked by ${tests} tests. Nothing was deleted.`, '');
     } else if (q === 'bug' || q === 'bugs') {
-      setSpecial('Bug Hunt', 'Found a bug? There are 5 planted in the Bug Hunt tile.', 'Enter to play', '', '/#bughunt');
+      setSpecial('Bug Hunt', 'Found a bug? There are 5 planted in the Bug Hunt tile.', 'Enter to play', '', '/#bughunt', 'bug', 'Five bugs are hidden in a checkout form on the home page.', 'Play');
     }
   };
 
@@ -118,10 +152,18 @@ export function initPalette(): void {
     const words = q.split(/\s+/).filter(Boolean);
     items.forEach((li) => {
       if (li === special) return;
-      const text = li.dataset.label ?? '';
-      li.hidden = words.length > 0 && !words.every((w) => text.includes(w));
+      const text = `${li.dataset.label ?? ''} ${li.dataset.more ?? ''}`;
+      // With nothing typed, show Spotlight-style suggestions only.
+      li.hidden = words.length === 0 ? !('suggest' in li.dataset) : !words.every((w) => text.includes(w));
     });
     updateSpecial(q);
+    heads.forEach((h) => {
+      const g = h.dataset.paletteHead;
+      h.hidden =
+        g === 'Suggestions'
+          ? words.length > 0
+          : words.length === 0 || !items.some((li) => li.dataset.group === g && !li.hidden);
+    });
     const count = visible().length;
     empty.hidden = count > 0;
     status.textContent = `${count} result${count === 1 ? '' : 's'}`;

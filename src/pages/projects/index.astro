@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import site from '../../content/site.json';
 import AppIcon from '../../components/AppIcon.astro';
+import { projectLook } from '../../lib/projects';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
 import FaceMock from '../../components/mockups/FaceMock.astro';
@@ -12,12 +13,7 @@ const groups = [...new Set(site.repos.map((r) => r.group))].map((g) => ({
   name: g,
   repos: site.repos.filter((r) => r.group === g).sort((a, b) => b.updated.localeCompare(a.updated)),
 }));
-// App Store "Today" cards: each case study gets an eyebrow, a big headline and a drawn mock-up.
-const today: Record<string, { eyebrow: string; headline: string; tone: string; icon: 'githubactions' | 'report' | 'portrait'; mock: 'flexorder' | 'traffic' | 'face' }> = {
-  'flexorder-e2e': { eyebrow: 'At WPPOOL · 2024 – now', headline: '38 tests guard every plugin release', tone: 'mint', icon: 'githubactions', mock: 'flexorder' },
-  'traffic-flow-prediction': { eyebrow: 'Capstone · BUBT 2022', headline: 'Which model predicts traffic best?', tone: 'indigo', icon: 'report', mock: 'traffic' },
-  'ai-face-analyzer': { eyebrow: 'Side project · 2026', headline: 'Age, emotion and gender from one photo', tone: 'lilac', icon: 'portrait', mock: 'face' },
-};
+const today = projectLook;
 const companyColor: Record<string, string> = { WPPOOL: '#3a6df0', 'Zaimah Technologies': '#0f9e66', Edutechs: '#1aa7ec' };
 const month = (ym: string) =>
   new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -25,9 +21,15 @@ const month = (ym: string) =>
 
 <BaseLayout title="Projects | Rakibul Islam" description="Test automation frameworks, CI pipelines and side projects by Rakibul Islam.">
   <div class="container">
-    <header class="page-head">
-      <h1>Projects</h1>
-      <p>Test frameworks, pipelines and a few side projects. Each one has a short case study: the problem, what I built and how it turned out.</p>
+    <header class="page-head store-head">
+      <div>
+        <p class="store-head__eyebrow">Test frameworks, pipelines and side projects</p>
+        <h1>Projects</h1>
+        <p>Each one has a short case study: the problem, what I built and how it turned out.</p>
+      </div>
+      <a class="store-head__me" href="/about/" aria-label={`About ${site.firstName}`}>
+        <img data-me src="/portrait/photo-192.webp" data-photo="/portrait/photo-192.webp" data-avatar="/portrait/avatar-192.webp" width="40" height="40" alt="" decoding="async" />
+      </a>
     </header>
 
     <ul class="plist">
@@ -131,6 +133,34 @@ const month = (ym: string) =>
 </BaseLayout>
 
 <style>
+  .store-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+  }
+  .store-head__eyebrow {
+    margin: 0 0 4px !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .store-head__me {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    margin-bottom: 8px;
+  }
+  .store-head__me img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
   /* App Store "Today" cards */
   .plist {
     list-style: none;

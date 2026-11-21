@@ -13,29 +13,36 @@ test('projects index lists every case study', async ({ page }) => {
   await expect(page.getByRole('heading', { name: "Where I've tested" })).toBeVisible();
 });
 
-test('a case study has its sections, metrics and stack', async ({ page }) => {
+test('a case study reads like an App Store page', async ({ page }) => {
   await page.goto('/projects/flexorder-e2e/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('FlexOrder E2E Automation');
-  for (const h of ['The problem', 'What I built', 'The result']) {
-    await expect(page.getByRole('heading', { level: 2, name: h })).toBeVisible();
+  for (const h of ['Preview', 'About', 'Information', 'You might also like', 'The problem', 'What I built', 'The result']) {
+    await expect(page.getByRole('heading', { level: 2, name: h, exact: true })).toBeVisible();
   }
-  const results = page.getByRole('list', { name: 'Results' });
-  await expect(results).toContainText('38');
-  await expect(results).toContainText('100%');
-  await expect(page.getByRole('complementary', { name: 'Tech stack' })).toContainText('Playwright');
+  const facts = page.getByRole('definition').locator('xpath=ancestor::dl[1]').first();
+  await expect(facts).toHaveAttribute('aria-label', 'Key facts');
+  await expect(facts).toContainText('38');
+  await expect(facts).toContainText('100%');
+  await expect(page.locator('.app__stack')).toContainText('Playwright');
+  await expect(page.getByRole('link', { name: '‹ Projects' })).toHaveAttribute('href', '/projects/');
 });
 
-test('"next project" links cycle through all case studies', async ({ page }) => {
-  await page.goto(`/projects/${slugs[0]}/`);
-  for (let i = 1; i <= slugs.length; i++) {
-    await page.getByRole('navigation', { name: 'Next project' }).getByRole('link').click();
-    await expect(page).toHaveURL(new RegExp(`/projects/${slugs[i % slugs.length]}/$`));
+test('"You might also like" links to every other case study', async ({ page }) => {
+  for (const slug of slugs) {
+    await page.goto(`/projects/${slug}/`);
+    const more = page.locator('.app__more');
+    await expect(more.getByRole('link')).toHaveCount(slugs.length - 1);
+    for (const other of slugs.filter((s) => s !== slug)) {
+      await expect(more.locator(`a[href="/projects/${other}/"]`)).toHaveCount(1);
+    }
   }
+  await page.locator('.app__more').getByRole('link').first().click();
+  await expect(page).toHaveURL(/\/projects\/(flexorder-e2e|traffic-flow-prediction)\/$/);
 });
 
 test('external project links open in a new tab safely', async ({ page }) => {
   await page.goto('/projects/traffic-flow-prediction/');
-  const link = page.getByRole('link', { name: /Source code/ });
+  const link = page.getByRole('link', { name: /View code/ });
   await expect(link).toHaveAttribute('href', /github\.com\/RakibulIslam39\/traffic-flow-prediction-Python/);
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', /noopener/);

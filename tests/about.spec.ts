@@ -1,55 +1,86 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('about page (Notes layout)', () => {
+test.describe('about page (Apple Notes window)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/about/');
   });
 
-  test('shows one note at a time, starting with "About me"', async ({ page }) => {
-    const tabs = page.getByRole('tablist', { name: 'Notes' }).getByRole('tab');
-    await expect(tabs).toHaveCount(6);
-    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByRole('tabpanel')).toHaveCount(1);
-    await expect(page.getByRole('tabpanel')).toContainText('About me');
+  test('is one long note with every section, starting at the intro', async ({ page }) => {
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText("Hey, I'm Rakibul.");
+    for (const h of ['Experience', 'Key achievements', 'Skills', 'Education & languages', 'Now']) {
+      await expect(page.getByRole('heading', { level: 2, name: h })).toBeAttached();
+    }
+    await expect(page.locator('[data-note]')).toHaveCount(6);
   });
 
-  test('clicking a note shows it and updates the URL hash', async ({ page }) => {
-    await page.getByRole('tab', { name: /Experience/ }).click();
-    const panel = page.getByRole('tabpanel');
-    await expect(panel).toContainText('Jr. SQA Engineer');
-    await expect(panel).toContainText('WPPOOL');
+  test('on desktop the note scrolls inside the window and the list follows along', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Desktop layout');
+    const list = page.getByRole('navigation', { name: 'About page sections' });
+    const editor = page.locator('[data-notes-editor]');
+    await expect(list.getByRole('link', { name: /^About/ })).toHaveAttribute('aria-current', 'true');
+
+    // The window fits the screen; the note itself scrolls.
+    const fits = await page.locator('[data-notes]').evaluate((el) => el.getBoundingClientRect().bottom <= window.innerHeight + 1);
+    expect(fits).toBe(true);
+    const scrolls = await editor.evaluate((el) => el.scrollHeight > el.clientHeight);
+    expect(scrolls).toBe(true);
+
+    // Scroll-spy
+    await editor.evaluate((el: HTMLElement) => {
+      const s = el.querySelector<HTMLElement>('#skills')!;
+      el.style.scrollBehavior = 'auto';
+      el.scrollTop = s.offsetTop - el.offsetTop;
+    });
+    await expect(list.getByRole('link', { name: /^Skills/ })).toHaveAttribute('aria-current', 'true');
+    await editor.evaluate((el) => (el.scrollTop = el.scrollHeight));
+    await expect(list.getByRole('link', { name: /^Now/ })).toHaveAttribute('aria-current', 'true');
+  });
+
+  test('clicking a note jumps to that section and updates the URL hash', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'The list is hidden on phones');
+    const list = page.getByRole('navigation', { name: 'About page sections' });
+    await list.getByRole('link', { name: /^Experience/ }).click();
     await expect(page).toHaveURL(/#experience$/);
+    await expect(list.getByRole('link', { name: /^Experience/ })).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByRole('heading', { name: 'Experience', level: 2 })).toBeInViewport();
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
-  test('arrow keys, Home and End move between notes', async ({ page, isMobile }) => {
-    test.skip(isMobile, 'Keyboard test');
-    const first = page.getByRole('tab', { name: /About me/ });
-    await first.focus();
-    await page.keyboard.press('ArrowDown');
-    await expect(page.getByRole('tab', { name: /Experience/ })).toBeFocused();
-    await expect(page.getByRole('tab', { name: /Experience/ })).toHaveAttribute('aria-selected', 'true');
-    await page.keyboard.press('End');
-    await expect(page.getByRole('tab', { name: /Now/ })).toHaveAttribute('aria-selected', 'true');
-    await page.keyboard.press('ArrowDown');
-    await expect(first).toHaveAttribute('aria-selected', 'true');
-    await page.keyboard.press('ArrowUp');
-    await expect(page.getByRole('tab', { name: /Now/ })).toHaveAttribute('aria-selected', 'true');
-    await page.keyboard.press('Home');
-    await expect(first).toHaveAttribute('aria-selected', 'true');
-  });
-
-  test('a hash link opens that note directly', async ({ page }) => {
+  test('a hash link opens at that section', async ({ page }) => {
     await page.goto('/about/#education');
-    await expect(page.getByRole('tab', { name: /Education/ })).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByRole('tabpanel')).toContainText('Bangladesh University of Business and Technology');
-    await expect(page.getByRole('tabpanel')).toContainText('Bengali');
+    await expect(page.getByText('Bangladesh University of Business and Technology')).toBeInViewport();
+  });
+
+  test('the sidebars can be hidden and shown again', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'No sidebars on phones');
+    const list = page.getByRole('navigation', { name: 'About page sections' });
+    await page.getByRole('button', { name: 'Hide Notes sidebars' }).click();
+    await expect(list).toBeHidden();
+    await page.getByRole('button', { name: 'Show Notes sidebars' }).click();
+    await expect(list).toBeVisible();
+  });
+
+  test('a temporary note can be written and is not saved', async ({ page, isMobile }) => {
+    await page.getByRole('button', { name: 'Create a temporary note' }).click();
+    const title = page.getByRole('textbox', { name: 'Note title' });
+    await expect(title).toBeFocused();
+    await title.fill('Bug ideas');
+    await page.getByRole('textbox', { name: 'Note body' }).fill('Check the empty cart');
+    if (!isMobile) {
+      await expect(page.locator('[data-notes-draft]')).toContainText('Bug ideas');
+    }
+    await page.getByRole('button', { name: /About Rakibul/ }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await page.reload();
+    await expect(page.locator('[data-notes-draft]')).toBeHidden();
   });
 
   test('all notes are readable without JavaScript', async ({ browser }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const page = await ctx.newPage();
     await page.goto('/about/');
-    await expect(page.locator('[data-note]:visible')).toHaveCount(6);
+    await expect(page.locator('[data-note]')).toHaveCount(6);
+    await expect(page.locator('[data-notes-temp]')).toBeHidden();
     await ctx.close();
   });
 });

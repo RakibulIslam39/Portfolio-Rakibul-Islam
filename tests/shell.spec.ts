@@ -52,7 +52,8 @@ test.describe('command palette', () => {
     await expect(input).toBeFocused();
 
     await input.fill('about');
-    await expect(dialog.getByRole('option')).toHaveCount(1);
+    await expect(dialog.getByRole('option').first()).toHaveAttribute('aria-selected', 'true');
+    await expect(dialog.getByRole('option').first()).toContainText('About');
     await input.press('Enter');
     await expect(page).toHaveURL(/\/about\/$/);
   });
@@ -71,6 +72,20 @@ test.describe('command palette', () => {
     await expect(options.last()).toHaveAttribute('aria-selected', 'true');
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
+  });
+
+  test('looks like Spotlight: suggestions first, then a preview of the selected result', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'The preview pane is hidden on phones');
+    await page.goto('/');
+    await page.getByRole('button', { name: /Search/ }).click();
+    const dialog = page.getByRole('dialog', { name: 'Search the site' });
+    await expect(dialog.getByText('Suggestions', { exact: true })).toBeVisible();
+    const preview = dialog.locator('[data-palette-preview]');
+    await expect(preview).toContainText('About');
+    await dialog.getByRole('combobox').fill('flexorder');
+    await expect(dialog.getByText('Suggestions', { exact: true })).toBeHidden();
+    await expect(preview).toContainText('FlexOrder E2E Automation');
+    await expect(preview).toContainText('Playwright');
   });
 
   test('shows an empty state for no matches', async ({ page }) => {

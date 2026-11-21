@@ -2,20 +2,43 @@
 import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
+
+// What each WPPOOL plugin does, shown like the App Store's app list.
+const about: Record<string, [string, string]> = {
+  FlexOrder: ['Syncs WooCommerce orders with Google Sheets', '#1f9d55'],
+  FlexStock: ['Manages WooCommerce stock from Google Sheets', '#0f8a6a'],
+  EchoRewards: ['Referral and rewards program for WooCommerce', '#e8590c'],
+  FlexTable: ['Shows Google Sheets as tables in WordPress', '#1a73e8'],
+  FormyChat: ['Sends contact form leads to WhatsApp', '#25a244'],
+  'WP Dark Mode': ['Adds a dark mode to WordPress sites', '#3b3f52'],
+  'Jitsi Meet': ['Video meetings inside WordPress', '#2a6ad1'],
+};
 ---
 
 <Tile id="plugins" size="1x1" area="plugins" app="Plugins I test" class="plugins">
   <AppIcon name="wordpress" slot="icon" />
   <ul class="plg">
     {
-      site.plugins.map((p) => (
-        <li>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12.5l4.5 4.5L19 7.5" />
-          </svg>
-          {p}
-        </li>
-      ))
+      site.plugins.map((p) => {
+        const [desc, color] = about[p] ?? ['WordPress plugin', '#21759b'];
+        return (
+          <li>
+            <span class="plg__icon" style={`--c:${color}`} aria-hidden="true">
+              {p.replace(/^WP /, '').slice(0, 1)}
+            </span>
+            <span class="plg__text">
+              <strong>{p}</strong>
+              <span>{desc}</span>
+            </span>
+            <span class="plg__ok" title="Covered by my tests">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+              <span class="sr-only">Tested</span>
+            </span>
+          </li>
+        );
+      })
     }
   </ul>
 </Tile>
@@ -25,18 +48,52 @@ import site from '../../content/site.json';
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: 14px;
-    columns: 1;
   }
   .plg li {
-    display: flex;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 8px;
-    padding: 3px 0;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .plg li + li {
+    border-top: 1px solid var(--line);
+  }
+  .plg__icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 78%, #fff), var(--c));
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.15) inset;
+  }
+  .plg__text {
+    display: grid;
+    min-width: 0;
+    line-height: 1.3;
+  }
+  .plg__text strong {
+    font-size: 14px;
     color: var(--text);
   }
-  .plg svg {
+  .plg__text span {
+    font-size: 12px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .plg__ok {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--pass) 18%, transparent);
     color: var(--pass);
-    flex: none;
   }
 </style>

@@ -2,45 +2,52 @@
 import site from '../content/site.json';
 import { getCollection } from 'astro:content';
 import qa from '../data/qa-report.json';
+import AppIcon from './AppIcon.astro';
+import { projectLook } from '../lib/projects';
 
 const posts = (await getCollection('writing')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const caseStudies = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
-type Item = { label: string; hint: string; group: string; href?: string; action?: string };
+type Icon = Parameters<typeof AppIcon>[0]['name'];
+type Item = { label: string; hint: string; group: string; icon: Icon; desc: string; href?: string; action?: string; suggest?: boolean };
 
+const ext = 'Opens in a new tab';
 const items: Item[] = [
-  { group: 'Pages', label: 'Home', hint: '/', href: '/' },
-  { group: 'Pages', label: 'About', hint: '/about/', href: '/about/' },
-  { group: 'Pages', label: 'Projects', hint: '/projects/', href: '/projects/' },
-  { group: 'Pages', label: 'Blog', hint: '/writing/', href: '/writing/' },
-  { group: 'Pages', label: 'Certificates', hint: '/certificates/', href: '/certificates/' },
-  { group: 'Pages', label: 'QA report', hint: '/qa/', href: '/qa/' },
-  { group: 'Pages', label: 'CV', hint: '/cv/', href: '/cv/' },
-  ...site.projects.map((p) => ({ group: 'Projects', label: p.name, hint: p.hook, href: `/projects/${p.slug}/` })),
-  ...posts.map((p) => ({ group: 'Blog', label: p.data.title, hint: p.data.source ?? p.data.category, href: p.data.url ?? `/writing/${p.id}/` })),
-  ...site.certifications.map((c) => ({ group: 'Certificates', label: c.title, hint: c.issuer, href: '/certificates/' })),
-  ...site.repos.map((r) => ({ group: 'Repositories', label: r.name, hint: r.language, href: r.url })),
-  ...site.experience.map((e) => ({ group: 'Experience', label: `${e.role} · ${e.company}`, hint: e.period, href: '/about/' })),
-  { group: 'Links', label: 'GitHub', hint: 'github.com', href: site.links.github },
-  { group: 'Links', label: 'LinkedIn', hint: 'linkedin.com', href: site.links.linkedin },
-  { group: 'Links', label: 'Medium', hint: 'medium.com', href: site.links.medium },
-  { group: 'Links', label: 'Download CV', hint: 'PDF', href: '/Rakibul-Islam-CV.pdf' },
-  { group: 'Actions', label: 'Copy email address', hint: site.email, action: 'copy-email' },
-  { group: 'Actions', label: 'Toggle dark / light theme', hint: 'Theme', action: 'toggle-theme' },
-  { group: 'Actions', label: 'Turn click sounds on / off', hint: 'Sound', action: 'toggle-sound' },
-  { group: 'Actions', label: 'Switch photo / 3D avatar', hint: 'Look', action: 'toggle-look' },
-  { group: 'Actions', label: 'Edit the home layout', hint: 'Rearrange tiles', action: 'edit-layout' },
-  { group: 'Actions', label: 'Book a QA chat', hint: 'Email', href: `mailto:${site.email}?subject=${encodeURIComponent('QA chat (via your portfolio)')}` },
+  { group: 'Pages', label: 'Home', hint: '/', href: '/', icon: 'portrait', desc: 'The bento grid: projects, live CI, Find My, Bug Hunt and more.' },
+  { group: 'Pages', label: 'About', hint: '/about/', href: '/about/', icon: 'contact', desc: 'Experience, skills and education, written as Apple Notes.', suggest: true },
+  { group: 'Pages', label: 'Projects', hint: '/projects/', href: '/projects/', icon: 'projects', desc: 'Case studies and every public GitHub repository.', suggest: true },
+  { group: 'Pages', label: 'Blog', hint: '/writing/', href: '/writing/', icon: 'blog', desc: 'What I learn while automating tests. Published on Medium.' },
+  { group: 'Pages', label: 'Certificates', hint: '/certificates/', href: '/certificates/', icon: 'certificates', desc: `${site.certifications.length} course certificates, each with a link to verify it.` },
+  { group: 'Pages', label: 'QA report', hint: '/qa/', href: '/qa/', icon: 'report', desc: `This site's own test results: ${qa.tests.total} Playwright tests, accessibility and Lighthouse.`, suggest: true },
+  { group: 'Pages', label: 'CV', hint: '/cv/', href: '/cv/', icon: 'cv', desc: 'One page, printable, with a PDF download.' },
+  ...caseStudies.map((p) => ({ group: 'Projects', label: p.data.title, hint: p.data.hook, href: `/projects/${p.id}/`, icon: projectLook[p.id]?.icon ?? 'projects', desc: p.data.summary, suggest: p.data.order === 1 })),
+  ...posts.map((p, i) => ({ group: 'Blog', label: p.data.title, hint: p.data.source ?? p.data.category, href: p.data.url ?? `/writing/${p.id}/`, icon: (p.data.url ? 'medium' : 'blog') as Icon, desc: p.data.excerpt, suggest: i === 0 })),
+  ...site.certifications.map((c) => ({ group: 'Certificates', label: c.title, hint: c.issuer, href: '/certificates/', icon: (/udemy/i.test(c.issuer) ? 'udemy' : 'certificates') as Icon, desc: `${c.issuer}. Completed ${new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}.` })),
+  ...site.repos.map((r) => ({ group: 'Repositories', label: r.name, hint: r.language, href: r.url, icon: 'github' as Icon, desc: `${r.description} ${ext} on GitHub.` })),
+  ...site.experience.map((e) => ({ group: 'Experience', label: `${e.role} · ${e.company}`, hint: e.period, href: '/about/#experience', icon: 'timeline' as Icon, desc: `${e.period} · ${e.place}` })),
+  { group: 'Links', label: 'GitHub', hint: 'github.com', href: site.links.github, icon: 'github', desc: `My repositories. ${ext}.` },
+  { group: 'Links', label: 'LinkedIn', hint: 'linkedin.com', href: site.links.linkedin, icon: 'linkedin', desc: `My LinkedIn profile. ${ext}.` },
+  { group: 'Links', label: 'Medium', hint: 'medium.com', href: site.links.medium, icon: 'medium', desc: `My posts on Medium. ${ext}.` },
+  { group: 'Links', label: 'Download CV', hint: 'PDF', href: '/Rakibul-Islam-CV.pdf', icon: 'cv', desc: 'My CV as a PDF.', suggest: true },
+  { group: 'Actions', label: 'Copy email address', hint: site.email, action: 'copy-email', icon: 'mail', desc: `Copies ${site.email} to your clipboard.` },
+  { group: 'Actions', label: 'Toggle dark / light theme', hint: 'Theme', action: 'toggle-theme', icon: 'status', desc: 'Switches between the dark and light look.' },
+  { group: 'Actions', label: 'Turn click sounds on / off', hint: 'Sound', action: 'toggle-sound', icon: 'terminal', desc: 'The soft click you hear on buttons and links.' },
+  { group: 'Actions', label: 'Switch photo / 3D avatar', hint: 'Look', action: 'toggle-look', icon: 'portrait', desc: 'Shows my photo or my 3D avatar across the site.' },
+  { group: 'Actions', label: 'Edit the home layout', hint: 'Rearrange tiles', action: 'edit-layout', icon: 'projects', desc: 'Swap the home tiles around. Your layout is saved in this browser.' },
+  { group: 'Actions', label: 'Book a QA chat', hint: 'Email', href: `mailto:${site.email}?subject=${encodeURIComponent('QA chat (via your portfolio)')}`, icon: 'mail', desc: 'A free 30-minute video call about test strategy, Playwright or CI.', suggest: true },
 ];
+const groups = [...new Set(items.map((i) => i.group))];
+const cta = (i: Item) => (i.action ? (i.action.startsWith('copy') ? 'Copy' : 'Run') : /^(https?:|mailto:)/.test(i.href ?? '') ? 'Open ↗' : 'Open');
 ---
 
 <dialog class="palette" aria-label="Search the site" data-palette data-email={site.email} data-tests={qa.tests.total}>
   <div class="palette__box">
     <label class="palette__search">
       <span class="sr-only">Search pages, projects and actions</span>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
       <input
         type="text"
-        placeholder="Search, or try 2+2…"
+        placeholder="Spotlight Search"
         autocomplete="off"
         spellcheck="false"
         role="combobox"
@@ -51,46 +58,79 @@ const items: Item[] = [
       />
       <kbd>esc</kbd>
     </label>
-    <ul id="palette-list" class="palette__list" role="listbox" aria-label="Results">
-      <li id="palette-opt-special" role="option" aria-selected="false" data-palette-item data-palette-special hidden>
-        <span class="palette__group" data-special-group>Calculator</span>
-        <span class="palette__label" data-special-label></span>
-        <span class="palette__hint" data-special-hint></span>
-      </li>
-      {
-        items.map((item, i) => (
-          <li
-            id={`palette-opt-${i}`}
-            role="option"
-            aria-selected="false"
-            data-palette-item
-            data-label={`${item.label} ${item.hint} ${item.group}`.toLowerCase()}
-            data-href={item.href}
-            data-action={item.action}
-          >
-            <span class="palette__group">{item.group}</span>
-            <span class="palette__label">{item.label}</span>
-            <span class="palette__hint">{item.hint}</span>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="palette__panes">
+      <ul id="palette-list" class="palette__list" role="listbox" aria-label="Results">
+        <li class="palette__head" role="presentation" aria-hidden="true" data-palette-head="Suggestions">Suggestions</li>
+        <li id="palette-opt-special" role="option" aria-selected="false" data-palette-item data-palette-special hidden data-desc="" data-cta="">
+          <span class="palette__icon" data-special-icon>
+            <span data-kind="calc"><AppIcon name="report" size={22} /></span>
+            <span data-kind="term"><AppIcon name="terminal" size={22} /></span>
+            <span data-kind="bug"><AppIcon name="bug" size={22} /></span>
+          </span>
+          <span class="palette__group sr-only" data-special-group>Calculator</span>
+          <span class="palette__label" data-special-label></span>
+          <span class="palette__hint" data-special-hint></span>
+        </li>
+        {
+          groups.map((g) => (
+            <>
+              <li class="palette__head" role="presentation" aria-hidden="true" data-palette-head={g}>
+                {g}
+              </li>
+              {items.map((item, i) =>
+                item.group !== g ? null : (
+                  <li
+                    id={`palette-opt-${i}`}
+                    role="option"
+                    aria-selected="false"
+                    data-palette-item
+                    data-group={item.group}
+                    data-suggest={item.suggest ? '' : undefined}
+                    data-label={`${item.label} ${item.hint} ${item.group}`.toLowerCase()}
+                    data-more={item.desc.toLowerCase()}
+                    data-href={item.href}
+                    data-action={item.action}
+                    data-desc={item.desc}
+                    data-cta={cta(item)}
+                  >
+                    <span class="palette__icon">
+                      <AppIcon name={item.icon} size={22} />
+                    </span>
+                    <span class="palette__group sr-only">{item.group}</span>
+                    <span class="palette__label">{item.label}</span>
+                    <span class="palette__hint">{item.hint}</span>
+                  </li>
+                ),
+              )}
+            </>
+          ))
+        }
+      </ul>
+      <aside class="palette__preview" aria-hidden="true" data-palette-preview>
+        <span class="palette__big" data-preview-icon></span>
+        <strong data-preview-title></strong>
+        <span class="palette__pgroup" data-preview-group></span>
+        <p data-preview-desc></p>
+        <span class="palette__cta"><span data-preview-cta>Open</span> <kbd>↵</kbd></span>
+      </aside>
+    </div>
     <p class="palette__empty" data-palette-empty hidden>No results. Try “playwright”, “certificates” or “cv”.</p>
     <p class="palette__status sr-only" aria-live="polite" data-palette-status></p>
   </div>
 </dialog>
 
 <style>
+  /* macOS Spotlight: results on the left, a preview of the selected one on the right. */
   .palette {
-    width: min(100% - 32px, 560px);
-    max-height: min(70vh, 520px);
+    width: min(100% - 32px, 760px);
+    max-height: min(76vh, 560px);
     margin: 12vh auto auto;
     padding: 0;
     border: 1px solid var(--tile-edge);
-    border-radius: 20px;
-    background: var(--glass);
-    backdrop-filter: blur(24px) saturate(1.6);
-    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--tile) 90%, transparent);
+    backdrop-filter: blur(30px) saturate(1.7);
+    -webkit-backdrop-filter: blur(30px) saturate(1.7);
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
     color: var(--text);
     overflow: hidden;
@@ -99,7 +139,7 @@ const items: Item[] = [
     animation: pop 0.22s var(--ease-arrive);
   }
   .palette::backdrop {
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.3);
   }
   @keyframes pop {
     from {
@@ -110,8 +150,8 @@ const items: Item[] = [
   .palette__search {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
+    gap: 12px;
+    padding: 14px 18px;
     border-bottom: 1px solid var(--line);
     color: var(--muted);
   }
@@ -120,60 +160,135 @@ const items: Item[] = [
     border: 0;
     background: transparent;
     color: var(--text);
-    font: 500 16px var(--font);
+    font: 500 20px var(--font);
     outline: none;
   }
-  .palette__search kbd {
+  .palette__search input::placeholder {
+    color: var(--muted);
+  }
+  .palette__search kbd,
+  .palette__cta kbd {
     font-size: 12px;
     border: 1px solid var(--outline);
     border-radius: 6px;
     padding: 1px 6px;
   }
+  .palette__panes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    min-height: 0;
+  }
   .palette__list {
     list-style: none;
     margin: 0;
-    padding: 8px;
-    max-height: 380px;
+    padding: 6px 8px 10px;
+    max-height: min(56vh, 440px);
     overflow-y: auto;
   }
-  .palette__list li {
+  .palette__head {
+    padding: 10px 10px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .palette__head[hidden],
+  .palette__list li[hidden] {
+    display: none;
+  }
+  .palette__list li[role='option'] {
     display: grid;
-    grid-template-columns: 76px 1fr auto;
+    grid-template-columns: 22px minmax(0, auto) minmax(0, 1fr);
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+  }
+  .palette__icon {
+    display: grid;
+    line-height: 0;
+  }
+  .palette__icon > [data-kind] {
+    display: none;
+  }
+  [data-special-kind='calc'] [data-kind='calc'],
+  [data-special-kind='term'] [data-kind='term'],
+  [data-special-kind='bug'] [data-kind='bug'] {
+    display: block;
   }
   .palette__list li[aria-selected='true'] {
     background: var(--link);
     color: #fff;
   }
-  .palette__list li[aria-selected='true'] .palette__group,
   .palette__list li[aria-selected='true'] .palette__hint {
     color: rgba(255, 255, 255, 0.8);
   }
-  .palette__group {
-    font-size: 12px;
-    color: var(--muted);
-  }
   .palette__label {
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .palette__hint {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--muted);
-    max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .palette__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 28px 22px;
+    border-left: 1px solid var(--line);
+    text-align: center;
+  }
+  .palette__big {
+    line-height: 0;
+    margin-bottom: 8px;
+  }
+  .palette__preview strong {
+    font-size: 16px;
+  }
+  .palette__pgroup {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .palette__preview p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .palette__cta {
+    margin-top: auto;
+    padding-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--link);
+  }
+  .palette__preview:has([data-preview-title]:empty) {
+    visibility: hidden;
   }
   .palette__empty {
     padding: 20px;
     margin: 0;
     color: var(--muted);
     text-align: center;
+  }
+  @media (max-width: 680px) {
+    .palette__panes {
+      grid-template-columns: 1fr;
+    }
+    .palette__preview {
+      display: none;
+    }
+    .palette__search input {
+      font-size: 17px;
+    }
   }
 </style>
 

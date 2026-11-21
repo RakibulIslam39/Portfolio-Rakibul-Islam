@@ -15,6 +15,8 @@ const projects = defineCollection({
     stack: z.array(z.string()),
     metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
     links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+    /** Optional dated milestones, newest first, shown as "Version history". */
+    history: z.array(z.object({ version: z.string(), date: z.string(), note: z.string() })).default([]),
     /** true while the write-up still contains lorem ipsum. */
     placeholder: z.boolean().default(false),
   }),
