@@ -1,0 +1,101 @@
+---
+/* A phone running the analyzer: an illustrated face (not a real person) with its detection box and results. */
+---
+
+<div class="fm" aria-hidden="true">
+  <div class="fm__phone">
+    <div class="fm__notch"></div>
+    <div class="fm__photo">
+      <svg viewBox="0 0 120 120" class="fm__face">
+        <rect width="120" height="120" fill="#cfd8ff"></rect>
+        <path d="M22 120c4-26 20-38 38-38s34 12 38 38z" fill="#5b6bd6"></path>
+        <circle cx="60" cy="52" r="24" fill="#f2c4a2"></circle>
+        <path d="M36 50c0-18 12-26 24-26s24 8 24 26c-6-8-14-12-24-12s-18 4-24 12z" fill="#3b2a20"></path>
+        <circle cx="51" cy="54" r="2.4" fill="#1d1d1f"></circle><circle cx="69" cy="54" r="2.4" fill="#1d1d1f"></circle>
+        <path d="M52 64c5 5 11 5 16 0" stroke="#8a3d2c" stroke-width="2.4" fill="none" stroke-linecap="round"></path>
+      </svg>
+      <span class="fm__box"><em>Face 1</em></span>
+    </div>
+    <ul class="fm__results">
+      <li><span>Age</span><b>27</b></li>
+      <li><span>Emotion</span><b>Happy · 92%</b></li>
+      <li><span>Gender</span><b>Man · 97%</b></li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .fm {
+    display: grid;
+    place-items: center;
+    width: 100%;
+  }
+  .fm__phone {
+    position: relative;
+    width: 190px;
+    padding: 26px 12px 16px;
+    border-radius: 32px;
+    border: 7px solid #1d1d1f;
+    background: #fff;
+    box-shadow: 0 22px 40px -16px rgb(0 0 0 / 0.5);
+  }
+  .fm__notch {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 56px;
+    height: 12px;
+    border-radius: 8px;
+    background: #1d1d1f;
+    transform: translateX(-50%);
+  }
+  .fm__photo {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .fm__face {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .fm__box {
+    position: absolute;
+    left: 26%;
+    top: 14%;
+    width: 48%;
+    height: 50%;
+    border: 2px solid #15803d;
+    border-radius: 6px;
+  }
+  .fm__box em {
+    position: absolute;
+    left: -2px;
+    top: -18px;
+    padding: 1px 6px;
+    border-radius: 4px 4px 0 0;
+    background: #15803d;
+    color: #fff;
+    font: 600 9px/1.5 var(--font-sans, system-ui);
+    font-style: normal;
+  }
+  .fm__results {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 11px;
+    color: #1d1d1f;
+  }
+  .fm__results li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #f2f2f7;
+  }
+  .fm__results span {
+    color: #6e6e73;
+  }
+</style>

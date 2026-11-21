@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate, readingTime, slugify } from '../../lib/format';
 import site from '../../content/site.json';
+import AppIcon from '../../components/AppIcon.astro';
 
 const posts = (await getCollection('writing')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const counts = posts.reduce<Record<string, number>>((acc, p) => {
@@ -11,6 +12,8 @@ const counts = posts.reduce<Record<string, number>>((acc, p) => {
 }, {});
 const categories = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 const [latest, ...rest] = posts;
+// Topics the posts cover, for the tags tile.
+const topics = ['Playwright', 'Google Sheets API', 'WooCommerce REST API', 'Page Object Model', 'CI/CD', 'AI-assisted testing'];
 const href = (p: (typeof posts)[number]) => p.data.url ?? `/writing/${p.id}/`;
 const minutes = (p: (typeof posts)[number]) => p.data.minutes ?? readingTime(p.body ?? '');
 const ext = (p: (typeof posts)[number]) => (p.data.url ? { target: '_blank', rel: 'noopener' } : {});
@@ -37,20 +40,41 @@ const ext = (p: (typeof posts)[number]) => (p.data.url ? { target: '_blank', rel
     )}
     <p class="sr-only" aria-live="polite" data-filter-status></p>
 
-    {
-      latest && (
-        <a class="featured" href={href(latest)} {...ext(latest)} data-post data-cat={slugify(latest.data.category)}>
-          <span class="featured__meta">
-            Latest · {latest.data.category} · {minutes(latest)} min read
-            {latest.data.source && <span class="source">on {latest.data.source} ↗</span>}
-            {latest.data.placeholder && <span class="draft-badge">Draft</span>}
-          </span>
-          <h2>{latest.data.title}</h2>
-          <p>{latest.data.excerpt}</p>
-          <time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
-        </a>
-      )
-    }
+    <div class="wr-grid">
+      {
+        latest && (
+          <a class="featured" href={href(latest)} {...ext(latest)} data-post data-cat={slugify(latest.data.category)}>
+            <span class="featured__meta">
+              Latest · {latest.data.category} · {minutes(latest)} min read
+              {latest.data.source && <span class="source">on {latest.data.source} ↗</span>}
+              {latest.data.placeholder && <span class="draft-badge">Draft</span>}
+            </span>
+            <h2>{latest.data.title}</h2>
+            <p>{latest.data.excerpt}</p>
+            <time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
+          </a>
+        )
+      }
+      <figure class="wr-quote">
+        <blockquote>
+          <p>Automating it meant ensuring that such bulk operations never break.</p>
+        </blockquote>
+        <figcaption>From the FlexStock post</figcaption>
+      </figure>
+      <a class="wr-follow" href={site.links.medium} target="_blank" rel="noopener">
+        <AppIcon name="medium" size={44} />
+        <span>
+          <strong>Follow on Medium</strong>
+          <span>New posts land there first</span>
+        </span>
+      </a>
+      <div class="wr-topics">
+        <h2 class="wr-topics__title">Topics</h2>
+        <ul>
+          {topics.map((t) => <li class="pill">{t}</li>)}
+        </ul>
+      </div>
+    </div>
 
     {rest.length > 0 && (
     <ul class="posts">
@@ -108,6 +132,119 @@ const ext = (p: (typeof posts)[number]) => (p.data.url ? { target: '_blank', rel
   }
   .chip[aria-pressed='true'] b {
     color: var(--bg);
+  }
+  /* Tile grid: the newest post big, with a pull quote, a follow tile and topics beside it. */
+  .wr-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-areas:
+      'feat quote'
+      'feat follow'
+      'topics topics';
+    gap: var(--gap);
+    margin-bottom: var(--gap);
+  }
+  .wr-grid .featured {
+    grid-area: feat;
+    margin-bottom: 0;
+    align-content: end;
+    min-height: 340px;
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--pass) 22%, transparent), transparent 60%),
+      var(--tile);
+  }
+  .wr-quote {
+    grid-area: quote;
+    margin: 0;
+    padding: var(--tile-pad);
+    border-radius: var(--radius);
+    background: #ffd60a;
+    color: #1d1d1f;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .wr-quote blockquote {
+    margin: 0;
+  }
+  .wr-quote p {
+    margin: 0;
+    font-size: clamp(20px, 2vw, 24px);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .wr-quote p::before {
+    content: '“';
+  }
+  .wr-quote p::after {
+    content: '”';
+  }
+  .wr-quote figcaption {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(29 29 31 / 0.7);
+  }
+  .wr-follow {
+    grid-area: follow;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    text-decoration: none;
+    transition: transform 0.3s var(--ease-arrive);
+  }
+  .wr-follow:hover {
+    transform: translateY(-3px);
+  }
+  .wr-follow > span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .wr-follow strong {
+    color: var(--text);
+    font-size: 16px;
+  }
+  .wr-follow > span > span {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .wr-topics {
+    grid-area: topics;
+    padding: 18px var(--tile-pad);
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  .wr-topics__title {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .wr-topics ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  @media (max-width: 799px) {
+    .wr-grid {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'feat' 'quote' 'follow' 'topics';
+    }
+    .wr-grid .featured {
+      min-height: 0;
+    }
   }
   .featured {
     display: grid;

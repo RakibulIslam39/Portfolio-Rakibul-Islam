@@ -5,9 +5,12 @@ const slugs = ['flexorder-e2e', 'traffic-flow-prediction', 'ai-face-analyzer'];
 test('projects index lists every case study', async ({ page }) => {
   await page.goto('/projects/');
   await expect(page.getByRole('heading', { level: 1, name: 'Projects' })).toBeVisible();
-  const cards = page.locator('.plist > li');
+  // App Store "Today" cards: one per case study, each with a View link to it.
+  const cards = page.locator('.plist > li.today:not(.today--work)');
   await expect(cards).toHaveCount(slugs.length);
   for (const slug of slugs) await expect(cards.locator(`a[href="/projects/${slug}/"]`)).toHaveCount(1);
+  await expect(page.getByRole('link', { name: 'View the FlexOrder E2E Automation case study' })).toHaveAttribute('href', '/projects/flexorder-e2e/');
+  await expect(page.getByRole('heading', { name: "Where I've tested" })).toBeVisible();
 });
 
 test('a case study has its sections, metrics and stack', async ({ page }) => {

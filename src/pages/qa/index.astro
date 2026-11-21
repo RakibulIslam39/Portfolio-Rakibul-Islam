@@ -19,6 +19,19 @@ const categories = [
 const grade = (n: number) => (n >= 90 ? 'good' : n >= 50 ? 'ok' : 'poor');
 const avg = (k: (typeof categories)[number]['key']) =>
   qa.lighthouse.length ? Math.round(qa.lighthouse.reduce((s, r) => s + r[k], 0) / qa.lighthouse.length) : 0;
+
+// Activity rings, like Apple Fitness: outer to inner. Each ring closes at 100%.
+const passing = ran ? Math.round(((t.passed + (t.flaky ?? 0)) / ran) * 100) : 0;
+const rings = [
+  { label: 'Tests passing', value: passing, unit: '%', color: '#fa114f', track: 'rgb(250 17 79 / 0.22)', note: `${t.passed + (t.flaky ?? 0)} of ${ran}` },
+  { label: 'Performance', value: avg('performance'), unit: '', color: '#a6ff00', track: 'rgb(166 255 0 / 0.2)', note: 'Lighthouse, average' },
+  { label: 'Accessibility', value: avg('accessibility'), unit: '', color: '#00f0ff', track: 'rgb(0 240 255 / 0.2)', note: 'Lighthouse, average' },
+];
+const R = [84, 62, 40];
+const ring = (r: number, v: number) => {
+  const c = 2 * Math.PI * r;
+  return { c, dash: `${((Math.min(v, 100) / 100) * c).toFixed(1)} ${c.toFixed(1)}` };
+};
 ---
 
 <BaseLayout title="QA report | Rakibul Islam" description="This site's own test results, Lighthouse scores and live CI status.">
@@ -42,6 +55,62 @@ const avg = (k: (typeof categories)[number]['key']) =>
         }
       </p>
     </header>
+
+
+    <section class="activity" aria-labelledby="activity-h">
+      <h2 id="activity-h" class="sr-only">At a glance</h2>
+      <article class="card card--dark rings-card">
+        <h3 class="card__label">How it scores</h3>
+        <div class="rings">
+          <svg viewBox="0 0 200 200" width="200" height="200" role="img" aria-label={rings.map((r) => `${r.label} ${r.value}${r.unit}`).join(', ')}>
+            {
+              rings.map((r, i) => {
+                const g = ring(R[i]!, r.value);
+                return (
+                  <g transform="rotate(-90 100 100)">
+                    <circle cx="100" cy="100" r={R[i]} fill="none" stroke={r.track} stroke-width="18" />
+                    <circle class="ring" cx="100" cy="100" r={R[i]} fill="none" stroke={r.color} stroke-width="18" stroke-linecap="round" stroke-dasharray={g.dash} style={`--c:${g.c.toFixed(1)}`} />
+                  </g>
+                );
+              })
+            }
+          </svg>
+          <ul class="rings__legend">
+            {
+              rings.map((r) => (
+                <li style={`--ring:${r.color}`}>
+                  <span class="rings__name">{r.label}</span>
+                  <strong class="rings__value">{r.value}{r.unit}</strong>
+                  <span class="rings__note">{r.note}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </article>
+
+      <article class="card visit" data-visit>
+        <h3 class="card__label">Your visit</h3>
+        <p class="visit__big"><strong data-visit-total>–</strong><span>ms</span></p>
+        <p class="card__meta" data-visit-where>to load this page in your browser</p>
+        <ul class="visit__bars">
+          <li><span>Find</span><i><b data-bar="dns"></b></i><em data-ms="dns">–</em></li>
+          <li><span>Connect</span><i><b data-bar="connect"></b></i><em data-ms="connect">–</em></li>
+          <li><span>Wait</span><i><b data-bar="wait"></b></i><em data-ms="wait">–</em></li>
+          <li><span>Download</span><i><b data-bar="download"></b></i><em data-ms="download">–</em></li>
+        </ul>
+      </article>
+
+      <article class="card vitals" data-vitals>
+        <h3 class="card__label">How it feels (for you)</h3>
+        <ul class="vitals__list">
+          <li data-vital="lcp"><span><strong>Loads</strong> main content on screen</span><em>–</em></li>
+          <li data-vital="cls"><span><strong>Stays put</strong> how much the page jumps</span><em>–</em></li>
+          <li data-vital="inp"><span><strong>Responds</strong> after a tap or click</span><em>tap anything</em></li>
+        </ul>
+        <p class="card__meta">Core Web Vitals, measured live in your browser. Nothing is sent anywhere.</p>
+      </article>
+    </section>
 
     <section class="live" aria-label="Live status">
       <article class="card" data-live-ci>
@@ -179,6 +248,169 @@ const avg = (k: (typeof categories)[number]['key']) =>
 </BaseLayout>
 
 <style>
+  /* At a glance: Activity-style rings, your visit, your Core Web Vitals */
+  .activity {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gap);
+    margin-bottom: 40px;
+  }
+  .card.card--dark {
+    background: #0c0c0e;
+    color: #d6d6dc;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08) inset;
+  }
+  .card.card--dark .card__label {
+    color: #9d9da6;
+  }
+  .rings {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .rings svg {
+    flex: none;
+    width: 180px;
+    height: 180px;
+  }
+  .ring {
+    animation: ring-fill 1.4s var(--ease-arrive) both;
+  }
+  @keyframes ring-fill {
+    from {
+      stroke-dasharray: 0 var(--c);
+    }
+  }
+  .rings__legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .rings__legend li {
+    display: grid;
+    padding-left: 12px;
+    border-left: 3px solid var(--ring);
+    line-height: 1.25;
+  }
+  .rings__name {
+    font-size: 13px;
+    color: #c7c7cf;
+  }
+  .rings__value {
+    font-size: 26px;
+    color: var(--ring);
+    font-variant-numeric: tabular-nums;
+  }
+  .rings__note {
+    font-size: 12px;
+    color: #8e8e98;
+  }
+  .visit__big {
+    margin: 4px 0 2px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .visit__big strong {
+    font-size: 48px;
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .visit__big span {
+    color: var(--muted);
+  }
+  .visit__bars {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .visit__bars li {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 52px;
+    align-items: center;
+    gap: 10px;
+  }
+  .visit__bars i {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--hover);
+    overflow: hidden;
+  }
+  .visit__bars b {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    background: var(--link);
+    transition: width 0.6s var(--ease-arrive);
+  }
+  .visit__bars em,
+  .vitals__list em {
+    font-style: normal;
+    text-align: right;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .vitals__list {
+    list-style: none;
+    margin: 6px 0 12px;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .vitals__list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .vitals__list li[data-grade='good'] {
+    border-color: var(--pass);
+  }
+  .vitals__list li[data-grade='ok'] {
+    border-color: var(--warn);
+  }
+  .vitals__list li[data-grade='poor'] {
+    border-color: #ff453a;
+  }
+  .vitals__list strong {
+    display: block;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .vitals__list em {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  @media (max-width: 999px) {
+    .activity {
+      grid-template-columns: 1fr 1fr;
+    }
+    .rings-card {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 599px) {
+    .activity {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ring {
+      animation: none;
+    }
+  }
   .qa {
     padding-bottom: 48px;
   }
@@ -441,6 +673,82 @@ const avg = (k: (typeof categories)[number]['key']) =>
     statsCard.querySelector<HTMLElement>('[data-stats]')!.hidden = false;
     statsCard.querySelector<HTMLElement>('[data-stats-fallback]')!.hidden = true;
   };
+
+
+  // Your visit: how long this page took to reach you, from the browser's own timing.
+  const visit = document.querySelector<HTMLElement>('[data-visit]');
+  const showVisit = () => {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    if (!visit || !nav || !nav.responseEnd) return;
+    const parts = {
+      dns: nav.domainLookupEnd - nav.domainLookupStart,
+      connect: nav.connectEnd - nav.connectStart,
+      wait: nav.responseStart - nav.requestStart,
+      download: nav.responseEnd - nav.responseStart,
+    };
+    const total = Math.round(nav.responseEnd - nav.startTime);
+    visit.querySelector('[data-visit-total]')!.textContent = String(total);
+    const max = Math.max(...Object.values(parts), 1);
+    (Object.keys(parts) as (keyof typeof parts)[]).forEach((k) => {
+      const ms = Math.max(0, Math.round(parts[k]));
+      visit.querySelector(`[data-ms="${k}"]`)!.textContent = `${ms} ms`;
+      visit.querySelector<HTMLElement>(`[data-bar="${k}"]`)!.style.width = `${Math.max(2, (ms / max) * 100)}%`;
+    });
+  };
+  if (document.readyState === 'complete') showVisit();
+  else window.addEventListener('load', showVisit, { once: true });
+
+  // Which Cloudflare data centre served you (only on the live site).
+  const CITIES: Record<string, string> = {
+    DAC: 'Dhaka', CGP: 'Chattogram', CCU: 'Kolkata', DEL: 'Delhi', BOM: 'Mumbai', MAA: 'Chennai', SIN: 'Singapore',
+    KUL: 'Kuala Lumpur', BKK: 'Bangkok', HKG: 'Hong Kong', NRT: 'Tokyo', ICN: 'Seoul', SYD: 'Sydney', DXB: 'Dubai',
+    FRA: 'Frankfurt', AMS: 'Amsterdam', LHR: 'London', CDG: 'Paris', ARN: 'Stockholm', WAW: 'Warsaw', BUD: 'Budapest',
+    VIE: 'Vienna', MAD: 'Madrid', MXP: 'Milan', IAD: 'Ashburn', EWR: 'Newark', ORD: 'Chicago', DFW: 'Dallas',
+    LAX: 'Los Angeles', SJC: 'San Jose', SEA: 'Seattle', YYZ: 'Toronto', GRU: 'São Paulo',
+  };
+  fetch('/cdn-cgi/trace')
+    .then((r) => (r.ok ? r.text() : ''))
+    .then((text) => {
+      const colo = /^colo=(\w+)$/m.exec(text)?.[1];
+      if (!colo || !visit) return;
+      visit.querySelector('[data-visit-where]')!.textContent = `to load this page, served by Cloudflare in ${CITIES[colo] ?? colo}`;
+    })
+    .catch(() => undefined);
+
+  // Your Core Web Vitals, measured in this browser and shown only to you.
+  const vitals = document.querySelector<HTMLElement>('[data-vitals]');
+  const setVital = (name: string, text: string, grade: 'good' | 'ok' | 'poor') => {
+    const li = vitals?.querySelector<HTMLElement>(`[data-vital="${name}"]`);
+    if (!li) return;
+    li.querySelector('em')!.textContent = text;
+    li.dataset.grade = grade;
+  };
+  const observe = (type: string, cb: (entries: PerformanceEntryList) => void, extra: Record<string, unknown> = {}) => {
+    try {
+      new PerformanceObserver((list) => cb(list.getEntries())).observe({ type, buffered: true, ...extra } as PerformanceObserverInit);
+    } catch {
+      /* not supported in this browser */
+    }
+  };
+  observe('largest-contentful-paint', (entries) => {
+    const ms = entries.at(-1)!.startTime;
+    setVital('lcp', `${(ms / 1000).toFixed(1)} s`, ms <= 2500 ? 'good' : ms <= 4000 ? 'ok' : 'poor');
+  });
+  let cls = 0;
+  setVital('cls', '0.00', 'good');
+  observe('layout-shift', (entries) => {
+    for (const e of entries as (PerformanceEntry & { value: number; hadRecentInput: boolean })[]) if (!e.hadRecentInput) cls += e.value;
+    setVital('cls', cls.toFixed(2), cls <= 0.1 ? 'good' : cls <= 0.25 ? 'ok' : 'poor');
+  });
+  let inp = 0;
+  observe(
+    'event',
+    (entries) => {
+      for (const e of entries) inp = Math.max(inp, e.duration);
+      if (inp) setVital('inp', `${Math.round(inp)} ms`, inp <= 200 ? 'good' : inp <= 500 ? 'ok' : 'poor');
+    },
+    { durationThreshold: 16 },
+  );
 
   void loadCi();
   void loadStats();
