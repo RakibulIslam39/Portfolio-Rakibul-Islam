@@ -1,0 +1,42 @@
+{
+  "highlights": [
+    {
+      "id": "coxs-bazar",
+      "title": "Cox's Bazar",
+      "place": "Cox's Bazar, Bangladesh",
+      "cover": "me-at-sunset",
+      "coverPosition": "50% 25%",
+      "photos": ["me-at-sunset", "sunset-pier", "casuarina-beach", "beach-flags", "beach-loungers", "night-waves"]
+    },
+    {
+      "id": "team-trip",
+      "title": "Team trip",
+      "place": "With the WPPOOL team in Cox's Bazar",
+      "cover": "wppool-team",
+      "coverPosition": "60% 50%",
+      "photos": ["wppool-team", "beach-cafe", "bamboo-lantern", "sea-pearl-night"]
+    },
+    {
+      "id": "pabna",
+      "title": "Pabna",
+      "place": "Ishwardi, Pabna, Bangladesh",
+      "cover": "hardinge-bridge",
+      "coverPosition": "50% 50%",
+      "photos": ["hardinge-bridge", "rooppur"]
+    }
+  ],
+  "photos": [
+    { "id": "me-at-sunset", "w": 1200, "h": 1600, "caption": "Me, at sunset on the beach", "alt": "Rakibul in sunglasses and a checked shirt, smiling on the beach with the sun setting over the sea behind him" },
+    { "id": "sunset-pier", "w": 1600, "h": 738, "caption": "Sunset over the Bay of Bengal", "alt": "An orange sunset over the sea, with a long pier on the left and ships on the horizon" },
+    { "id": "casuarina-beach", "w": 1600, "h": 738, "caption": "Casuarina trees by the sea", "alt": "Casuarina trees on a wide sandy beach under a clear blue sky, with beach umbrellas by the water" },
+    { "id": "beach-flags", "w": 1600, "h": 713, "caption": "Flags on the beach", "alt": "Yellow, red and blue flags on a sandy beach, with quad bikes and umbrellas towards the sea" },
+    { "id": "beach-loungers", "w": 1600, "h": 738, "caption": "Beach loungers at dusk", "alt": "Rows of blue beach loungers under string lights and palms at dusk, next to the sea" },
+    { "id": "night-waves", "w": 1200, "h": 1600, "caption": "Watching the waves at night", "alt": "Rakibul seen from behind in a white shirt, hands clasped, facing white waves in the dark" },
+    { "id": "wppool-team", "w": 1600, "h": 1200, "caption": "The WPPOOL team", "alt": "A big group of the WPPOOL team in matching black WPPOOL sweatshirts, posing for a selfie outside a restaurant" },
+    { "id": "beach-cafe", "w": 1600, "h": 738, "caption": "A beach café with surfboards", "alt": "A colourful café with orange, purple and yellow chairs, woven lamps and painted surfboards on the wall" },
+    { "id": "bamboo-lantern", "w": 1200, "h": 1600, "caption": "Bamboo lantern at dinner", "alt": "A glowing bamboo lantern on a wooden pillar under a woven ceiling" },
+    { "id": "sea-pearl-night", "w": 1600, "h": 738, "caption": "Sea Pearl resort at night", "alt": "A lit-up resort building at night, with a giant shell sculpture holding a glowing pearl in the garden" },
+    { "id": "hardinge-bridge", "w": 1600, "h": 900, "caption": "Hardinge Bridge over the Padma", "alt": "A long red steel railway bridge with arched spans over a wide calm river" },
+    { "id": "rooppur", "w": 1600, "h": 1200, "caption": "Rooppur power plant, from the road", "alt": "Four large white cooling towers seen from a moving car, behind a road barrier" }
+  ]
+}
