@@ -45,4 +45,11 @@ test.describe('gallery', () => {
     await page.keyboard.press('Escape');
     await expect(viewer).toBeHidden();
   });
+
+  test('highlight covers are perfect circles, whatever the photo shape', async ({ page }) => {
+    await page.goto('/gallery/');
+    const sizes = await page.locator('.hl__ring img').evaluateAll((els) => els.map((e) => [e.clientWidth, e.clientHeight]));
+    expect(sizes).toHaveLength(3);
+    for (const [w, h] of sizes) expect(w).toBe(h);
+  });
 });
