@@ -203,3 +203,14 @@ main {
     scroll-behavior: auto !important;
   }
 }
+
+/* The RI logo: navy for light backgrounds, a light version for dark ones. */
+.brand-logo--dark {
+  display: none;
+}
+:root[data-theme='dark'] .brand-logo--light {
+  display: none;
+}
+:root[data-theme='dark'] .brand-logo--dark {
+  display: inline-block;
+}

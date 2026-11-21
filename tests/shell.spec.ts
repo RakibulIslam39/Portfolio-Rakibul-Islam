@@ -106,3 +106,17 @@ test.describe('command palette', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 });
+
+test('the RI logo shows the right version for each theme and links home', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'The logo is hidden in the phone nav bar');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('/about/');
+    const logo = page.getByRole('banner').getByRole('link', { name: 'Rakibul Islam, home' });
+    await expect(logo).toHaveAttribute('href', '/');
+    await expect(logo.locator(`.brand-logo--${scheme}`)).toBeVisible();
+    await expect(logo.locator(`.brand-logo--${scheme === 'light' ? 'dark' : 'light'}`)).toBeHidden();
+  }
+  const icon = await page.request.get('/favicon.svg');
+  expect(icon.headers()['content-type']).toContain('svg');
+});

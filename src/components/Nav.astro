@@ -18,7 +18,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <header class="topbar">
   <div class="topbar__inner">
     <a href="/" class="logo">
-      <span aria-hidden="true">RI</span>
+      <img class="brand-logo brand-logo--light" src="/brand/logo-light-96.webp" width="30" height="23" alt="" decoding="async" />
+      <img class="brand-logo brand-logo--dark" src="/brand/logo-dark-96.webp" width="30" height="23" alt="" decoding="async" />
       <span class="sr-only">Rakibul Islam, home</span>
     </a>
 
@@ -96,11 +97,23 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     background: var(--glass);
     border: 1px solid var(--tile-edge);
     box-shadow: var(--shadow);
-    color: var(--text);
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: -0.02em;
     text-decoration: none;
+    overflow: hidden;
+  }
+  .logo img {
+    width: 30px;
+    height: auto;
+    transition: transform 0.35s var(--ease-arrive, ease);
+  }
+  /* A nod to the animated logo: the check gives a little nod when you point at it. */
+  .logo:hover img,
+  .logo:focus-visible img {
+    transform: rotate(-6deg) scale(1.08);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo img {
+      transition: none;
+    }
   }
   .nav {
     background: var(--glass);

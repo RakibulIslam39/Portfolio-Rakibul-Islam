@@ -14,6 +14,7 @@ import { chromium } from '@playwright/test';
 const DIST = resolve('dist');
 const OUT = resolve('public/og');
 const SITE_HOST = 'rakibul-portfolio.pages.dev';
+const LOGO = `data:image/png;base64,${readFileSync('public/brand/logo-dark-320.png').toString('base64')}`;
 
 /** Same rule as src/lib/og.ts. */
 const ogSlug = (pathname) => pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '').replace(/\//g, '-') || 'home';
@@ -60,7 +61,7 @@ h1 { font-stretch: 108%; color: #f2f2f4; font-size: ${title.length > 42 ? 58 : 7
 p { color: #b8b8c2; font-size: 28px; line-height: 1.4; margin-top: 22px; max-width: 900px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .foot { margin-top: auto; display: flex; align-items: center; gap: 18px; color: #c6c6ce; font-size: 24px; }
-.logo { width: 56px; height: 56px; border-radius: 50%; background: #26262b; color: #f2f2f4; display: grid; place-items: center; font-weight: 700; }
+.logo { width: 64px; height: auto; }
 .foot b { color: #f2f2f4; font-weight: 600; }
 .foot > div { white-space: nowrap; }
 .url { margin-left: auto; color: #9d9da6; }
@@ -69,7 +70,7 @@ p { color: #b8b8c2; font-size: 28px; line-height: 1.4; margin-top: 22px; max-wid
 <div class="eyebrow">${esc(section)}</div>
 <h1>${esc(title)}</h1>
 ${description ? `<p>${esc(description)}</p>` : ''}
-<div class="foot"><div class="logo">RI</div><div><b>Rakibul Islam</b><br>QA Automation Engineer &amp; SDET</div>
+<div class="foot"><img class="logo" src="${LOGO}" alt=""><div><b>Rakibul Islam</b><br>QA Automation Engineer &amp; SDET</div>
 <div class="url"><span class="dot"></span>${SITE_HOST}</div></div>
 </div></body></html>`;
 

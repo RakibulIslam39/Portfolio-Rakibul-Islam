@@ -5,7 +5,11 @@ const year = new Date().getFullYear();
 
 <footer class="footer container">
   <div class="footer__about">
-    <p class="footer__name">{site.name}</p>
+    <p class="footer__name">
+      <img class="brand-logo brand-logo--light" src="/brand/logo-light-96.webp" width="36" height="28" alt="" decoding="async" />
+        <img class="brand-logo brand-logo--dark" src="/brand/logo-dark-96.webp" width="36" height="28" alt="" decoding="async" />
+      {site.name}
+    </p>
     <p>{site.role} · {site.location}</p>
     <p>
       Built with Astro, tested with Playwright on every push.{' '}
@@ -62,9 +66,16 @@ const year = new Date().getFullYear();
     margin: 0 0 6px;
   }
   .footer__name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: var(--text);
     font-weight: 600;
     font-size: 16px;
+  }
+  .footer__name img {
+    width: 36px;
+    height: auto;
   }
   .footer a {
     color: var(--muted);
