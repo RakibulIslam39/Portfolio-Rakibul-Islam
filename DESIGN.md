@@ -17,7 +17,7 @@ One accent, green, means one thing: **passing**. It also marks the main action.
 | `--pass` | #2fd08a | #0a7a4b | Passing states, main action accents, focus caret |
 | `--fail` | #ff453a | #e5342a | Failing states only |
 | `--link` | #0a84ff | #0066d6 | Links, focus ring |
-No violet. No gradient text. Browser surfaces (selection, scrollbar, caret) use these tokens.
+No gradient text. Project cards use soft tinted tones (mint, indigo, lilac, night); browser surfaces (selection, scrollbar, caret) use these tokens.
 
 ## Typography
 - **Mona Sans Variable** for everything; headings at `font-stretch: 108%`, weight 600, `text-wrap: balance`.
@@ -36,14 +36,14 @@ No violet. No gradient text. Browser surfaces (selection, scrollbar, caret) use 
 ## Components and rules
 - **Tile header:** app icon + app name (sentence case, muted). Not a kicker.
 - **One container level.** Inside a tile use dividers and spacing, never a nested card.
-- **No kickers** (small uppercase label above a heading), no section numbers, no progress rings or
-  hero-metric blocks standing in for content: show the real artefact (report rows, run log, prose result).
+- **Real artefacts over decoration:** report rows, run logs, prose results. Rings and big numbers only
+  for real measured data (Lighthouse on /qa, Web Vitals and visits on /activity). No section numbers.
 - **Buttons:** pill; primary = solid text colour; secondary = card + outline. Labels are verb + object.
 - **Tap targets ≥ 44 px** for every standalone control or link (`.tap` utility).
 
 ## Motion
-- One authored moment per page: the terminal test run on Home. Everything else stays still
-  except hover/press feedback (lift 2 px, scale 0.97 press).
+- Motion is small and purposeful: the Home terminal run, the Find My walk, the Activity globe, gallery stories.
+  Everything else is hover/press feedback (lift 2 px, scale 0.97 press).
 - Ease: arrive `cubic-bezier(.2,.9,.3,1)`, travel `cubic-bezier(.45,0,.2,1)`.
 - `prefers-reduced-motion`: the run shows its final state; nothing is hidden.
 

@@ -4,7 +4,7 @@
  * the grid collapses to 2 and then 1 column on smaller screens.
  */
 interface Props {
-  size?: '1x1' | '2x1' | '2x2' | '4x1';
+  size?: '1x1' | '2x1' | '2x2';
   title?: string;
   /** Short app-style label shown next to the icon, e.g. "Terminal". */
   app?: string;
@@ -13,7 +13,7 @@ interface Props {
   hrefLabel?: string;
   id: string;
   class?: string;
-  tone?: 'default' | 'dark' | 'plain';
+  tone?: 'default' | 'dark';
   /** Remove inner padding so media can run edge to edge. */
   flush?: boolean;
   /** Named grid area on the home bento (see src/pages/index.astro). */
@@ -71,28 +71,9 @@ const external = href ? /^https?:/.test(href) : false;
   .tile--flush {
     padding: 0;
   }
-  /* Plain: content sits on the page itself (the hero), so the terminal window is the only box. */
-  .tile--plain {
-    background: none;
-    box-shadow: none;
-    padding: 24px 0 32px;
-    border-radius: 0;
-    overflow: visible;
-  }
   .tile--dark {
     background: #101012;
     color: #d6d6dc;
-  }
-  /* Size classes only apply outside the named-area grid (tiles with --area set). */
-  .tile--2x1:not([style*='--area']),
-  .tile--2x2:not([style*='--area']) {
-    grid-column: span 2;
-  }
-  .tile--2x2:not([style*='--area']) {
-    grid-row: span 2;
-  }
-  .tile--4x1:not([style*='--area']) {
-    grid-column: 1 / -1;
   }
   .tile__head {
     display: flex;
@@ -150,8 +131,7 @@ const external = href ? /^https?:/.test(href) : false;
 
   @media (max-width: 699px) {
     .tile--2x1,
-    .tile--2x2,
-    .tile--4x1 {
+    .tile--2x2 {
       grid-column: auto;
       grid-row: auto;
     }

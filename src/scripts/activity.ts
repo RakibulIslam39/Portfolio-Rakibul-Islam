@@ -4,6 +4,7 @@
  * Every part fills in on its own; anything missing stays as "–".
  */
 import { getJSON, relativeTime } from './live';
+import { showVisit } from './visit';
 
 interface Activity {
   now: string;
@@ -167,38 +168,6 @@ function renderBuild(root: HTMLElement, b: Build) {
   days.setAttribute('aria-label', `Commits per day, ${bars.length} days, busiest day ${max} commits`);
 }
 
-function showVisit(root: HTMLElement) {
-  const visit = $(root, '[data-visit]');
-  const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-  if (!visit || !nav || !nav.responseEnd) return;
-  const parts = {
-    dns: nav.domainLookupEnd - nav.domainLookupStart,
-    connect: nav.connectEnd - nav.connectStart,
-    wait: nav.responseStart - nav.requestStart,
-    download: nav.responseEnd - nav.responseStart,
-  };
-  $(visit, '[data-visit-total]')!.textContent = String(Math.round(nav.responseEnd - nav.startTime));
-  const max = Math.max(...Object.values(parts), 1);
-  (Object.keys(parts) as (keyof typeof parts)[]).forEach((k) => {
-    const ms = Math.max(0, Math.round(parts[k]));
-    $(visit, `[data-ms="${k}"]`)!.textContent = `${ms} ms`;
-    $(visit, `[data-bar="${k}"]`)!.style.width = `${Math.max(2, (ms / max) * 100)}%`;
-  });
-  const CITIES: Record<string, string> = {
-    DAC: 'Dhaka', CGP: 'Chattogram', CCU: 'Kolkata', DEL: 'Delhi', BOM: 'Mumbai', MAA: 'Chennai', SIN: 'Singapore', KUL: 'Kuala Lumpur',
-    BKK: 'Bangkok', HKG: 'Hong Kong', NRT: 'Tokyo', ICN: 'Seoul', SYD: 'Sydney', DXB: 'Dubai', FRA: 'Frankfurt', AMS: 'Amsterdam',
-    LHR: 'London', CDG: 'Paris', ARN: 'Stockholm', WAW: 'Warsaw', BUD: 'Budapest', VIE: 'Vienna', MAD: 'Madrid', MXP: 'Milan',
-    IAD: 'Ashburn', EWR: 'Newark', ORD: 'Chicago', DFW: 'Dallas', LAX: 'Los Angeles', SJC: 'San Jose', SEA: 'Seattle', YYZ: 'Toronto', GRU: 'São Paulo',
-  };
-  fetch('/cdn-cgi/trace')
-    .then((r) => (r.ok ? r.text() : ''))
-    .then((text) => {
-      const colo = /^colo=(\w+)$/m.exec(text)?.[1];
-      if (colo) $(visit, '[data-visit-where]')!.textContent = `to reach you, from Cloudflare in ${CITIES[colo] ?? colo}`;
-    })
-    .catch(() => undefined);
-}
-
 /** A slowly turning dotted globe. Countries with visits this week glow; their size follows the visits. */
 function globe(canvas: HTMLCanvasElement, geo: Geo, places: Activity['places']) {
   const ctx = canvas.getContext('2d');
@@ -291,8 +260,7 @@ function globe(canvas: HTMLCanvasElement, geo: Geo, places: Activity['places']) 
 export function initActivity(): void {
   const root = document.querySelector<HTMLElement>('[data-activity]');
   if (!root) return;
-  if (document.readyState === 'complete') showVisit(root);
-  else window.addEventListener('load', () => showVisit(root), { once: true });
+  showVisit($(root, '[data-visit]'), (city) => `to reach you, from Cloudflare in ${city}`);
 
   void getJSON<Build>('/activity/build.json').then((b) => b && renderBuild(root, b));
 

@@ -38,12 +38,13 @@ Long-form content is Markdown:
 
 Set `placeholder: false` in a file's frontmatter once its lorem ipsum is replaced; that removes the "Draft" label.
 
-Things still marked TODO (search the repo for `TODO` and `Lorem`):
+Other data files:
 
-- `links.linkedin` in `site.json`: your real LinkedIn URL
-- `site` in `astro.config.mjs`: your domain
-- Lorem ipsum in the three case studies, the About page ("About me" and "Now" notes) and all four writing posts
-- Portrait placeholders in `src/components/tiles/Portrait.astro`: swap for your photo/avatar
+- `src/content/gallery.json`: travel highlights and photos (images in `public/gallery/`, `name.webp` + `name-sm.webp`)
+- `src/lib/projects.ts`: each case study's card tone, mock-up and icon (icons in `public/projects/`)
+- Plugin icons in `public/plugins/`, company logos in `public/companies/`, the RI logo in `public/brand/`
+
+Regenerate the app icons after changing the logo with `npm run icons`.
 
 ## Tests
 
@@ -53,12 +54,15 @@ Things still marked TODO (search the repo for `TODO` and `Lorem`):
 | `tests/shell.spec.ts` | Theme toggle + persistence, nav state, skip link, ⌘K palette (filter, arrows, Enter, Esc) |
 | `tests/widgets.spec.ts` | Terminal replay, Bug Hunt game, portrait switcher, map zoom limits, CI tile, clock, contact links |
 | `tests/a11y.spec.ts` | axe WCAG 2.2 AA scan of every page in both themes |
-| `tests/about.spec.ts` | Notes tabs: click, arrow keys, Home/End, hash deep links, readable without JS |
-| `tests/projects.spec.ts` | Projects index, case-study sections and metrics, next-project cycle, home tile links |
+| `tests/about.spec.ts` | Notes window: inner scroll, scroll-spy, hash links, hide sidebars, temporary note, courses, readable without JS |
+| `tests/projects.spec.ts` | Projects index, App Store-style case studies, "You might also like", live and code links, company logos |
+| `tests/activity.spec.ts` | /activity live cards with mocked `/api/activity`, build stats, unavailable state |
+| `tests/gallery.spec.ts` | Highlights play as stories (pause, autoplay), grid opens the viewer, keyboard |
+| `tests/content.spec.ts`, `widgets2.spec.ts`, `interactions.spec.ts`, `certificates.spec.ts`, `sound.spec.ts`, `phase4.spec.ts` | Real content, home widgets, ⌘K search, certificates, click sounds, QA/blog/404 pages |
 | `tests/writing.spec.ts` | Newest-first order, category filter chips, post page |
 | `tests/cv.spec.ts` | All CV sections, PDF download, print layout |
 | `tests/qa.spec.ts` | /qa report, live CI and visitor cards (APIs mocked), fallbacks, footer and hero widgets |
-| `tests/api.spec.ts` | Unit tests for `/api/ci` and `/api/stats` logic with a fake fetch |
+| `tests/api.spec.ts` | Unit tests for `/api/ci`, `/api/stats` and `/api/activity` logic with a fake fetch |
 | `tests/layout.spec.ts` | No sideways scroll at 320 px on any page; tap targets ≥ 24 px (WCAG 2.2 AA), buttons/standalone links ≥ 36–44 px |
 | `tests/seo.spec.ts` | Sitemap, robots.txt, canonical URLs, a 1200×630 share image per page, noindex drafts, headers |
 | `tests/visual.spec.ts` | Full-page screenshots, dark + light, desktop + mobile |
@@ -107,6 +111,7 @@ Cloudflare's GraphQL explorer (https://graphql.cloudflare.com) and adjust the fi
 | --- | --- | --- |
 | `/api/ci` | Latest CI run on `main`: status, run number, duration, commit, link | 2 min |
 | `/api/stats` | Visits today, visits in the last 7 days, countries this week | 5 min |
+| `/api/activity` | Everything on /activity: recent visits, latest visitors, countries, Web Vitals, load time by country | 5 min |
 
 To try the functions locally: `npm run build && npx wrangler pages dev dist`.
 
@@ -146,20 +151,26 @@ If Lighthouse itself crashes on a page, that's a warning, not a failure.
 
 ```
 src/
-  components/      Nav, CommandPalette, Footer, Tile, AppIcon
+  components/      Nav, CommandPalette, Footer, Tile, AppIcon, TechIcon, ProjectIcon, CompanyLogo, IMessage
   components/tiles/ one component per bento tile
+  components/mockups/ drawn project previews
   content/site.json all copy and data
+  content/gallery.json travel photos and highlights
+  lib/             brands + tech logos, project looks, Find My map, formatting
   layouts/         BaseLayout (SEO, theme script)
   content/projects/ case studies (Markdown)
   content/writing/ blog posts (Markdown)
   pages/           routes
-  scripts/         widget logic (theme, palette, terminal, bughunt)
+  scripts/         page and widget logic (theme, sound, palette, notes, rearrange, activity, gallery, visit…)
   styles/          tokens.css, global.css, prose.css
   data/qa-report.json  data for /qa (sample until CI regenerates it)
 functions/api/     Cloudflare Pages Functions (thin wrappers)
 server/            endpoint logic, unit-testable without Cloudflare
 scripts/qa-report.mjs  builds the QA report and checks Lighthouse budgets
 scripts/og-images.mjs  renders share images into public/og/
+scripts/build-info.mjs writes dist/activity/build.json after every build
+scripts/icons.mjs      app icons from the logo (npm run icons)
+scripts/geo-data.mjs   globe dots for /activity (npm run geo, one-off)
 tests/             Playwright specs
 ```
 
@@ -174,5 +185,7 @@ tests/             Playwright specs
 - [x] Phase 7: correct site URL, sitemap, share images, Lighthouse budgets, security headers, custom-domain guide
 - [x] v2 design pass: Mona Sans, PRODUCT.md + DESIGN.md, hero with live terminal, named-area bento,
       no kickers/rings/nested cards, 44 px tap targets, 320 px layout test, app icons + manifest
-- [ ] v2 content: real photo, LinkedIn, case-study write-ups, screenshots, posts
-- [ ] v2.5 extras: Uses page, contact form, drag-to-rearrange tiles, click sounds
+- [x] v2 content: real photo, LinkedIn, case-study write-ups, Medium post, certificates, WordPress.org
+- [x] v2.5 extras: drag-to-rearrange tiles, click sounds, Notes About page, App Store project pages,
+      Spotlight search, Activity page, Gallery with story highlights, Europass CV
+- [ ] Next: project screenshots, more posts, custom domain

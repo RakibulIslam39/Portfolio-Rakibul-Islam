@@ -14,11 +14,9 @@
     "wordpress": "https://profiles.wordpress.org/rakib03029/"
   },
   "wordpress": {
-    "pluginsCheckedOn": "Nov 2026",
     "handle": "@rakib03029",
     "joined": "Dec 2021",
     "team": "Test",
-    "interests": ["Plugin", "Theme", "Core"],
     "locale": "Bengali (bn_BD)",
     "badge": "Translation Contributor",
     "badgeYear": "2025",
@@ -218,7 +216,6 @@
   ],
   "report": {
     "total": 38,
-    "passRate": 100,
     "note": "WooCommerce ↔ Google Sheets order-sync plugin",
     "suites": [
       "Setup & onboarding",

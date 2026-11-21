@@ -12,7 +12,7 @@ const VOLUME = 0.25;
 let ctx: AudioContext | null = null;
 let noise: AudioBuffer | null = null;
 
-export function soundOn(): boolean {
+function soundOn(): boolean {
   try {
     return localStorage.getItem(KEY) !== 'off';
   } catch {
@@ -49,7 +49,7 @@ function noiseBuffer(c: AudioContext): AudioBuffer {
   return buf;
 }
 
-export function playClick(force = false): void {
+function playClick(force = false): void {
   if (!force && document.documentElement.dataset.sound === 'off') return;
   const c = audio();
   if (!c) return;

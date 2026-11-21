@@ -8,11 +8,11 @@
  * Swapping two tiles swaps their slots. The map tile → slot is saved in this browser only.
  */
 
-export const LAYOUT_KEY = 'home-layout';
+const LAYOUT_KEY = 'home-layout';
 
 type Layout = Record<string, string>; // tile id → id of the tile whose home slot it now uses
 
-export function readLayout(): Layout {
+function readLayout(): Layout {
   try {
     const raw = JSON.parse(localStorage.getItem(LAYOUT_KEY) ?? '{}');
     return raw && typeof raw === 'object' ? (raw as Layout) : {};
@@ -32,7 +32,7 @@ function writeLayout(layout: Layout): void {
 }
 
 /** Put every tile in its slot. Also used before first paint by the inline script on the page. */
-export function applyLayout(grid: HTMLElement, layout: Layout): void {
+function applyLayout(grid: HTMLElement, layout: Layout): void {
   const tiles = Array.from(grid.querySelectorAll<HTMLElement>(':scope > .tile'));
   const home = new Map(tiles.map((t, i) => [t.id, { area: t.dataset.area ?? '', order: i }]));
   tiles.forEach((t) => {

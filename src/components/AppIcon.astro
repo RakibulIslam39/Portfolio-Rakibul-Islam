@@ -7,9 +7,9 @@
 import { brandPaths } from '../lib/brands';
 
 type Glyph =
-  | 'terminal' | 'report' | 'ci' | 'map' | 'contact' | 'projects' | 'timeline' | 'skills' | 'plugins'
+  | 'terminal' | 'report' | 'map' | 'contact' | 'projects' | 'timeline' | 'skills'
   | 'cv' | 'bug' | 'status' | 'portrait' | 'certificates' | 'blog' | 'mail' | 'linkedin'
-  | 'github' | 'medium' | 'udemy' | 'gmail' | 'docker' | 'postman' | 'wordpress' | 'githubactions';
+  | 'github' | 'medium' | 'udemy' | 'gmail' | 'wordpress' | 'githubactions';
 interface Props {
   name: Glyph;
   size?: number;
@@ -20,13 +20,11 @@ const { name, size = 28 } = Astro.props;
 const look: Record<Glyph, [string, string, string]> = {
   terminal: ['#4a4a52', '#16161a', '#3ee08f'],
   report: ['#5ee3a8', '#0e9a62', '#fff'],
-  ci: ['#4fa0ff', '#1a5fd6', '#fff'],
   map: ['#7fe08a', '#2aa84f', '#fff'],
   contact: ['#c9a27e', '#8a6545', '#fff'],
   projects: ['#6cc4ff', '#1e88e5', '#fff'],
   timeline: ['#d29bff', '#7b3fe4', '#fff'],
   skills: ['#ffb84d', '#f07b00', '#fff'],
-  plugins: ['#3d9bd8', '#21759b', '#fff'],
   cv: ['#ff9a5a', '#e8590c', '#fff'],
   bug: ['#ff6b8a', '#d81b4a', '#fff'],
   status: ['#5ee3a8', '#0e9a62', '#fff'],
@@ -39,8 +37,6 @@ const look: Record<Glyph, [string, string, string]> = {
   medium: ['#3a3a3a', '#000', '#fff'],
   udemy: ['#b866ff', '#8a2be2', '#fff'],
   gmail: ['#ffffff', '#e9e9ee', '#ea4335'],
-  docker: ['#4fb3ff', '#1d7fd6', '#fff'],
-  postman: ['#ff9566', '#ff5f1f', '#fff'],
   wordpress: ['#3d9bd8', '#21759b', '#fff'],
   githubactions: ['#4fa0ff', '#1a5fd6', '#fff'],
 };
@@ -74,13 +70,11 @@ const brand = medium ? undefined : brandPaths[name];
         {name === 'terminal' && <path d="M8 10l4 4-4 4M14 18h6" />}
         {name === 'report' && <><rect x="8" y="6.5" width="12" height="15" rx="2" /><path d="M11 14.5l2 2 4-4.5" /></>}
         {name === 'status' && <path d="M8.5 14.5l3.5 3.5 7.5-8" />}
-        {name === 'ci' && <><circle cx="9" cy="9" r="2" /><circle cx="9" cy="19" r="2" /><circle cx="19" cy="14" r="2" /><path d="M9 11v6M11 9.5c4 0 6 1.5 6.3 2.8" /></>}
         {name === 'map' && <><path d="M14 21.5s5-4.6 5-8.5a5 5 0 0 0-10 0c0 3.9 5 8.5 5 8.5z" fill={ink} stroke="none" /><circle cx="14" cy="13" r="1.9" fill={bottom} stroke="none" /></>}
         {name === 'contact' && <><rect x="7" y="7" width="14" height="14" rx="2.5" /><circle cx="14" cy="12.3" r="2.4" /><path d="M10.2 18.6c.8-1.9 2.2-2.8 3.8-2.8s3 .9 3.8 2.8" /></>}
         {name === 'projects' && <><path d="M6.5 10.5a1.5 1.5 0 0 1 1.5-1.5h4l1.6 1.8H20a1.5 1.5 0 0 1 1.5 1.5v6.7a1.5 1.5 0 0 1-1.5 1.5H8a1.5 1.5 0 0 1-1.5-1.5z" fill={ink} stroke="none" opacity="0.95" /></>}
         {name === 'timeline' && <><rect x="7" y="8" width="14" height="13" rx="2" /><path d="M7 12h14M11 6.5v3M17 6.5v3" /><circle cx="11" cy="16" r="0.6" fill={ink} /><circle cx="14" cy="16" r="0.6" fill={ink} /><circle cx="17" cy="16" r="0.6" fill={ink} /></>}
         {name === 'skills' && <><rect x="6.5" y="11" width="15" height="9.5" rx="1.8" /><path d="M11 11V9.2c0-.7.5-1.2 1.2-1.2h3.6c.7 0 1.2.5 1.2 1.2V11M6.5 15h15" /></>}
-        {name === 'plugins' && <><path d="M11 7v4M17 7v4M9 11h10v3a5 5 0 0 1-10 0zM14 19v3" /></>}
         {name === 'cv' && <><path d="M10 6.5h6l3.5 3.5v11.5h-9.5z" /><path d="M16 6.5V10h3.5M12.5 15h5M12.5 18h3.5" /></>}
         {name === 'bug' && <><ellipse cx="14" cy="15.5" rx="4" ry="5" fill={ink} stroke="none" /><path d="M14 10.5V20.5" stroke={bottom} /><path d="M10 13H7M21 13h-3M10 17H7M21 17h-3M11.5 9l-1.5-2M16.5 9l1.5-2" /></>}
         {name === 'portrait' && <><circle cx="14" cy="11.5" r="3.2" /><path d="M8 21c1.2-3.3 3.4-4.6 6-4.6s4.8 1.3 6 4.6" /></>}

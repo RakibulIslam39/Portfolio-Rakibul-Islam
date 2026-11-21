@@ -7,10 +7,13 @@ const pages = [
   '/projects/flexorder-e2e/',
   '/projects/traffic-flow-prediction/',
   '/projects/ai-face-analyzer/',
+  '/projects/old-portfolio/',
   '/writing/',
   '/certificates/',
   '/cv/',
   '/qa/',
+  '/activity/',
+  '/gallery/',
 ];
 
 test('home page loads with the right title and heading', async ({ page }) => {

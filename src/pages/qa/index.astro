@@ -638,6 +638,7 @@ const ring = (r: number, v: number) => {
 
 <script>
   import { getJSON, relativeTime, formatDuration, statusLabel, type CiSummary, type Stats } from '../../scripts/live';
+  import { showVisit } from '../../scripts/visit';
 
   const ciCard = document.querySelector<HTMLElement>('[data-live-ci]')!;
   const state = ciCard.querySelector<HTMLElement>('[data-ci-state]')!;
@@ -675,45 +676,8 @@ const ring = (r: number, v: number) => {
   };
 
 
-  // Your visit: how long this page took to reach you, from the browser's own timing.
-  const visit = document.querySelector<HTMLElement>('[data-visit]');
-  const showVisit = () => {
-    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-    if (!visit || !nav || !nav.responseEnd) return;
-    const parts = {
-      dns: nav.domainLookupEnd - nav.domainLookupStart,
-      connect: nav.connectEnd - nav.connectStart,
-      wait: nav.responseStart - nav.requestStart,
-      download: nav.responseEnd - nav.responseStart,
-    };
-    const total = Math.round(nav.responseEnd - nav.startTime);
-    visit.querySelector('[data-visit-total]')!.textContent = String(total);
-    const max = Math.max(...Object.values(parts), 1);
-    (Object.keys(parts) as (keyof typeof parts)[]).forEach((k) => {
-      const ms = Math.max(0, Math.round(parts[k]));
-      visit.querySelector(`[data-ms="${k}"]`)!.textContent = `${ms} ms`;
-      visit.querySelector<HTMLElement>(`[data-bar="${k}"]`)!.style.width = `${Math.max(2, (ms / max) * 100)}%`;
-    });
-  };
-  if (document.readyState === 'complete') showVisit();
-  else window.addEventListener('load', showVisit, { once: true });
-
-  // Which Cloudflare data centre served you (only on the live site).
-  const CITIES: Record<string, string> = {
-    DAC: 'Dhaka', CGP: 'Chattogram', CCU: 'Kolkata', DEL: 'Delhi', BOM: 'Mumbai', MAA: 'Chennai', SIN: 'Singapore',
-    KUL: 'Kuala Lumpur', BKK: 'Bangkok', HKG: 'Hong Kong', NRT: 'Tokyo', ICN: 'Seoul', SYD: 'Sydney', DXB: 'Dubai',
-    FRA: 'Frankfurt', AMS: 'Amsterdam', LHR: 'London', CDG: 'Paris', ARN: 'Stockholm', WAW: 'Warsaw', BUD: 'Budapest',
-    VIE: 'Vienna', MAD: 'Madrid', MXP: 'Milan', IAD: 'Ashburn', EWR: 'Newark', ORD: 'Chicago', DFW: 'Dallas',
-    LAX: 'Los Angeles', SJC: 'San Jose', SEA: 'Seattle', YYZ: 'Toronto', GRU: 'São Paulo',
-  };
-  fetch('/cdn-cgi/trace')
-    .then((r) => (r.ok ? r.text() : ''))
-    .then((text) => {
-      const colo = /^colo=(\w+)$/m.exec(text)?.[1];
-      if (!colo || !visit) return;
-      visit.querySelector('[data-visit-where]')!.textContent = `to load this page, served by Cloudflare in ${CITIES[colo] ?? colo}`;
-    })
-    .catch(() => undefined);
+  // Your visit: how long this page took to reach you, and from which Cloudflare data centre.
+  showVisit(document.querySelector<HTMLElement>('[data-visit]'), (city) => `to load this page, served by Cloudflare in ${city}`);
 
   // Your Core Web Vitals, measured in this browser and shown only to you.
   const vitals = document.querySelector<HTMLElement>('[data-vitals]');

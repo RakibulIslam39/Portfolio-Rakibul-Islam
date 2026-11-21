@@ -1,6 +1,6 @@
 /** Presentation details for each case study, shared by /projects/ and the project pages. */
-export type Tone = 'mint' | 'indigo' | 'lilac' | 'night';
-export interface ProjectLook {
+type Tone = 'mint' | 'indigo' | 'lilac' | 'night';
+interface ProjectLook {
   eyebrow: string;
   headline: string;
   tone: Tone;

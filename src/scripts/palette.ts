@@ -3,7 +3,7 @@ import { toggleTheme } from './theme';
 import { savedLook, setLook } from './look';
 
 /** A tiny calculator: + - * / % ^ and brackets. Returns null if the text isn't a sum. */
-export function calculate(text: string): number | null {
+function calculate(text: string): number | null {
   const src = text.replace(/\s+/g, '').replace(/×/g, '*').replace(/÷/g, '/');
   if (!/^[\d.+\-*/%^()]+$/.test(src) || !/[+\-*/%^]/.test(src.replace(/^-/, ''))) return null;
   let i = 0;

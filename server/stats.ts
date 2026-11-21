@@ -9,7 +9,7 @@ export interface StatsEnv {
   CF_SITE_TAG?: string;
 }
 
-export interface Stats {
+interface Stats {
   today: number;
   week: number;
   countries: number;

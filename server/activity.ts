@@ -6,7 +6,7 @@ import { fetchStats, type StatsEnv } from './stats';
  * Each part is its own GraphQL request: if Cloudflare renames a field, only that part turns into
  * null (and its message lands in `errors`), and the rest of the page keeps working.
  */
-export interface Activity {
+interface Activity {
   now: string;
   totals: { today: number; yesterday: number; week: number; prevWeek: number; countries: number } | null;
   /** Visits in the last 30 minutes. */
@@ -47,7 +47,7 @@ const wrap = (inner: string) => `query Activity($account: String!, $site: String
   viewer { accounts(filter: { accountTag: $account }) { ${inner} } }
 }`;
 
-export const QUERIES = {
+const QUERIES = {
   recent: wrap(`rows: rumPageloadEventsAdaptiveGroups(limit: 1, filter: { siteTag: $site, datetime_geq: $from, datetime_leq: $to }) { sum { visits } }`),
   latest: wrap(`rows: rumPageloadEventsAdaptiveGroups(limit: 6, orderBy: [datetimeMinute_DESC], filter: { siteTag: $site, datetime_geq: $from, datetime_leq: $to }) {
     count

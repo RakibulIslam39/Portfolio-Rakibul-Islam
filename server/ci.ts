@@ -7,7 +7,7 @@ export interface CiEnv {
   GITHUB_TOKEN?: string;
 }
 
-export interface CiSummary {
+interface CiSummary {
   status: 'passing' | 'failing' | 'running' | 'unknown';
   conclusion: string | null;
   title: string;

@@ -3,7 +3,7 @@
  * The portrait tile on the home page switches it; the choice is remembered in this
  * browser and every picture marked [data-me] across the site follows it.
  */
-export type Look = 'photo' | 'avatar';
+type Look = 'photo' | 'avatar';
 const KEY = 'look';
 
 export function savedLook(): Look {

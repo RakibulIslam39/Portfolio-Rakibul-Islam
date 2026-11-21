@@ -1,10 +1,10 @@
-export type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark';
 
-export function currentTheme(): Theme {
+function currentTheme(): Theme {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 }
 
-export function setTheme(theme: Theme): void {
+function setTheme(theme: Theme): void {
   const apply = () => {
     document.documentElement.dataset.theme = theme;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f2f2f5' : '#0e0e10');
