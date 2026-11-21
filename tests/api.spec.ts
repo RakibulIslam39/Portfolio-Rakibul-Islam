@@ -7,6 +7,8 @@ import { latestCiRun, toSummary, DEFAULT_REPO } from '../server/ci';
 import { fetchStats, isConfigured, QUERY } from '../server/stats';
 import { onRequestGet as statsHandler } from '../functions/api/stats';
 import { onRequestGet as ciHandler } from '../functions/api/ci';
+import { fetchActivity, section, toMs } from '../server/activity';
+import { onRequestGet as activityHandler } from '../functions/api/activity';
 
 const run = {
   status: 'completed',
@@ -140,5 +142,51 @@ test.describe('Pages Functions', () => {
     } finally {
       globalThis.fetch = original;
     }
+  });
+});
+
+test.describe('activity', () => {
+  const env = { CF_ANALYTICS_TOKEN: 't', CF_ACCOUNT_ID: 'acc', CF_SITE_TAG: 'site' };
+  const now = new Date('2026-11-21T16:00:00Z');
+
+  test('names the part of the site a path belongs to', () => {
+    expect(section('/')).toBe('Home');
+    expect(section('/projects/flexorder-e2e/')).toBe('Projects');
+    expect(section('/writing/')).toBe('Blog');
+    expect(section('/nope/')).toBe('a page');
+  });
+
+  test('reads Cloudflare timings in microseconds or milliseconds', () => {
+    expect(toMs(1_200_000)).toBe(1200);
+    expect(toMs(850)).toBe(850);
+    expect(toMs(null)).toBeNull();
+  });
+
+  test('one failing part does not take the others down', async () => {
+    // Answer each query by what it asks for; the Web Vitals "shares" query fails like an unknown field would.
+    const f = (async (_url: string, init?: RequestInit) => {
+      const q = JSON.parse(String(init?.body)).query as string;
+      const reply = (accounts: unknown) => new Response(JSON.stringify({ data: { viewer: { accounts: [accounts] } } }), { headers: { 'content-type': 'application/json' } });
+      if (q.includes('lcpGood')) return new Response(JSON.stringify({ errors: [{ message: 'unknown field lcpGood' }] }), { headers: { 'content-type': 'application/json' } });
+      if (q.includes('today:')) return reply({ today: [{ sum: { visits: 9 } }], week: [{ sum: { visits: 90 } }], yesterday: [{ sum: { visits: 3 } }], prevWeek: [], countries: [{ dimensions: { countryName: 'BD' } }] });
+      if (q.includes('datetimeMinute')) return reply({ rows: [{ count: 1, dimensions: { datetimeMinute: '2026-11-21T15:50:00Z', countryName: 'BD', requestPath: '/about/' } }] });
+      if (q.includes('sum_visits_DESC')) return reply({ rows: [{ sum: { visits: 7 }, dimensions: { countryName: 'BD' } }] });
+      if (q.includes('largestContentfulPaintP75')) return reply({ rows: [{ count: 40, quantiles: { largestContentfulPaintP75: 1_234_000, interactionToNextPaintP75: 72_000, cumulativeLayoutShiftP75: 0.013 } }] });
+      if (q.includes('pageLoadTimeP50')) return reply({ rows: [{ count: 5, dimensions: { countryName: 'BD' }, quantiles: { pageLoadTimeP50: 800_000 } }] });
+      return reply({ rows: [{ sum: { visits: 2 } }] });
+    }) as unknown as typeof fetch;
+    const a = await fetchActivity(env, now, f);
+    expect(a.recent).toBe(2);
+    expect(a.totals).toMatchObject({ today: 9, week: 90, countries: 1 });
+    expect(a.latest).toEqual([{ at: '2026-11-21T15:50:00Z', country: 'BD', section: 'About' }]);
+    expect(a.places).toEqual([{ country: 'BD', visits: 7 }]);
+    expect(a.vitals).toEqual({ loads: 40, lcp: { seconds: 1.23, good: null }, inp: { ms: 72, good: null }, cls: { score: 0.01, good: null } });
+    expect(a.world).toEqual([{ country: 'BD', seconds: 0.8, loads: 5 }]);
+    expect(a.errors).toEqual({ shares: 'unknown field lcpGood' });
+  });
+
+  test('the endpoint answers 204 until analytics is set up', async () => {
+    const res = await activityHandler({ request: new Request('https://x/api/activity'), env: {} });
+    expect(res.status).toBe(204);
   });
 });

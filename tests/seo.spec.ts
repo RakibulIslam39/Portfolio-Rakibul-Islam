@@ -19,7 +19,7 @@ async function sitemapPaths(request: import('@playwright/test').APIRequestContex
 
 test('sitemap lists the public pages and leaves out external posts', async ({ request }) => {
   const paths = await sitemapPaths(request);
-  for (const p of ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/certificates/', '/cv/', '/qa/']) {
+  for (const p of ['/', '/about/', '/projects/', '/projects/flexorder-e2e/', '/writing/', '/certificates/', '/cv/', '/qa/', '/activity/']) {
     expect(paths).toContain(p);
   }
   // Posts published elsewhere (Medium) have no local page.

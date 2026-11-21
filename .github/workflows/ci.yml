@@ -67,6 +67,9 @@ jobs:
         run: echo "::notice::Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets to enable deploys."
       - uses: actions/checkout@v4
         if: env.CLOUDFLARE_API_TOKEN != ''
+        with:
+          # Full history, so the Activity page can count commits and lines changed.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         if: env.CLOUDFLARE_API_TOKEN != ''
         with:

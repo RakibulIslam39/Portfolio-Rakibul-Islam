@@ -1,0 +1,26 @@
+{
+  "now": "2026-11-21T16:00:00.000Z",
+  "totals": { "today": 62, "yesterday": 50, "week": 511, "prevWeek": 600, "countries": 37 },
+  "recent": 4,
+  "latest": [
+    { "at": "2026-11-21T15:48:00Z", "country": "BD", "section": "Home" },
+    { "at": "2026-11-21T15:30:00Z", "country": "DE", "section": "Projects" },
+    { "at": "2026-11-21T15:10:00Z", "country": "US", "section": "About" },
+    { "at": "2026-11-21T14:55:00Z", "country": "HU", "section": "CV" }
+  ],
+  "places": [
+    { "country": "BD", "visits": 300 },
+    { "country": "US", "visits": 80 },
+    { "country": "DE", "visits": 40 },
+    { "country": "IN", "visits": 30 },
+    { "country": "HU", "visits": 12 }
+  ],
+  "vitals": { "loads": 597, "lcp": { "seconds": 1.2, "good": 0.95 }, "inp": { "ms": 72, "good": 0.93 }, "cls": { "score": 0, "good": 0.99 } },
+  "world": [
+    { "country": "BD", "seconds": 0.8, "loads": 300 },
+    { "country": "IN", "seconds": 1.2, "loads": 30 },
+    { "country": "DE", "seconds": 1.6, "loads": 40 },
+    { "country": "US", "seconds": 2.4, "loads": 80 }
+  ],
+  "errors": {}
+}

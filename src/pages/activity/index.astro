@@ -1,0 +1,679 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import qa from '../../data/qa-report.json';
+
+// Lighthouse scores for the homepage, from the QA report CI writes on every push.
+const home = qa.lighthouse.find((l) => l.path === '/') ?? qa.lighthouse[0];
+const report = home
+  ? [
+      { label: 'Performance', value: home.performance },
+      { label: 'Accessibility', value: home.accessibility },
+      { label: 'Best practices', value: home.bestPractices },
+      { label: 'SEO', value: home.seo },
+    ]
+  : [];
+const gauge = (v: number) => {
+  const c = 2 * Math.PI * 34;
+  return `${((v / 100) * c).toFixed(1)} ${c.toFixed(1)}`;
+};
+const grade = (v: number) => (v >= 90 ? 'good' : v >= 50 ? 'ok' : 'poor');
+
+// Activity rings for the three Core Web Vitals: outer to inner.
+const RINGS = [
+  { key: 'lcp', r: 84, color: '#fa114f', track: 'rgb(250 17 79 / 0.22)' },
+  { key: 'inp', r: 62, color: '#a6ff00', track: 'rgb(166 255 0 / 0.2)' },
+  { key: 'cls', r: 40, color: '#00f0ff', track: 'rgb(0 240 255 / 0.2)' },
+];
+const CONTINENTS = [
+  ['AS', 'Asia'],
+  ['EU', 'Europe'],
+  ['NA', 'N. America'],
+  ['SA', 'S. America'],
+  ['AF', 'Africa'],
+  ['OC', 'Oceania'],
+];
+---
+
+<BaseLayout
+  title="Activity: how this site is doing | Rakibul Islam"
+  description="Who's reading, how fast the site reached them and how it scores. Live from Cloudflare's cookie-free analytics, with nothing personal in it."
+>
+  <div class="container ac">
+    <header class="page-head ac-head">
+      <p class="ac-app"><span class="ac-dot" aria-hidden="true"></span> Activity</p>
+      <h1>How this site is doing</h1>
+      <p>
+        Who's reading, how fast it reached you, and how it scores. Straight from Cloudflare's cookie-free analytics, refreshed every five
+        minutes, and none of it personal.
+      </p>
+    </header>
+
+    <div class="ac-grid" data-activity data-state="loading">
+      <section class="tile ac-live" aria-labelledby="ac-live-h">
+        <h2 id="ac-live-h" class="ac-label"><span class="ac-pulse" aria-hidden="true"></span> Live</h2>
+        <p class="ac-hero">
+          <strong class="ac-hero__n" data-recent>–</strong>
+          <span class="ac-hero__unit">visits in the<br />last 30 minutes</span>
+        </p>
+        <dl class="ac-counts">
+          <div><dt>Today</dt><dd><span data-total="today">–</span> <em data-change="today"></em></dd></div>
+          <div><dt>Countries</dt><dd><span data-total="countries">–</span></dd></div>
+          <div><dt>This week</dt><dd><span data-total="week">–</span> <em data-change="week"></em></dd></div>
+        </dl>
+        <ol class="ac-feed" data-feed aria-label="Latest visits"></ol>
+        <canvas class="ac-globe" data-globe width="560" height="560" aria-hidden="true"></canvas>
+        <p class="ac-off" data-off hidden>Live numbers appear on the deployed site, once Cloudflare Web Analytics is connected.</p>
+      </section>
+
+      <section class="tile ac-feels" aria-labelledby="ac-feels-h">
+        <h2 id="ac-feels-h" class="ac-label">How it feels</h2>
+        <svg class="ac-rings" viewBox="0 0 200 200" role="img" aria-label="Share of visits rated good for loading, responding and staying put" data-rings>
+          {
+            RINGS.map((r) => (
+              <g transform="rotate(-90 100 100)">
+                <circle cx="100" cy="100" r={r.r} fill="none" stroke={r.track} stroke-width="18" />
+                <circle class="ac-ring" data-ring={r.key} cx="100" cy="100" r={r.r} fill="none" stroke={r.color} stroke-width="18" stroke-linecap="round" stroke-dasharray={`0 ${(2 * Math.PI * r.r).toFixed(1)}`} data-c={(2 * Math.PI * r.r).toFixed(1)} />
+              </g>
+            ))
+          }
+        </svg>
+        <ul class="ac-vitals">
+          <li style="--ring:#fa114f"><span><strong>Loads</strong> main content on screen</span><em data-vital="lcp">–</em></li>
+          <li style="--ring:#a6ff00"><span><strong>Responds</strong> after a tap or click</span><em data-vital="inp">–</em></li>
+          <li style="--ring:#00f0ff"><span><strong>Stays put</strong> how much the page jumps</span><em data-vital="cls">–</em></li>
+        </ul>
+        <p class="ac-foot">Real visits this week. Each ring is the share Google rates good.</p>
+      </section>
+
+      <section class="tile ac-visit" aria-labelledby="ac-visit-h" data-visit>
+        <h2 id="ac-visit-h" class="ac-label">Your visit</h2>
+        <p class="ac-stat"><strong data-visit-total>–</strong><span>ms</span></p>
+        <p class="ac-sub" data-visit-where>to reach you, from your browser's own timing</p>
+        <ul class="ac-bars">
+          <li><span>Find</span><i><b data-bar="dns"></b></i><em data-ms="dns">–</em></li>
+          <li><span>Connect</span><i><b data-bar="connect"></b></i><em data-ms="connect">–</em></li>
+          <li><span>Wait</span><i><b data-bar="wait"></b></i><em data-ms="wait">–</em></li>
+          <li><span>Download</span><i><b data-bar="download"></b></i><em data-ms="download">–</em></li>
+        </ul>
+      </section>
+
+      <section class="tile ac-ship" aria-labelledby="ac-ship-h">
+        <h2 id="ac-ship-h" class="ac-label">Last published</h2>
+        <p class="ac-timer"><strong data-ago>–</strong> ago.</p>
+        <p class="ac-sub" data-commit>&nbsp;</p>
+        <dl class="ac-facts">
+          <div><dt>Homepage</dt><dd data-weight>–</dd></div>
+          <div><dt>Cookies</dt><dd>0</dd></div>
+          <div><dt>Ad trackers</dt><dd>0</dd></div>
+        </dl>
+      </section>
+
+      <section class="tile ac-report" aria-labelledby="ac-report-h">
+        <h2 id="ac-report-h" class="ac-label">Report card</h2>
+        <ul class="ac-gauges">
+          {
+            report.map((g) => (
+              <li data-grade={grade(g.value)}>
+                <svg viewBox="0 0 80 80" width="80" height="80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke-width="6" class="ac-gauge__track" />
+                  <circle cx="40" cy="40" r="34" fill="none" stroke-width="6" class="ac-gauge__value" stroke-dasharray={gauge(g.value)} stroke-linecap="round" transform="rotate(-90 40 40)" />
+                </svg>
+                <strong>{g.value}</strong>
+                <span>{g.label}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="ac-foot">Google Lighthouse on the homepage, on a phone, from the <a href="/qa/">QA run</a> on every push.</p>
+      </section>
+
+      <section class="tile ac-world" aria-labelledby="ac-world-h">
+        <h2 id="ac-world-h" class="ac-label">Around the world</h2>
+        <ul class="ac-regions" data-regions>
+          {
+            CONTINENTS.map(([code, name]) => (
+              <li data-region={code}>
+                <span>{name}</span>
+                <i><b></b></i>
+                <em>–</em>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="ac-foot">Typical time to load a page, this week.</p>
+      </section>
+
+      <section class="tile ac-built" aria-labelledby="ac-built-h">
+        <h2 id="ac-built-h" class="ac-label">How it's built</h2>
+        <p class="ac-built__main"><strong data-repo="linesAdded">–</strong> <span>lines written</span></p>
+        <dl class="ac-built__facts">
+          <div><dt>Commits</dt><dd data-repo="commits">–</dd></div>
+          <div><dt>Days worked on</dt><dd data-repo="days">–</dd></div>
+          <div><dt>Lines removed</dt><dd data-repo="linesRemoved">–</dd></div>
+          <div><dt>Files</dt><dd data-repo="files">–</dd></div>
+        </dl>
+        <div class="ac-days" data-days role="img" aria-label="Commits per day"></div>
+        <p class="ac-foot" data-since>Counted from the site's git history on every deploy.</p>
+      </section>
+    </div>
+
+    <p class="ac-note">
+      <strong>What's counted.</strong> Cloudflare's cookie-free Web Analytics, which every page reports to: the country a visit came from,
+      which part of the site, and how quickly it loaded. Not the city, no names, no IP addresses, no cookies. Nothing here can tell who
+      anyone is.
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  import { initActivity } from '../../scripts/activity';
+  initActivity();
+</script>
+
+<style>
+  .ac-head .ac-app {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 13px !important;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .ac-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--pass);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--pass) 22%, transparent);
+  }
+  .ac-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(260px, auto);
+    gap: var(--gap, 16px);
+  }
+  .ac-grid > .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 24px;
+    border-radius: var(--radius);
+    background: var(--tile);
+    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .ac-live {
+    grid-column: span 2;
+    grid-row: span 2;
+    min-height: 560px;
+  }
+  .ac-feels {
+    grid-row: span 2;
+  }
+  .ac-report,
+  .ac-world {
+    grid-column: span 2;
+  }
+  .ac-built {
+    grid-column: 1 / -1;
+  }
+  .ac-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .ac-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pass);
+    animation: ac-pulse 2s ease-out infinite;
+  }
+  @keyframes ac-pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--pass) 60%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
+  .ac-foot,
+  .ac-sub {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .ac-foot {
+    margin-top: auto;
+    padding-top: 12px;
+  }
+  .ac-foot a {
+    color: inherit;
+  }
+
+  /* Live */
+  .ac-hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    margin: 0;
+  }
+  .ac-hero__n {
+    font-size: clamp(72px, 9vw, 112px);
+    font-weight: 700;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .ac-hero__unit {
+    padding-bottom: 6px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .ac-counts {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 28px;
+    margin: 22px 0 0;
+  }
+  .ac-counts dt {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ac-counts dd {
+    margin: 2px 0 0;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .ac-counts em {
+    font-style: normal;
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: 3px;
+  }
+  .ac-counts em[data-trend='up'] {
+    color: var(--pass);
+  }
+  .ac-counts em[data-trend='down'] {
+    color: #ff6b6b;
+  }
+  .ac-feed {
+    position: relative;
+    z-index: 1;
+    list-style: none;
+    margin: auto 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    max-width: 330px;
+    min-height: 152px;
+    align-content: end;
+  }
+  .ac-feed :global(li) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--card) 85%, transparent);
+    backdrop-filter: blur(8px);
+    font-size: 13px;
+    color: var(--muted);
+    animation: ac-in 0.5s var(--ease-arrive, ease) both;
+  }
+  .ac-feed :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+  @keyframes ac-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .ac-globe {
+    position: absolute;
+    right: -90px;
+    bottom: -110px;
+    width: 520px;
+    height: 520px;
+    pointer-events: none;
+  }
+  .ac-off {
+    position: relative;
+    z-index: 1;
+    max-width: 300px;
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* How it feels */
+  .ac-rings {
+    width: min(100%, 210px);
+    margin: 4px auto 18px;
+  }
+  .ac-ring {
+    transition: stroke-dasharray 1.2s var(--ease-arrive, ease);
+  }
+  .ac-vitals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .ac-vitals li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-left: 12px;
+    border-left: 3px solid var(--ring);
+  }
+  .ac-vitals span {
+    display: grid;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ac-vitals strong {
+    font-size: 14px;
+    color: var(--text);
+  }
+  .ac-vitals em {
+    font-style: normal;
+    font: 600 18px var(--font-mono, ui-monospace, monospace);
+    color: var(--ring);
+    white-space: nowrap;
+  }
+  :global(html[data-theme='light']) .ac-vitals em {
+    color: var(--text);
+  }
+
+  /* Your visit + last published */
+  .ac-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0 0 4px;
+  }
+  .ac-stat strong,
+  .ac-timer strong {
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .ac-stat span {
+    color: var(--muted);
+  }
+  .ac-bars {
+    list-style: none;
+    margin: auto 0 0;
+    padding: 14px 0 0;
+    display: grid;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .ac-bars li {
+    display: grid;
+    grid-template-columns: 64px 1fr 48px;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+  }
+  .ac-bars i {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .ac-bars b {
+    display: block;
+    width: 2%;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--link);
+    transition: width 0.8s var(--ease-arrive, ease);
+  }
+  .ac-bars em {
+    font-style: normal;
+    text-align: right;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .ac-timer {
+    margin: 0 0 6px;
+    color: var(--muted);
+  }
+  .ac-timer {
+    white-space: nowrap;
+  }
+  .ac-timer strong {
+    font-size: clamp(20px, 2vw, 26px);
+  }
+  .ac-sub[data-commit] {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 3.9em;
+  }
+  .ac-facts {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    gap: 8px;
+    margin: auto 0 0;
+    padding-top: 14px;
+  }
+  .ac-facts dt {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ac-facts dd {
+    margin: 2px 0 0;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* Report card */
+  .ac-gauges {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    text-align: center;
+  }
+  .ac-gauges li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    --g: var(--pass);
+  }
+  .ac-gauges li[data-grade='ok'] {
+    --g: #ffa400;
+  }
+  .ac-gauges li[data-grade='poor'] {
+    --g: #ff4e42;
+  }
+  .ac-gauge__track {
+    stroke: color-mix(in srgb, var(--g) 18%, transparent);
+  }
+  .ac-gauge__value {
+    stroke: var(--g);
+  }
+  .ac-gauges strong {
+    position: absolute;
+    top: 26px;
+    font-size: 22px;
+    color: var(--g);
+    font-variant-numeric: tabular-nums;
+  }
+  .ac-gauges span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Around the world */
+  .ac-regions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .ac-regions li {
+    display: grid;
+    grid-template-columns: 90px 1fr 46px;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+  }
+  .ac-regions i {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .ac-regions b {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 3px;
+    background: #ffa400;
+    transition: width 0.8s var(--ease-arrive, ease);
+  }
+  .ac-regions em {
+    font-style: normal;
+    text-align: right;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* How it's built */
+  .ac-built {
+    min-height: 0;
+  }
+  .ac-built__main {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 0 0 14px;
+  }
+  .ac-built__main strong {
+    font-size: clamp(44px, 7vw, 84px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .ac-built__main span {
+    color: var(--muted);
+  }
+  .ac-built__facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0 0 18px;
+  }
+  .ac-built__facts dt {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ac-built__facts dd {
+    margin: 2px 0 0;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .ac-days {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 90px;
+  }
+  .ac-days :global(i) {
+    flex: 1;
+    min-width: 3px;
+    max-width: 28px;
+    border-radius: 3px 3px 0 0;
+    background: var(--pass);
+    opacity: 0.9;
+  }
+  .ac-days :global(i[data-zero]) {
+    height: 3px !important;
+    background: var(--card);
+  }
+
+  .ac-note {
+    max-width: 760px;
+    margin: 28px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .ac-note strong {
+    color: var(--text);
+  }
+
+  @media (max-width: 1100px) {
+    .ac-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ac-live,
+    .ac-report,
+    .ac-world {
+      grid-column: 1 / -1;
+    }
+    .ac-feels {
+      grid-row: span 2;
+    }
+  }
+  @media (max-width: 640px) {
+    .ac-grid {
+      grid-template-columns: 1fr;
+    }
+    .ac-live,
+    .ac-feels {
+      grid-row: auto;
+    }
+    .ac-live {
+      min-height: 620px;
+    }
+    .ac-globe {
+      right: -120px;
+      bottom: -150px;
+    }
+    .ac-gauges {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ac-built__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ac-pulse,
+    .ac-feed :global(li) {
+      animation: none;
+    }
+  }
+</style>

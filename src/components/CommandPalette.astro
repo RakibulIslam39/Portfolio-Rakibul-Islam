@@ -20,6 +20,7 @@ const items: Item[] = [
   { group: 'Pages', label: 'Blog', hint: '/writing/', href: '/writing/', icon: 'blog', desc: 'What I learn while automating tests. Published on Medium.' },
   { group: 'Pages', label: 'Certificates', hint: '/certificates/', href: '/certificates/', icon: 'certificates', desc: `${site.certifications.length} course certificates, each with a link to verify it.` },
   { group: 'Pages', label: 'QA report', hint: '/qa/', href: '/qa/', icon: 'report', desc: `This site's own test results: ${qa.tests.total} Playwright tests, accessibility and Lighthouse.`, suggest: true },
+  { group: 'Pages', label: 'Activity', hint: '/activity/', href: '/activity/', icon: 'status', desc: "Who's reading this site right now, how fast it loads for them, and how it's built." },
   { group: 'Pages', label: 'CV', hint: '/cv/', href: '/cv/', icon: 'cv', desc: 'One page, printable, with a PDF download.' },
   ...caseStudies.map((p) => ({ project: p.id, group: 'Projects', label: p.data.title, hint: p.data.hook, href: `/projects/${p.id}/`, icon: projectLook[p.id]?.icon ?? 'projects', desc: p.data.summary, suggest: p.data.order === 1 })),
   ...posts.map((p, i) => ({ group: 'Blog', label: p.data.title, hint: p.data.source ?? p.data.category, href: p.data.url ?? `/writing/${p.id}/`, icon: (p.data.url ? 'medium' : 'blog') as Icon, desc: p.data.excerpt, suggest: i === 0 })),
