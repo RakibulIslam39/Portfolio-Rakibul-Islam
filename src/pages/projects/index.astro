@@ -9,6 +9,7 @@ import { projectLook } from '../../lib/projects';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
 import FaceMock from '../../components/mockups/FaceMock.astro';
+import OldSiteMock from '../../components/mockups/OldSiteMock.astro';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const groups = [...new Set(site.repos.map((r) => r.group))].map((g) => ({
@@ -47,6 +48,7 @@ const month = (ym: string) =>
                 {card.mock === 'flexorder' && <FlexOrderMock />}
                 {card.mock === 'traffic' && <TrafficMock />}
                 {card.mock === 'face' && <FaceMock />}
+                {card.mock === 'oldsite' && <OldSiteMock />}
               </div>
               <div class="today__strip">
                 <ProjectIcon id={p.id} size={40} />
@@ -202,11 +204,18 @@ const month = (ym: string) =>
   .today--lilac {
     background: linear-gradient(160deg, #f6dcff, #e3c4ff);
   }
+  .today--night {
+    --fg: #fff;
+    --sub: rgb(255 255 255 / 0.72);
+    --strip: rgb(0 0 0 / 0.3);
+    background: radial-gradient(120% 90% at 80% 20%, #2b3270, #0b1028 70%);
+    grid-column: span 2;
+  }
   .today--work {
     background: var(--tile);
     --fg: var(--text);
     --sub: var(--muted);
-    grid-column: span 2;
+    grid-column: 1 / -1;
     min-height: 0;
   }
   .today__top {
@@ -271,7 +280,8 @@ const month = (ym: string) =>
     font-weight: 700;
     text-decoration: none;
   }
-  .today--indigo .today__get {
+  .today--indigo .today__get,
+  .today--night .today__get {
     background: rgb(255 255 255 / 0.9);
   }
   /* The whole card is the link's hit area. */
@@ -328,6 +338,7 @@ const month = (ym: string) =>
       grid-template-columns: 1fr;
     }
     .today--lead,
+    .today--night,
     .today--work {
       grid-column: auto;
     }

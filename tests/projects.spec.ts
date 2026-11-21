@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const slugs = ['flexorder-e2e', 'traffic-flow-prediction', 'ai-face-analyzer'];
+const slugs = ['flexorder-e2e', 'traffic-flow-prediction', 'ai-face-analyzer', 'old-portfolio'];
 
 test('projects index lists every case study', async ({ page }) => {
   await page.goto('/projects/');
@@ -80,4 +80,13 @@ test('experience shows each company’s own logo', async ({ page }) => {
     );
     expect(loaded, path).toEqual([true, true, true]);
   }
+});
+
+test('the previous portfolio is a project that links to the old site', async ({ page }) => {
+  await page.goto('/projects/old-portfolio/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('My previous portfolio');
+  const visit = page.getByRole('link', { name: /Visit the old site/ }).first();
+  await expect(visit).toHaveAttribute('href', 'https://rakib-protfolio.vercel.app/');
+  await expect(visit).toHaveAttribute('target', '_blank');
+  await expect(page.locator('main')).toContainText('three.js');
 });

@@ -6,6 +6,7 @@ import TechIcon from '../../components/TechIcon.astro';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
 import FaceMock from '../../components/mockups/FaceMock.astro';
+import OldSiteMock from '../../components/mockups/OldSiteMock.astro';
 import { projectLook } from '../../lib/projects';
 
 export async function getStaticPaths() {
@@ -42,7 +43,7 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
             primary && (
               <a class="app__btn app__btn--primary" href={primary.url} target="_blank" rel="noopener">
                 {primary.label === 'Source code' ? 'View code' : primary.label}
-                <span class="sr-only"> on GitHub (opens in a new tab)</span>
+                <span class="sr-only">{primary.label === 'Source code' ? ' on GitHub' : ''} (opens in a new tab)</span>
               </a>
             )
           }
@@ -86,6 +87,7 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
           {look.mock === 'flexorder' && <FlexOrderMock />}
           {look.mock === 'traffic' && <TrafficMock />}
           {look.mock === 'face' && <FaceMock />}
+          {look.mock === 'oldsite' && <OldSiteMock />}
           <figcaption class="sr-only">Drawn mock-up of {d.title}</figcaption>
         </figure>
         <div class:list={['app__card', `tone--${look.tone}`]}>
@@ -328,6 +330,10 @@ const year = d.period.match(/\d{4}/)?.[0] ?? '';
   }
   .tone--indigo {
     background: linear-gradient(160deg, #3446c7, #1b2477);
+    color: #fff;
+  }
+  .tone--night {
+    background: radial-gradient(120% 90% at 80% 20%, #2b3270, #0b1028 70%);
     color: #fff;
   }
   .tone--lilac {

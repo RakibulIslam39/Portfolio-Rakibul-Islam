@@ -1,0 +1,173 @@
+---
+/** A drawn snapshot of the previous portfolio: the glass intro card over a dark 3D room, and the monitor with a failing Playwright test. */
+---
+
+<div class="osm" aria-hidden="true">
+  <div class="osm__window">
+    <div class="osm__bar"><i></i><i></i><i></i><span>rakib-protfolio.vercel.app</span></div>
+    <div class="osm__scene">
+      <div class="osm__card">
+        <p class="osm__eyebrow">Quality engineering · SDET</p>
+        <p class="osm__name">Rakibul<br /><b>Islam.</b></p>
+        <p class="osm__role">QA Engineer / Test Automation / SDET</p>
+        <span class="osm__btn">Explore my work →</span>
+      </div>
+      <div class="osm__monitor">
+        <code><span class="k">import</span> {'{'} test, expect {'}'}</code>
+        <code><span class="f">test</span>(<span class="s">'checkout total'</span>, …)</code>
+        <code>&nbsp;&nbsp;<span class="k">await</span> page.goto(<span class="s">'/cart'</span>)</code>
+        <code class="osm__fail">✕ checkout.spec.js · 1 failing</code>
+      </div>
+      <div class="osm__desk"></div>
+      <div class="osm__pc"><i></i><i></i></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .osm {
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+  }
+  .osm__window {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #0d1020;
+    box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+  .osm__bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 10px;
+    background: #1a1d2e;
+    font-size: 10px;
+    color: #8b90a8;
+  }
+  .osm__bar i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff5f57;
+  }
+  .osm__bar i:nth-child(2) {
+    background: #febc2e;
+  }
+  .osm__bar i:nth-child(3) {
+    background: #28c840;
+  }
+  .osm__bar span {
+    margin-left: 8px;
+  }
+  .osm__scene {
+    position: relative;
+    height: 230px;
+    background: radial-gradient(120% 90% at 75% 30%, #2a2f55, #0d1020 70%);
+  }
+  .osm__card {
+    position: absolute;
+    left: 6%;
+    top: 12%;
+    z-index: 2;
+    width: 48%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgb(240 242 248 / 0.92);
+    color: #12131a;
+  }
+  .osm__eyebrow {
+    margin: 0;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5b5f75;
+  }
+  .osm__name {
+    margin: 4px 0;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+  .osm__name b {
+    color: #2f43e0;
+  }
+  .osm__role {
+    margin: 0 0 8px;
+    font-size: 7.5px;
+    font-weight: 600;
+  }
+  .osm__btn {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #12131a;
+    color: #fff;
+    font-size: 7.5px;
+  }
+  .osm__monitor {
+    position: absolute;
+    right: 8%;
+    top: 14%;
+    width: 40%;
+    padding: 8px;
+    display: grid;
+    gap: 3px;
+    border: 3px solid #1c1f2b;
+    border-radius: 4px;
+    background: #0f1422;
+    box-shadow: 0 0 30px rgb(80 120 255 / 0.35);
+  }
+  .osm__monitor code {
+    font: 7px/1.4 var(--font-mono, ui-monospace, monospace);
+    color: #cbd5e1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .osm__monitor .k {
+    color: #c084fc;
+  }
+  .osm__monitor .f {
+    color: #fbbf24;
+  }
+  .osm__monitor .s {
+    color: #7dd3fc;
+  }
+  .osm__fail {
+    margin-top: 2px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background: #7f1d1d;
+    color: #fecaca !important;
+  }
+  .osm__desk {
+    position: absolute;
+    left: 40%;
+    right: 3%;
+    top: 68%;
+    height: 9px;
+    border-radius: 3px;
+    background: linear-gradient(#e9b98f, #c98f63);
+  }
+  .osm__pc {
+    position: absolute;
+    right: 4%;
+    top: 40%;
+    width: 9%;
+    height: 28%;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    border-radius: 3px;
+    background: #111827;
+  }
+  .osm__pc i {
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+  }
+</style>
