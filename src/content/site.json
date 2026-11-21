@@ -8,7 +8,22 @@
   "links": {
     "github": "https://github.com/RakibulIslam39",
     "linkedin": "https://www.linkedin.com/in/rakibul-islam08/",
-    "medium": "https://medium.com/@rakib.cse.bubt"
+    "medium": "https://medium.com/@rakib.cse.bubt",
+    "wordpress": "https://profiles.wordpress.org/rakib03029/"
+  },
+  "wordpress": {
+    "handle": "@rakib03029",
+    "joined": "Dec 2021",
+    "team": "Test",
+    "interests": ["Plugin", "Theme", "Core"],
+    "locale": "Bengali (bn_BD)",
+    "badge": "Translation Contributor",
+    "badgeYear": "2025",
+    "approved": 41,
+    "suggested": 389,
+    "projects": ["WordPress 7.1 (development)", "WordPress 6.5", "WordPress 5.5", "Gutenberg", "WordPress.org", "WordCamp.org"],
+    "props": "Received props in the Make WordPress Slack",
+    "translate": "https://translate.wordpress.org/locale/bn/"
   },
   "tagline": "I break things on purpose, so your users don't.",
   "intro": [

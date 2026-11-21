@@ -7,10 +7,10 @@ test.describe('about page (Apple Notes window)', () => {
 
   test('is one long note with every section, starting at the intro', async ({ page }) => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText("Hey, I'm Rakibul.");
-    for (const h of ['Experience', 'Key achievements', 'Skills', 'Education & languages', 'Now']) {
+    for (const h of ['Experience', 'Key achievements', 'Skills', 'Education & languages', 'WordPress community', 'Now']) {
       await expect(page.getByRole('heading', { level: 2, name: h })).toBeAttached();
     }
-    await expect(page.locator('[data-note]')).toHaveCount(6);
+    await expect(page.locator('[data-note]')).toHaveCount(7);
   });
 
   test('on desktop the note scrolls inside the window and the list follows along', async ({ page, isMobile }) => {
@@ -79,7 +79,7 @@ test.describe('about page (Apple Notes window)', () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const page = await ctx.newPage();
     await page.goto('/about/');
-    await expect(page.locator('[data-note]')).toHaveCount(6);
+    await expect(page.locator('[data-note]')).toHaveCount(7);
     await expect(page.locator('[data-notes-temp]')).toBeHidden();
     await ctx.close();
   });

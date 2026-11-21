@@ -38,3 +38,18 @@ test('AI Face Analyzer is described as the FastAPI + DeepFace app it is', async 
   await expect(page.locator('main')).toContainText('DeepFace');
   await expect(page.locator('main')).not.toContainText(/lorem ipsum|runs entirely in the browser/i);
 });
+
+test('WordPress.org profile and contributions are linked', async ({ page, request }) => {
+  const profile = 'https://profiles.wordpress.org/rakib03029/';
+  for (const p of ['/', '/about/', '/cv/']) {
+    await page.goto(p);
+    await expect(page.locator(`a[href="${profile}"]`).first(), p).toBeAttached();
+  }
+  await page.goto('/about/');
+  const note = page.locator('#community');
+  await expect(note).toContainText('Translation Contributor');
+  await expect(note).toContainText('Bengali');
+  await expect(note).toContainText('Test team');
+  const vcf = await (await request.get('/rakibul-islam.vcf')).text();
+  expect(vcf).toContain('profiles.wordpress.org/rakib03029');
+});

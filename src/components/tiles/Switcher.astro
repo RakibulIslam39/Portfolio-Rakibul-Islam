@@ -11,7 +11,7 @@ const certs = [...site.certifications].sort((a, b) => b.date.localeCompare(a.dat
 const topRepos = site.repos.filter((r) => r.case).slice(0, 3);
 
 type Card = { title: string; sub: string; href: string };
-const apps: { id: string; label: string; icon: 'github' | 'linkedin' | 'medium' | 'gmail' | 'certificates'; cards: Card[] }[] = [
+const apps: { id: string; label: string; icon: 'github' | 'linkedin' | 'medium' | 'gmail' | 'certificates' | 'wordpress'; cards: Card[] }[] = [
   {
     id: 'github',
     label: 'GitHub',
@@ -37,6 +37,16 @@ const apps: { id: string; label: string; icon: 'github' | 'linkedin' | 'medium' 
     cards: [
       ...posts.slice(0, 2).map((p) => ({ title: p.data.title, sub: `${p.data.minutes ?? ''} min read`.trim(), href: p.data.url ?? `/writing/${p.id}/` })),
       { title: 'All posts', sub: 'medium.com/@rakib.cse.bubt', href: site.links.medium },
+    ],
+  },
+  {
+    id: 'wordpress',
+    label: 'WordPress.org',
+    icon: 'wordpress',
+    cards: [
+      { title: 'Bengali translator', sub: `${site.wordpress.badge} badge`, href: site.links.wordpress },
+      { title: `${site.wordpress.approved + site.wordpress.suggested}+ strings`, sub: 'Core, Gutenberg and more', href: site.wordpress.translate },
+      { title: `${site.wordpress.team} team`, sub: `Contributor since ${site.wordpress.joined}`, href: site.links.wordpress },
     ],
   },
   {

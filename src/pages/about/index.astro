@@ -8,6 +8,7 @@ const notes = [
   { id: 'achievements', title: 'Key achievements', preview: site.achievements[0]!.title },
   { id: 'skills', title: 'Skills', preview: site.skills.slice(0, 4).map((s) => s.name).join(', ') },
   { id: 'education', title: 'Education & languages', preview: site.education[0]!.degree },
+  { id: 'community', title: 'WordPress community', preview: `${site.wordpress.badge} · ${site.wordpress.locale}` },
   { id: 'now', title: 'Now', preview: site.status.detail },
 ];
 
@@ -152,6 +153,23 @@ const folder = `About ${site.firstName}`;
                   ))
                 }
               </ul>
+            </section>
+
+            <section id="community" class="note" data-note="community" aria-labelledby="h-community">
+              <h2 id="h-community">WordPress community</h2>
+              <p>
+                I've been on WordPress.org since {site.wordpress.joined}, as <a href={site.links.wordpress} target="_blank" rel="me noopener">{site.wordpress.handle}</a>.
+                I'm part of the <strong>{site.wordpress.team} team</strong>, with an interest in plugin, theme and core testing.
+              </p>
+              <p>
+                I also translate WordPress into Bengali. That earned me the <strong>{site.wordpress.badge}</strong> badge in {site.wordpress.badgeYear}:{' '}
+                {site.wordpress.approved} strings approved and {site.wordpress.suggested} more suggested, across {site.wordpress.projects.length} projects.
+              </p>
+              <ul>
+                {site.wordpress.projects.map((p) => <li>{p}</li>)}
+              </ul>
+              <p>{site.wordpress.props}, and I review plugins I use on the WordPress.org forums.</p>
+              <p><a href={site.wordpress.translate} target="_blank" rel="noopener">See Bengali translations on translate.wordpress.org ↗</a></p>
             </section>
 
             <section id="now" class="note" data-note="now" aria-labelledby="h-now">

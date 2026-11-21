@@ -25,6 +25,7 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
           <li>{site.location}</li>
           <li><a href={site.links.github}>{host(site.links.github)}</a></li>
           <li><a href={site.links.linkedin}>{host(site.links.linkedin)}</a></li>
+          <li><a href={site.links.wordpress}>{host(site.links.wordpress)}</a></li>
         </ul>
       </header>
 
@@ -118,6 +119,11 @@ const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,
               </div>
             ))
           }
+          <h2 class="cv__h2-gap">Community</h2>
+          <p>
+            WordPress.org contributor ({site.wordpress.team} team) · {site.wordpress.badge}, {site.wordpress.locale}:{' '}
+            {site.wordpress.approved} strings approved, {site.wordpress.suggested} suggested
+          </p>
           <h2 class="cv__h2-gap">Languages</h2>
           <p>{site.languages.map((l) => `${l.name} (${l.level})`).join(' · ')}</p>
         </section>
