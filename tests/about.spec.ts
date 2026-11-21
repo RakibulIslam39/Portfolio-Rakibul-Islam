@@ -84,3 +84,15 @@ test.describe('about page (Apple Notes window)', () => {
     await ctx.close();
   });
 });
+
+test('education lists the main courses and the capstone project', async ({ page }) => {
+  await page.goto('/about/#education');
+  const note = page.locator('#education');
+  await expect(note).toContainText('Jun 2018 – Dec 2022');
+  for (const t of ['Computer science core', 'Mathematics and statistics', 'Software and applied computing', 'Theory of computation and automata', 'Software Testing and Quality Assurance was the course that influenced me most']) {
+    await expect(note).toContainText(t);
+  }
+  await expect(note.getByRole('link', { name: 'Traffic Flow Prediction' })).toHaveAttribute('href', '/projects/traffic-flow-prediction/');
+  await expect(note.getByRole('link', { name: /Code and documentation/ })).toHaveAttribute('href', 'https://github.com/RakibulIslam39/traffic-flow-prediction-Python');
+  await expect(note).toContainText('R² of about 0.94');
+});

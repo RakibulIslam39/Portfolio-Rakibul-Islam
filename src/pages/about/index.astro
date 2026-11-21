@@ -139,7 +139,30 @@ const folder = `About ${site.firstName}`;
                   <>
                     <h3>{ed.degree}</h3>
                     <p class="job__meta">
-                      {ed.school} · {ed.period} · {ed.place}
+                      {ed.school} · {ed.dates ?? ed.period} · {ed.place}
+                    </p>
+                    <dl class="courses">
+                      {ed.subjects.map((s) => (
+                        <div>
+                          <dt>{s.group}</dt>
+                          <dd>{s.items.join(' · ')}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    <p>{ed.favourite}</p>
+                    <h3>
+                      Capstone project: <a href={ed.capstone.caseStudy}>{ed.capstone.title}</a>
+                    </h3>
+                    <p class="job__meta">{ed.capstone.tools.join(' · ')}</p>
+                    <ul>
+                      {ed.capstone.points.map((pt) => (
+                        <li>{pt}</li>
+                      ))}
+                    </ul>
+                    <p>
+                      <a href={ed.capstone.url} target="_blank" rel="noopener">
+                        Code and documentation on GitHub ↗
+                      </a>
                     </p>
                   </>
                 ))
@@ -497,6 +520,18 @@ const folder = `About ${site.firstName}`;
     color: var(--muted);
     font-size: 14px;
     margin-bottom: 10px;
+  }
+  .courses {
+    display: grid;
+    gap: 12px;
+    margin: 0 0 16px;
+  }
+  .courses dt {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .courses dd {
+    margin: 2px 0 0;
   }
   .skills-dl {
     margin: 0;

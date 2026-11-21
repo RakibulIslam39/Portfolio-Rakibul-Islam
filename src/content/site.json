@@ -103,7 +103,7 @@
       "company": "WPPOOL",
       "logo": "/companies/wppool.svg",
       "period": "Oct 2024 – now",
-      "place": "Dhaka",
+      "place": "Remote",
       "summary": "Playwright (TypeScript) POM frameworks and CI for WordPress/WooCommerce plugins.",
       "bullets": [
         "Designed and executed end-to-end manual and automated test suites for WordPress plugins, including FlexOrder, FlexStock, EchoRewards, FlexTable, FormyChat, WP Dark Mode and FlexMeeting (formerly Jitsi Meet).",
@@ -232,9 +232,27 @@
       "degree": "BSc in Computer Science and Engineering",
       "school": "Bangladesh University of Business and Technology (BUBT)",
       "period": "2018 – 2022",
+      "dates": "Jun 2018 – Dec 2022",
       "place": "Dhaka, Bangladesh",
       "short": "BSc in CSE",
-      "schoolShort": "BUBT"
+      "schoolShort": "BUBT",
+      "subjects": [
+        { "group": "Computer science core", "items": ["Data structures and algorithms", "Artificial intelligence and expert systems", "Database and distributed database systems", "Computer architecture", "Computer networks", "Theory of computation and automata"] },
+        { "group": "Mathematics and statistics", "items": ["Differential and integral calculus", "Linear algebra and differential equations", "Complex variables and Fourier analysis", "Numerical analysis", "Discrete mathematics", "Statistics"] },
+        { "group": "Software and applied computing", "items": ["Software Testing and Quality Assurance", "Advanced programming", "Web database programming", "Internet of Things", "Cyber security and digital forensics"] }
+      ],
+      "favourite": "Software Testing and Quality Assurance was the course that influenced me most, because it taught me that quality has to be built into every stage of development and not only checked at the end.",
+      "capstone": {
+        "title": "Traffic Flow Prediction",
+        "caseStudy": "/projects/traffic-flow-prediction/",
+        "url": "https://github.com/RakibulIslam39/traffic-flow-prediction-Python",
+        "tools": ["Python", "Keras/TensorFlow", "scikit-learn", "pandas", "NumPy", "Matplotlib"],
+        "points": [
+          "Built and compared three deep learning models (LSTM, GRU and Stacked Auto-Encoders) to predict short-term freeway traffic flow using 5-minute sensor data from Caltrans PeMS.",
+          "Prepared the data by scaling it and creating input windows from the previous 12 readings (the last one hour), then trained and tested each model.",
+          "Evaluated the models using MAE, MSE, RMSE, MAPE, R² and explained variance. The Stacked Auto-Encoders model gave the best result, with R² of about 0.94 and RMSE of about 9.6 vehicles per 5 minutes."
+        ]
+      }
     }
   ],
   "languages": [
