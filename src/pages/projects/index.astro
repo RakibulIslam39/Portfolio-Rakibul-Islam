@@ -21,7 +21,10 @@ const month = (ym: string) =>
   new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
-<BaseLayout title="Projects | Rakibul Islam" description="Test automation frameworks, CI pipelines and side projects by Rakibul Islam.">
+<BaseLayout
+  title="Test Automation Projects | Rakibul Islam"
+  description="Test automation projects by Rakibul Islam: a Playwright + TypeScript E2E framework with CI/CD, a deep learning traffic model, an AI face analyzer and his GitHub repos."
+>
   <div class="container">
     <header class="page-head store-head">
       <div>

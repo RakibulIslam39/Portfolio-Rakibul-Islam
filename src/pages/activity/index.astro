@@ -395,7 +395,8 @@ const CONTINENTS = [
   .ac-vitals em {
     font-style: normal;
     font: 600 18px var(--font-mono, ui-monospace, monospace);
-    color: var(--ring);
+    /* A lighter tint of the ring colour, so the value stays readable on the dark tile. */
+    color: color-mix(in srgb, var(--ring) 70%, #fff);
     white-space: nowrap;
   }
   :global(html[data-theme='light']) .ac-vitals em {

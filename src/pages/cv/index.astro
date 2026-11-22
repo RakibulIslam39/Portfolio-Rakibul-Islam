@@ -7,7 +7,10 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 ---
 
-<BaseLayout title="CV | Rakibul Islam" description={`CV of ${site.name}, ${site.role}. ${site.summary}`}>
+<BaseLayout
+  title="Rakibul Islam CV | QA Automation Engineer & SDET"
+  description={`CV of ${site.name}, QA Automation Engineer and SDET in Dhaka: Playwright, TypeScript, API testing, CI/CD, JMeter and Postman. Download the PDF or the Europass CV.`}
+>
   <div class="container">
     <div class="cv-actions">
       <div class="cv-actions__group" role="group" aria-label="Europass CV">

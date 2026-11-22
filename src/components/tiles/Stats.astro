@@ -101,13 +101,14 @@ const rows = [
     font-weight: 600;
     text-align: right;
     color: #fff;
-    background: var(--muted);
+    background: #636366;
   }
+  /* Chip colours keep white text above 4.5:1 in both themes. */
   .st__row[data-trend='up'] .st__chg {
-    background: #0a8a52;
+    background: #067041;
   }
   .st__row[data-trend='down'] .st__chg {
-    background: #d6362c;
+    background: #c0281f;
   }
   /* The note keeps its space even while hidden, so the tile never changes height. */
   .st__off[data-on='false'] {

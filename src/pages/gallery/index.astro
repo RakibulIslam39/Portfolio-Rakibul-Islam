@@ -15,9 +15,28 @@ const slides = (ids: string[]) =>
     }),
   );
 const all: Photo[] = gallery.photos;
+const origin = Astro.site!.toString();
+const gallerySchema = {
+  '@type': 'ImageGallery',
+  name: 'Travel gallery',
+  url: new URL('/gallery/', origin).href,
+  author: { '@id': new URL('/#person', origin).href },
+  image: all.map((p) => ({
+    '@type': 'ImageObject',
+    contentUrl: new URL(src(p.id), origin).href,
+    caption: p.caption,
+    description: p.alt,
+    contentLocation: placeOf.get(p.id),
+    creator: { '@id': new URL('/#person', origin).href },
+  })),
+};
 ---
 
-<BaseLayout title="Gallery | Rakibul Islam" description="Places I've been and photos I've taken around Bangladesh: Cox's Bazar, a WPPOOL team trip and Pabna.">
+<BaseLayout
+  title="Travel Gallery | Rakibul Islam"
+  description="Travel photos by Rakibul Islam from around Bangladesh: Cox's Bazar sea beach, a WPPOOL team trip, Hardinge Bridge and Rooppur in Pabna."
+  schema={[gallerySchema]}
+>
   <div class="container">
     <header class="page-head">
       <h1>Gallery</h1>

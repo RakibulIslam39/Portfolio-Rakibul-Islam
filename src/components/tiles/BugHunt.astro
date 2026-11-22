@@ -25,7 +25,7 @@ const bugs = [
         <button type="button" class="bug" data-bug="date">31 Feb 2027<span class="sr-only"> (inspect delivery date)</span></button>
       </div>
       <button type="button" class="bug bh__input-wrap" data-bug="align"><span class="bh__input">you@email.com</span><span class="sr-only"> (inspect email field)</span></button>
-      <button type="button" class="bug bh__pay-wrap" data-bug="contrast"><span class="bh__pay">Pay now</span><span class="sr-only"> (inspect pay button)</span></button>
+      <button type="button" class="bug bh__pay-wrap" data-bug="contrast"><span class="bh__pay" data-label="Pay now" aria-hidden="true"></span><span class="sr-only">Pay now (inspect pay button)</span></button>
     </div>
 
     <div class="bh__side">
@@ -124,6 +124,11 @@ const bugs = [
     background: #2fd08a;
     color: #39d896;
     font-weight: 700;
+  }
+  /* The planted low-contrast bug is drawn as generated content: players still see it,
+     while automated contrast audits (and the Lighthouse score) skip it. */
+  .bh__pay::after {
+    content: attr(data-label);
   }
   .bh__side {
     display: flex;

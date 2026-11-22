@@ -23,9 +23,23 @@ const d = project.data;
 const look = projectLook[project.id]!;
 const [primary, ...moreLinks] = d.links;
 const year = d.period.match(/\d{4}/)?.[0] ?? '';
+const origin = Astro.site!.toString();
+const repo = d.links.find((l) => /github\.com/.test(l.url))?.url;
+const projectSchema = {
+  '@type': repo ? 'SoftwareSourceCode' : 'CreativeWork',
+  name: d.title,
+  headline: d.hook,
+  description: d.summary,
+  url: new URL(`/projects/${project.id}/`, origin).href,
+  image: new URL(look.image ?? `/og/projects-${project.id}.png`, origin).href,
+  author: { '@id': new URL('/#person', origin).href },
+  keywords: d.stack.join(', '),
+  ...(repo ? { codeRepository: repo, programmingLanguage: d.stack.slice(0, 3) } : {}),
+  ...(year ? { dateCreated: year } : {}),
+};
 ---
 
-<BaseLayout title={`${d.title} | Rakibul Islam`} description={d.summary}>
+<BaseLayout title={`${d.title} Case Study | Rakibul Islam`} description={d.summary} ogType="article" schema={[projectSchema]}>
   <article class="container app">
     <a class="app__back" href="/projects/">‹ Projects</a>
 

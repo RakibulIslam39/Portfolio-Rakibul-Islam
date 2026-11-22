@@ -22,7 +22,11 @@ const groups = Object.entries(
 const folder = `About ${site.firstName}`;
 ---
 
-<BaseLayout title="About | Rakibul Islam" description={`About ${site.name}: ${site.summary}`}>
+<BaseLayout
+  title="About Rakibul Islam | QA Automation Engineer & SDET"
+  description={`About ${site.name}, QA Automation Engineer and SDET at WPPOOL: experience, skills, education (BSc CSE, BUBT) and WordPress.org contributions.`}
+  ogType="profile"
+>
   <div class="container about-wrap">
     <section class="nw" data-notes aria-label={`About ${site.firstName}, presented as an Apple Notes window`}>
       <header class="nw__bar">

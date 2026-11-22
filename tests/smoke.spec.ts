@@ -60,5 +60,5 @@ test('SEO meta is present', async ({ page }) => {
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/$/);
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
   const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
-  expect(ld['@type']).toBe('Person');
+  expect(ld['@graph'].map((n: { '@type': string }) => n['@type'])).toEqual(expect.arrayContaining(['WebSite', 'Person', 'ProfilePage']));
 });

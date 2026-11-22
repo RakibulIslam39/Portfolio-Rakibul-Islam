@@ -19,7 +19,10 @@ const minutes = (p: (typeof posts)[number]) => p.data.minutes ?? readingTime(p.b
 const ext = (p: (typeof posts)[number]) => (p.data.url ? { target: '_blank', rel: 'noopener' } : {});
 ---
 
-<BaseLayout title="Blog | Rakibul Islam" description="Posts by Rakibul Islam on Playwright, test automation, CI/CD and API testing.">
+<BaseLayout
+  title="Blog on Playwright & Test Automation | Rakibul Islam"
+  description="Posts by Rakibul Islam on Playwright, test automation, CI/CD and API testing for WordPress and WooCommerce plugins."
+>
   <div class="container">
     <header class="page-head">
       <h1>Blog</h1>
