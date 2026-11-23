@@ -262,12 +262,20 @@ export function initActivity(): void {
   if (!root) return;
   showVisit($(root, '[data-visit]'), (city) => `to reach you, from Cloudflare in ${city}`);
 
-  void getJSON<Build>('/activity/build.json').then((b) => b && renderBuild(root, b));
+  void getJSON<Build>('/activity/build.json').then((b) => {
+    if (b) renderBuild(root, b);
+    root.querySelectorAll<HTMLElement>('[data-build]').forEach((el) => {
+      delete el.dataset.loading;
+      el.removeAttribute('aria-busy');
+    });
+  });
 
   const geoP = getJSON<Geo>('/activity/geo.json', 8000);
   const load = async () => {
     const a = await getJSON<Activity>('/api/activity', 8000);
     root.dataset.state = a ? 'ready' : 'off';
+    delete root.dataset.loading;
+    root.removeAttribute('aria-busy');
     $(root, '[data-off]')!.hidden = !!a;
     if (!a) return null;
     renderLive(root, a);

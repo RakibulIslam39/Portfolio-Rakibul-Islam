@@ -3,6 +3,7 @@ import Tile from '../Tile.astro';
 import AppIcon from '../AppIcon.astro';
 import site from '../../content/site.json';
 import ProjectIcon from '../ProjectIcon.astro';
+import { projectLook } from '../../lib/projects';
 ---
 
 <Tile id="projects" size="2x2" area="proj" app="Projects" href="/projects/" hrefLabel="See all projects" class="projects">
@@ -11,8 +12,8 @@ import ProjectIcon from '../ProjectIcon.astro';
     {
       site.projects.map((p) => (
         <li>
-          <a class="proj__row" href={`/projects/${p.slug}/`}>
-            <span class="proj__icon"><ProjectIcon id={p.slug} size={48} /></span>
+          <a class:list={['proj__row', `proj__row--${projectLook[p.slug]?.tone ?? 'mint'}`]} href={`/projects/${p.slug}/`}>
+            <span class="proj__icon"><ProjectIcon id={p.slug} size={48} morph /></span>
             <span class="proj__name">{p.name}</span>
             <span class="proj__hook">{p.hook}</span>
             <span class="proj__summary">{p.summary}</span>
@@ -25,27 +26,51 @@ import ProjectIcon from '../ProjectIcon.astro';
 </Tile>
 
 <style>
+  /* Each project is a small card in its Projects-page colour (mint, indigo, lilac). */
   .proj {
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-  .proj li + li {
-    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 10px;
   }
   .proj__row {
+    --fg: #111113;
+    --sub: rgb(17 17 19 / 0.72);
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     column-gap: 16px;
     row-gap: 4px;
-    padding: 16px 0;
+    padding: 16px 18px;
+    border-radius: 20px;
+    color: var(--fg);
     text-decoration: none;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.04) inset;
+    transition: transform 0.25s var(--ease-arrive), box-shadow 0.25s var(--ease-arrive);
   }
-  .proj li:first-child .proj__row {
-    padding-top: 0;
+  @media (hover: hover) and (pointer: fine) {
+    .proj__row:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 1px rgb(0 0 0 / 0.04) inset, 0 14px 28px -18px rgb(0 0 0 / 0.5);
+    }
+  }
+  .proj__row:active {
+    transform: scale(0.99);
+  }
+  .proj__row--mint {
+    background: linear-gradient(160deg, #d8f7e6, #b8ecd0);
+  }
+  .proj__row--lilac {
+    background: linear-gradient(160deg, #f6dcff, #e3c4ff);
+  }
+  .proj__row--indigo,
+  .proj__row--night {
+    --fg: #fff;
+    --sub: rgb(255 255 255 / 0.78);
+    background: linear-gradient(160deg, #3446c7, #1b2477);
   }
   .proj__name {
-    color: var(--text);
+    color: var(--fg);
     font-weight: 600;
     font-size: 18px;
     font-stretch: var(--display-stretch);
@@ -57,18 +82,18 @@ import ProjectIcon from '../ProjectIcon.astro';
     text-decoration-thickness: 1px;
   }
   .proj__hook {
-    color: var(--pass);
+    color: var(--fg);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
   }
   .proj__summary {
     font-size: 14px;
     line-height: 1.5;
-    color: var(--body-text);
+    color: var(--sub);
   }
   .proj__stack {
     font-size: 13px;
-    color: var(--muted);
+    color: var(--sub);
   }
   .proj__row > :not(.proj__icon) {
     grid-column: 2;

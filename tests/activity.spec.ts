@@ -69,3 +69,21 @@ test.describe('Activity page', () => {
     await expect(page.locator('footer a[href="/activity/"]')).toBeAttached();
   });
 });
+
+test('live numbers show skeletons while loading, then the values', async ({ page }) => {
+  let answer: () => void = () => {};
+  const ready = new Promise<void>((done) => (answer = done));
+  await page.route('**/api/activity', async (r) => {
+    await ready;
+    await r.fulfill({ json: fixture });
+  });
+  await page.goto('/activity/');
+  const root = page.locator('[data-activity]');
+  await expect(root).toHaveAttribute('aria-busy', 'true');
+  await expect(page.locator('[data-recent]')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+  answer();
+  await expect(root).not.toHaveAttribute('data-loading');
+  await expect(root).not.toHaveAttribute('aria-busy');
+  await expect(page.locator('[data-recent]')).not.toHaveText('–');
+});
+

@@ -21,6 +21,13 @@
   --link: #0a84ff;
   --warn: #ffb340;
   --teal: #2ec4d6;
+  /* Brand accent, the teal of the RI logo: focus rings, selection, form controls. Links stay blue. */
+  --accent: #2ec4d6;
+  --accent-soft: rgba(46, 196, 214, 0.22);
+  /* Frosted glass for the nav: see-through enough to blur what scrolls beneath it. */
+  --glass-blur: rgba(30, 30, 34, 0.8);
+  /* A hairline of light along a tile's top edge, as on macOS widgets. */
+  --tile-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   --font: 'Mona Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* Headings use Mona Sans' width axis for a little more presence. */
@@ -55,8 +62,12 @@
   --hover: rgba(0, 0, 0, 0.05);
   --pass: #0a7a4b;
   --pass-soft: rgba(10, 122, 75, 0.1);
-  --fail: #e5342a;
+  --fail: #c4291f; /* 5.6:1 on white, so failure counts stay readable */
   --link: #0066d6;
   --warn: #8f5400;
+  --accent: #0b7f8c;
+  --accent-soft: rgba(11, 127, 140, 0.16);
+  --glass-blur: rgba(255, 255, 255, 0.8);
+  --tile-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --teal: #0e8fa0;
 }

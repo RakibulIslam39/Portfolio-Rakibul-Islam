@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectIcon from '../../components/ProjectIcon.astro';
 import TechIcon from '../../components/TechIcon.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import FlexOrderMock from '../../components/mockups/FlexOrderMock.astro';
 import TrafficMock from '../../components/mockups/TrafficMock.astro';
 import FaceMock from '../../components/mockups/FaceMock.astro';
@@ -41,10 +42,10 @@ const projectSchema = {
 
 <BaseLayout title={`${d.title} Case Study | Rakibul Islam`} description={d.summary} ogType="article" schema={[projectSchema]}>
   <article class="container app">
-    <a class="app__back" href="/projects/">‹ Projects</a>
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Projects', href: '/projects/' }, { label: d.title }]} />
 
     <header class="app__head">
-      <span class="app__icon"><ProjectIcon id={project.id} size={128} /></span>
+      <span class="app__icon"><ProjectIcon id={project.id} size={128} morph /></span>
       <div class="app__text">
         <div class="app__title">
           <h1>{d.title}</h1>
@@ -180,7 +181,7 @@ const projectSchema = {
           others.map((o) => {
             return (
               <li>
-                <ProjectIcon id={o.id} size={56} />
+                <ProjectIcon id={o.id} size={56} morph />
                 <span class="app__more-text">
                   <strong>{o.data.title}</strong>
                   <span>{o.data.hook}</span>
@@ -200,17 +201,6 @@ const projectSchema = {
 <style>
   .app {
     padding-bottom: 48px;
-  }
-  .app__back {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    color: var(--link);
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .app__back:hover {
-    text-decoration: underline;
   }
   .app__head {
     display: grid;
@@ -528,14 +518,40 @@ const projectSchema = {
       position: static;
     }
   }
+  /* Phones and small tablets: key facts as a list, label on the left and value on the right,
+     like the App Store's Information rows. */
   @media (max-width: 700px) {
     .app__facts {
       grid-auto-flow: row;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      row-gap: 14px;
+      grid-template-columns: 1fr;
+      padding: 0;
+      text-align: left;
+    }
+    .app__facts > div {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 16px;
+      align-items: center;
+      padding: 12px 0;
     }
     .app__facts > div + div {
       border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .app__facts dt {
+      grid-row: 1 / span 2;
+      min-height: 0;
+      justify-content: flex-start;
+    }
+    .app__facts dd {
+      grid-column: 2;
+      margin: 0;
+      font-size: 20px;
+      text-align: right;
+    }
+    .app__facts .app__note {
+      font-size: 12px;
+      font-weight: 500;
     }
   }
   @media (max-width: 560px) {

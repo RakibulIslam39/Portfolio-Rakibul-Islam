@@ -36,6 +36,12 @@ const project = site.projects[0]!;
 </Tile>
 
 <style>
+  /* A soft green wash from the top corner: this tile is the "all green" moment. */
+  :global(.tile.report) {
+    background:
+      radial-gradient(120% 90% at 100% 0%, var(--pass-soft), transparent 60%),
+      var(--tile);
+  }
   .rep {
     flex: 1;
     display: flex;

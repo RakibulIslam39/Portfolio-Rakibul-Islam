@@ -48,17 +48,17 @@ const CONTINENTS = [
       </p>
     </header>
 
-    <div class="ac-grid" data-activity data-state="loading">
+    <div class="ac-grid" data-activity data-state="loading" data-loading aria-busy="true">
       <section class="tile ac-live" aria-labelledby="ac-live-h">
         <h2 id="ac-live-h" class="ac-label"><span class="ac-pulse" aria-hidden="true"></span> Live</h2>
         <p class="ac-hero">
-          <strong class="ac-hero__n" data-recent>–</strong>
+          <strong class="ac-hero__n sk" data-recent>–</strong>
           <span class="ac-hero__unit">visits in the<br />last 30 minutes</span>
         </p>
         <dl class="ac-counts">
-          <div><dt>Today</dt><dd><span data-total="today">–</span> <em data-change="today"></em></dd></div>
-          <div><dt>Countries</dt><dd><span data-total="countries">–</span></dd></div>
-          <div><dt>This week</dt><dd><span data-total="week">–</span> <em data-change="week"></em></dd></div>
+          <div><dt>Today</dt><dd><span class="sk" data-total="today">–</span> <em data-change="today"></em></dd></div>
+          <div><dt>Countries</dt><dd><span class="sk" data-total="countries">–</span></dd></div>
+          <div><dt>This week</dt><dd><span class="sk" data-total="week">–</span> <em data-change="week"></em></dd></div>
         </dl>
         <ol class="ac-feed" data-feed aria-label="Latest visits"></ol>
         <canvas class="ac-globe" data-globe width="560" height="560" aria-hidden="true"></canvas>
@@ -78,9 +78,9 @@ const CONTINENTS = [
           }
         </svg>
         <ul class="ac-vitals">
-          <li style="--ring:#fa114f"><span><strong>Loads</strong> main content on screen</span><em data-vital="lcp">–</em></li>
-          <li style="--ring:#a6ff00"><span><strong>Responds</strong> after a tap or click</span><em data-vital="inp">–</em></li>
-          <li style="--ring:#00f0ff"><span><strong>Stays put</strong> how much the page jumps</span><em data-vital="cls">–</em></li>
+          <li style="--ring:#fa114f"><span><strong>Loads</strong> main content on screen</span><em class="sk" style="--sk-w: 5ch" data-vital="lcp">–</em></li>
+          <li style="--ring:#a6ff00"><span><strong>Responds</strong> after a tap or click</span><em class="sk" style="--sk-w: 5ch" data-vital="inp">–</em></li>
+          <li style="--ring:#00f0ff"><span><strong>Stays put</strong> how much the page jumps</span><em class="sk" style="--sk-w: 5ch" data-vital="cls">–</em></li>
         </ul>
         <p class="ac-foot">Real visits this week. Each ring is the share Google rates good.</p>
       </section>
@@ -97,12 +97,12 @@ const CONTINENTS = [
         </ul>
       </section>
 
-      <section class="tile ac-ship" aria-labelledby="ac-ship-h">
+      <section class="tile ac-ship" aria-labelledby="ac-ship-h" data-build data-loading aria-busy="true">
         <h2 id="ac-ship-h" class="ac-label">Last published</h2>
-        <p class="ac-timer"><strong data-ago>–</strong> ago.</p>
+        <p class="ac-timer"><strong class="sk" style="--sk-w: 6ch" data-ago>–</strong> ago.</p>
         <p class="ac-sub" data-commit>&nbsp;</p>
         <dl class="ac-facts">
-          <div><dt>Homepage</dt><dd data-weight>–</dd></div>
+          <div><dt>Homepage</dt><dd data-weight><span class="sk" style="--sk-w: 6ch">–</span></dd></div>
           <div><dt>Cookies</dt><dd>0</dd></div>
           <div><dt>Ad trackers</dt><dd>0</dd></div>
         </dl>
@@ -135,7 +135,7 @@ const CONTINENTS = [
               <li data-region={code}>
                 <span>{name}</span>
                 <i><b></b></i>
-                <em>–</em>
+                <em class="sk" style="--sk-w: 5ch">–</em>
               </li>
             ))
           }
@@ -143,14 +143,14 @@ const CONTINENTS = [
         <p class="ac-foot">Typical time to load a page, this week.</p>
       </section>
 
-      <section class="tile ac-built" aria-labelledby="ac-built-h">
+      <section class="tile ac-built" aria-labelledby="ac-built-h" data-build data-loading aria-busy="true">
         <h2 id="ac-built-h" class="ac-label">How it's built</h2>
-        <p class="ac-built__main"><strong data-repo="linesAdded">–</strong> <span>lines written</span></p>
+        <p class="ac-built__main"><strong class="sk" style="--sk-w: 5ch" data-repo="linesAdded">–</strong> <span>lines written</span></p>
         <dl class="ac-built__facts">
-          <div><dt>Commits</dt><dd data-repo="commits">–</dd></div>
-          <div><dt>Days worked on</dt><dd data-repo="days">–</dd></div>
-          <div><dt>Lines removed</dt><dd data-repo="linesRemoved">–</dd></div>
-          <div><dt>Files</dt><dd data-repo="files">–</dd></div>
+          <div><dt>Commits</dt><dd data-repo="commits"><span class="sk">–</span></dd></div>
+          <div><dt>Days worked on</dt><dd data-repo="days"><span class="sk">–</span></dd></div>
+          <div><dt>Lines removed</dt><dd data-repo="linesRemoved"><span class="sk">–</span></dd></div>
+          <div><dt>Files</dt><dd data-repo="files"><span class="sk">–</span></dd></div>
         </dl>
         <div class="ac-days" data-days role="img" aria-label="Commits per day"></div>
         <p class="ac-foot" data-since>Counted from the site's git history on every deploy.</p>

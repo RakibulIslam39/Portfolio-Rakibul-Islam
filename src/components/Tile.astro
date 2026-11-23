@@ -64,9 +64,20 @@ const external = href ? /^https?:/.test(href) : false;
     padding: var(--tile-pad);
     border-radius: var(--radius);
     background: var(--tile);
-    box-shadow: 0 0 0 1px var(--tile-edge) inset;
+    box-shadow:
+      0 0 0 1px var(--tile-edge) inset,
+      var(--tile-highlight);
     overflow: hidden;
     transition: transform 0.35s var(--ease-arrive), box-shadow 0.35s var(--ease-arrive);
+  }
+  /* Depth on hover (mouse only): the edge brightens and a soft shadow lifts the tile off the page. */
+  @media (hover: hover) and (pointer: fine) {
+    .tile:hover {
+      box-shadow:
+        0 0 0 1px var(--outline) inset,
+        var(--tile-highlight),
+        0 18px 40px -24px rgb(0 0 0 / 0.55);
+    }
   }
   .tile--flush {
     padding: 0;

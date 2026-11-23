@@ -120,3 +120,25 @@ test('the RI logo shows the right version for each theme and links home', async 
   const icon = await page.request.get('/favicon.svg');
   expect(icon.headers()['content-type']).toContain('svg');
 });
+
+test('on phones, "More" opens a sheet with the pages that don\'t fit in the bar', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The More sheet is for phones');
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await nav.getByRole('button', { name: 'More' }).click();
+  for (const name of ['Certificates', 'Gallery', 'Activity', 'QA report', 'CV']) {
+    await expect(nav.getByRole('link', { name })).toBeVisible();
+  }
+  await nav.getByRole('link', { name: 'Gallery' }).click();
+  await expect(page).toHaveURL(/\/gallery\/$/);
+});
+
+test('switching theme still works with the circle reveal', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/');
+  const html = page.locator('html');
+  const before = await html.getAttribute('data-theme');
+  await page.locator('[data-theme-toggle]:visible').first().click();
+  await expect(html).not.toHaveAttribute('data-theme', before ?? 'dark');
+  await expect(html).not.toHaveAttribute('data-theme-switch');
+});

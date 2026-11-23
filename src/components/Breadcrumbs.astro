@@ -1,0 +1,72 @@
+---
+/* Home › Section › Page. The names match the BreadcrumbList that lib/seo.ts gives Google,
+ * so what visitors see and what search results show agree. The last item is the current page. */
+interface Props {
+  items: { label: string; href?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {
+      items.map((it, i) => {
+        const last = i === items.length - 1;
+        return (
+          <li>
+            {last || !it.href ? <span aria-current={last ? 'page' : undefined}>{it.label}</span> : <a href={it.href}>{it.label}</a>}
+            {!last && (
+              <span class="crumbs__sep" aria-hidden="true">
+                ›
+              </span>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: var(--tap);
+    font-size: 14px;
+  }
+  .crumbs li {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: none;
+  }
+  /* The current page gives way first on narrow screens. */
+  .crumbs li:last-child {
+    flex: 0 1 auto;
+  }
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--link);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+  .crumbs [aria-current] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+  .crumbs__sep {
+    margin: 0 8px;
+    color: var(--muted);
+  }
+</style>

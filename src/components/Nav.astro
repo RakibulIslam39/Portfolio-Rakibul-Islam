@@ -2,18 +2,26 @@
 import { getCollection } from 'astro:content';
 
 const latestPost = (await getCollection('writing')).map((p) => p.data.date.toISOString().slice(0, 10)).sort().at(-1) ?? '';
-const items: { href: string; label: string; short?: string; desktopOnly?: boolean }[] = [
+const items: { href: string; label: string; desktopOnly?: boolean }[] = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
   { href: '/projects/', label: 'Projects' },
   { href: '/writing/', label: 'Blog' },
-  { href: '/certificates/', label: 'Certificates', short: 'Certs' },
+  { href: '/certificates/', label: 'Certificates', desktopOnly: true },
   { href: '/gallery/', label: 'Gallery', desktopOnly: true },
-  // On phones /gallery/ and /qa/ stay reachable from the footer, the home tiles and search.
   { href: '/qa/', label: 'QA', desktopOnly: true },
+];
+// On phones the bar has room for four links; the rest open from "More" as a small sheet.
+const more = [
+  { href: '/certificates/', label: 'Certificates' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/activity/', label: 'Activity' },
+  { href: '/qa/', label: 'QA report' },
+  { href: '/cv/', label: 'CV' },
 ];
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const inMore = more.some((m) => isActive(m.href));
 ---
 
 <header class="topbar">
@@ -34,20 +42,29 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
                 aria-current={isActive(item.href) ? 'page' : undefined}
                 data-latest={item.href === '/writing/' ? latestPost : undefined}
               >
-                {item.short ? (
-                  <>
-                    <span class="nav__long">{item.label}</span>
-                    <span class="nav__short" aria-hidden="true">{item.short}</span>
-                  </>
-                ) : (
-                  item.label
-                )}
+                {item.label}
                 {item.href === '/writing/' && <span class="nav__badge" data-new-badge hidden><span class="sr-only">, new post</span></span>}
               </a>
             </li>
           ))
         }
+        <li class="nav__more">
+          <button type="button" popovertarget="nav-more" aria-current={inMore ? 'page' : undefined}>More</button>
+        </li>
       </ul>
+      <div id="nav-more" class="more" popover>
+        <ul>
+          {
+            more.map((m) => (
+              <li>
+                <a href={m.href} aria-current={isActive(m.href) ? 'page' : undefined}>
+                  {m.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </nav>
 
     <div class="actions">
@@ -77,6 +94,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     pointer-events: none;
   }
   .topbar__inner {
+    /* Stays put while the page beneath it changes (see the page transitions in global.css). */
+    view-transition-name: topbar;
     width: min(100% - 32px, var(--max-wide));
     margin-inline: auto;
     display: flex;
@@ -117,13 +136,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     }
   }
   .nav {
-    background: var(--glass);
+    background: var(--glass-blur);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
     border: 1px solid var(--tile-edge);
     box-shadow: var(--shadow);
     border-radius: 999px;
     padding: 5px;
   }
-  .nav__short {
+  .nav__more {
     display: none;
   }
   /* A small red dot on Blog, like an app badge, until the visitor has seen the newest post. */
@@ -150,21 +171,30 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     margin: 0;
     padding: 0;
   }
-  .nav a {
+  .nav a,
+  .nav__more button {
     display: block;
     padding: 7px 14px;
+    border: 0;
+    background: none;
+    cursor: pointer;
     border-radius: 999px;
-    color: var(--muted);
+    color: var(--body-text);
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
-    transition: color 0.2s, background-color 0.2s;
+    transition: color 0.2s, background-color 0.2s, transform 0.2s var(--ease-arrive);
   }
-  .nav a:hover {
+  .nav a:hover,
+  .nav__more button:hover {
     color: var(--text);
     background: var(--hover);
   }
-  .nav a[aria-current='page'] {
+  .nav__more button[aria-current='page'] {
+    color: var(--text);
+    background: var(--card);
+  }
+  .nav > ul a[aria-current='page'] {
     color: var(--text);
     background: var(--card);
     view-transition-name: nav-pill;
@@ -215,19 +245,21 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   @media (max-width: 640px) {
     /* Phones: one glass pill at the bottom holding the links and the three icons. */
     .topbar {
-      inset: auto 0 12px;
+      inset: auto 0 calc(12px + env(safe-area-inset-bottom));
     }
     .logo,
     .search-btn .kbd {
       display: none;
     }
     .topbar__inner {
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      backdrop-filter: blur(20px) saturate(1.8);
       width: calc(100% - 16px);
       max-width: 460px;
       gap: 0;
       padding: 4px;
       border-radius: 999px;
-      background: var(--glass);
+      background: var(--glass-blur);
       border: 1px solid var(--tile-edge);
       box-shadow: var(--shadow);
       pointer-events: auto;
@@ -248,10 +280,14 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     .nav ul::-webkit-scrollbar {
       display: none;
     }
-    .nav a {
-      padding: 8px 8px;
+    .nav a,
+    .nav__more button {
+      padding: 8px 9px;
       font-size: 13px;
       white-space: nowrap;
+    }
+    .nav .nav__more {
+      display: block;
     }
     .actions {
       gap: 0;
@@ -265,20 +301,60 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       border: 0;
       box-shadow: none;
     }
-    .nav .nav__long {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-    .nav .nav__short {
-      display: inline;
-    }
     .nav .nav__desk {
       display: none;
     }
+  }
+  /* "More": a small glass sheet that opens above the bottom bar (native popover: Esc and
+     tapping outside close it, focus is handled by the browser). */
+  .more {
+    position: fixed;
+    inset: auto 8px calc(84px + env(safe-area-inset-bottom)) auto;
+    margin: 0;
+    width: min(240px, calc(100% - 16px));
+    padding: 6px;
+    border-radius: 20px;
+    border: 1px solid var(--tile-edge);
+    background: var(--glass-blur);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(24px) saturate(1.8);
+    box-shadow: var(--shadow);
+    color: var(--text);
+  }
+  .more:popover-open {
+    animation: more-in 0.2s var(--ease-arrive);
+  }
+  @keyframes more-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+  .nav .more ul {
+    display: grid;
+    gap: 2px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .nav .more a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 14px;
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav .more a:hover {
+    background: var(--hover);
+  }
+  .nav .more a[aria-current='page'] {
+    background: var(--card);
   }
   /* Very small phones: the theme switch moves to the ⌘K menu to make room for the links. */
   @media (max-width: 399px) {

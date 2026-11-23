@@ -5,14 +5,17 @@ import { projectLook } from '../lib/projects';
 interface Props {
   id: string;
   size?: number;
+  /** Let this icon glide to the same project's icon on the next page (one per project per page). */
+  morph?: boolean;
 }
-const { id, size = 40 } = Astro.props;
+const { id, size = 40, morph = false } = Astro.props;
+const vt = morph ? `;view-transition-name:proj-icon-${id}` : '';
 const look = projectLook[id];
 ---
 
 {
   look?.image ? (
-    <img class="project-icon" loading="lazy" decoding="async" src={look.image} width={size} height={size} alt="" aria-hidden="true" style={`--size:${size}px`} />
+    <img class="project-icon" loading="lazy" decoding="async" src={look.image} width={size} height={size} alt="" aria-hidden="true" style={`--size:${size}px${vt}`} />
   ) : (
     <AppIcon name={look?.icon ?? 'projects'} size={size} />
   )

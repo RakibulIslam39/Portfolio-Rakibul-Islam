@@ -46,6 +46,12 @@ const green = qa.tests.failed === 0;
     line-height: 1.04;
     color: var(--muted);
   }
+  /* Phones: the headline fits in three lines instead of four. */
+  @media (max-width: 640px) {
+    :global(.hero) h1 {
+      font-size: 30px;
+    }
+  }
   :global(.hero) .hi {
     color: var(--text);
   }

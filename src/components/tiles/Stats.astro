@@ -14,7 +14,7 @@ const rows = [
 
 <Tile id="stats" size="1x1" area="stats" app="Live stats" href="/activity/" hrefLabel="Open the Activity page with all the stats" class="stats">
   <AppIcon name="report" slot="icon" />
-  <ul class="st" data-stats>
+  <ul class="st" data-stats data-loading aria-busy="true">
     {
       rows.map((r) => (
         <li class="st__row" data-stat={r.key} data-vs={r.vs}>
@@ -26,7 +26,7 @@ const rows = [
             <path d="M0 12 H60" />
           </svg>
           <span class="st__num">
-            <strong data-value>–</strong>
+            <strong class="sk" style="--sk-w: 4ch" data-value>–</strong>
             <span class="st__chg" data-change hidden></span>
           </span>
         </li>
@@ -155,6 +155,8 @@ const rows = [
 
   const load = async () => {
     const s = await getJSON<Stats>('/api/stats');
+    delete list!.dataset.loading;
+    list!.removeAttribute('aria-busy');
     if (s && typeof s.today === 'number') {
       render(s);
       off!.dataset.on = 'false';

@@ -47,9 +47,18 @@ test('home has Certificates and Blog tiles that lead to their pages', async ({ p
   if (!isMobile) await expect(blog.getByRole('link', { name: /^Inbox/ })).toHaveAttribute('href', '/writing/');
 });
 
-test('Blog and Certificates are in the main navigation', async ({ page }) => {
+test('Blog and Certificates are in the main navigation', async ({ page, isMobile }) => {
   const nav = page.getByRole('navigation', { name: 'Main' });
-  await expect(nav.getByRole('link', { name: 'Certificates' })).toHaveAttribute('aria-current', 'page');
+  if (isMobile) {
+    // Phones: Certificates lives in the "More" sheet, and "More" shows it's the current section.
+    const more = nav.getByRole('button', { name: 'More' });
+    await expect(more).toHaveAttribute('aria-current', 'page');
+    await more.click();
+    await expect(nav.getByRole('link', { name: 'Certificates' })).toHaveAttribute('aria-current', 'page');
+    await page.keyboard.press('Escape');
+  } else {
+    await expect(nav.getByRole('link', { name: 'Certificates' })).toHaveAttribute('aria-current', 'page');
+  }
   await nav.getByRole('link', { name: 'Blog' }).click();
   await expect(page).toHaveURL(/\/writing\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Blog');

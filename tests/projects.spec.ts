@@ -24,7 +24,10 @@ test('a case study reads like an App Store page', async ({ page }) => {
   await expect(facts).toContainText('38');
   await expect(facts).toContainText('100%');
   await expect(page.locator('.app__stack')).toContainText('Playwright');
-  await expect(page.getByRole('link', { name: '‹ Projects' })).toHaveAttribute('href', '/projects/');
+  const crumbs = page.getByRole('navigation', { name: 'Breadcrumb' });
+  await expect(crumbs.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
+  await expect(crumbs.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects/');
+  await expect(crumbs.locator('[aria-current="page"]')).not.toBeEmpty();
 });
 
 test('"You might also like" links to every other case study', async ({ page }) => {
