@@ -6,7 +6,7 @@ import AppIcon from '../AppIcon.astro';
  * prices, each compared with the same period before. Data: GET /api/stats (Cloudflare Web
  * Analytics), asked for when the tile scrolls into view and every five minutes after. */
 const rows = [
-  { key: 'today', label: 'Visitors', sub: 'Today', vs: 'yesterday' },
+  { key: 'today', label: 'Visitors', sub: 'Last 24 hours', vs: 'yesterday' },
   { key: 'countries', label: 'Countries', sub: 'This week', vs: '' },
   { key: 'week', label: 'Visitors', sub: 'This week', vs: 'prevWeek' },
 ];

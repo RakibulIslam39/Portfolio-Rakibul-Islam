@@ -66,7 +66,7 @@ test('visitor numbers appear on /qa and in the footer', async ({ page }) => {
   await expect(page.locator('[data-stat="today"]')).toHaveText('38');
   await expect(page.locator('[data-stat="week"]')).toHaveText('1,417');
   await expect(page.locator('[data-stats-fallback]')).toBeHidden();
-  await expect(page.locator('[data-visitors]')).toContainText('38 visitors today · 12 countries this week');
+  await expect(page.locator('[data-visitors]')).toContainText('38 visitors in the last 24 hours · 12 countries this week');
 });
 
 test('home shows the "tests passing" pill only for real CI reports', async ({ page }) => {

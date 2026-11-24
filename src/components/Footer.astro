@@ -47,7 +47,7 @@ const year = new Date().getFullYear();
   if (link) {
     void getJSON<Stats>('/api/stats').then((s) => {
       if (!s) return;
-      link.querySelector('[data-visitors-text]')!.textContent = `${s.today} visitors today · ${s.countries} countries this week`;
+      link.querySelector('[data-visitors-text]')!.textContent = `${s.today} visitors in the last 24 hours · ${s.countries} countries this week`;
       link.hidden = false;
     });
   }

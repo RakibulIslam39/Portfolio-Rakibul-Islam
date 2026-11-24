@@ -10,10 +10,11 @@ export interface StatsEnv {
 }
 
 interface Stats {
+  /** Visits in the last 24 hours (a rolling window, so it never drops to 0 at UTC midnight). */
   today: number;
   week: number;
   countries: number;
-  /** Visits yesterday up to the same time of day, to compare with `today`. */
+  /** Visits in the 24 hours before that, to compare with `today`. */
   yesterday: number;
   /** Visits in the 7 days before this week, to compare with `week`. */
   prevWeek: number;
@@ -66,9 +67,13 @@ interface GqlResponse {
 
 const sumVisits = (rows?: Array<{ sum?: { visits?: number } }>) => (rows ?? []).reduce((n, r) => n + (r.sum?.visits ?? 0), 0);
 
-/** Visits today (UTC), in the last 7 days, and distinct countries this week. */
+/**
+ * Visits in the last 24 hours, in the last 7 days, and distinct countries this week. Both
+ * windows roll with the clock: a calendar "today" in UTC restarted at 6 AM in Dhaka and showed
+ * 0 visitors (−100%) for the first minutes of every day.
+ */
 export async function fetchStats(env: StatsEnv, now = new Date(), f: Fetch = fetch): Promise<Stats> {
-  const dayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const dayStart = new Date(now.getTime() - 864e5);
   const weekStart = new Date(now.getTime() - 7 * 864e5);
   const res = await fetchWithTimeout(f, 'https://api.cloudflare.com/client/v4/graphql', {
     method: 'POST',
@@ -82,7 +87,7 @@ export async function fetchStats(env: StatsEnv, now = new Date(), f: Fetch = fet
         weekStart: weekStart.toISOString(),
         now: now.toISOString(),
         yStart: new Date(dayStart.getTime() - 864e5).toISOString(),
-        yNow: new Date(now.getTime() - 864e5).toISOString(),
+        yNow: dayStart.toISOString(),
         pwStart: new Date(weekStart.getTime() - 7 * 864e5).toISOString(),
       },
     }),

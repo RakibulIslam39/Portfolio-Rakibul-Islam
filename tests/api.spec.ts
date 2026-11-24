@@ -111,7 +111,7 @@ test.describe('visitor stats', () => {
     expect(req.url).toBe('https://api.cloudflare.com/client/v4/graphql');
     const body = JSON.parse(req.init!.body as string);
     expect(body.query).toBe(QUERY);
-    expect(body.variables).toMatchObject({ account: 'acc', site: 'site', dayStart: '2026-11-19T00:00:00.000Z', yStart: '2026-11-18T00:00:00.000Z', yNow: '2026-11-18T15:30:00.000Z' });
+    expect(body.variables).toMatchObject({ account: 'acc', site: 'site', dayStart: '2026-11-18T15:30:00.000Z', yStart: '2026-11-17T15:30:00.000Z', yNow: '2026-11-18T15:30:00.000Z' });
     expect((req.init!.headers as Record<string, string>).authorization).toBe('Bearer t');
   });
 
