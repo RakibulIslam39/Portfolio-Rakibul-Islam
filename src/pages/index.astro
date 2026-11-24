@@ -39,8 +39,8 @@ import Blog from '../components/tiles/Blog.astro';
     <Report />
     <Status />
     <CiRun />
-    <Career />
     <Skills />
+    <Career />
     <Blog />
     <Certificates />
     <BugHunt />
@@ -65,7 +65,7 @@ import Blog from '../components/tiles/Blog.astro';
   <script is:inline>
     (function () {
       var layout = {};
-      try { layout = JSON.parse(localStorage.getItem('home-layout-v2') || '{}') || {}; } catch (e) {}
+      try { layout = JSON.parse(localStorage.getItem('home-layout-v3') || '{}') || {}; } catch (e) {}
       if (!Object.keys(layout).length) return;
       var grid = document.querySelector('[data-bento]');
       var tiles = Array.prototype.slice.call(grid.children).filter(function (t) { return t.classList.contains('tile'); });
@@ -170,8 +170,8 @@ import Blog from '../components/tiles/Blog.astro';
         'report report'
         'status status'
         'ci ci'
-        'tl tl'
         'skills skills'
+        'tl tl'
         'blog blog'
         'certs certs'
         'bug bug'
@@ -190,9 +190,9 @@ import Blog from '../components/tiles/Blog.astro';
         'hero hero photo map'
         'hero hero switch switch'
         'proj proj report report'
-        'proj proj report report'
-        'status status ci ci'
-        'tl tl skills skills'
+        'proj proj status status'
+        'ci ci skills skills'
+        'tl tl tl tl'
         'blog blog certs certs'
         'bug bug plugins contact'
         'book stats plugins contact';

@@ -8,8 +8,8 @@
  * Swapping two tiles swaps their slots. The map tile → slot is saved in this browser only.
  */
 
-// v2: the home grid changed shape (Phase 2), so layouts saved for the old grid start fresh.
-const LAYOUT_KEY = 'home-layout-v2';
+// v3: the home grid changed shape (Phase 2 and its follow-up), so layouts saved for the old grid start fresh.
+const LAYOUT_KEY = 'home-layout-v3';
 
 type Layout = Record<string, string>; // tile id → id of the tile whose home slot it now uses
 

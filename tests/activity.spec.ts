@@ -66,7 +66,8 @@ test.describe('Activity page', () => {
   test('the Live stats tile and the footer lead here', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#stats a[href="/activity/"]').first()).toBeAttached();
-    await expect(page.locator('footer a[href="/activity/"]')).toBeAttached();
+    await expect(page.locator('footer [data-visitors][href="/activity/"]')).toBeAttached();
+    await expect(page.getByRole('navigation', { name: 'Pages' }).getByRole('link', { name: 'Activity' })).toHaveAttribute('href', '/activity/');
   });
 });
 
