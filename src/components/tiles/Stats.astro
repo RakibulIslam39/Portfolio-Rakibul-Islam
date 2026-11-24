@@ -136,10 +136,28 @@ const rows = [
     return `M0 ${y(from)} L15 ${y(mid * 0.92)} L30 ${y(mid * 1.05)} L45 ${y((mid + to) / 2)} L60 ${y(to)}`;
   };
 
+  // Numbers roll up from 0 the first time they arrive (0.6 s, easing out); later refreshes,
+  // and visitors who prefer reduced motion, just get the new value.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let counted = false;
+  const countUp = (el: HTMLElement, to: number) => {
+    if (counted || reduce || to < 2) {
+      el.textContent = fmt.format(to);
+      return;
+    }
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / 600);
+      el.textContent = fmt.format(Math.round(to * (1 - (1 - t) ** 3)));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
   const render = (s: Stats) => {
     list!.querySelectorAll<HTMLElement>('[data-stat]').forEach((row) => {
       const value = s[row.dataset.stat as keyof Stats] as number;
-      row.querySelector('[data-value]')!.textContent = fmt.format(value);
+      countUp(row.querySelector<HTMLElement>('[data-value]')!, value);
       const before = row.dataset.vs ? (s[row.dataset.vs as keyof Stats] as number | undefined) : undefined;
       const chg = row.querySelector<HTMLElement>('[data-change]')!;
       if (typeof before === 'number') {
@@ -159,6 +177,7 @@ const rows = [
     list!.removeAttribute('aria-busy');
     if (s && typeof s.today === 'number') {
       render(s);
+      counted = true;
       off!.dataset.on = 'false';
     } else {
       off!.dataset.on = 'true';

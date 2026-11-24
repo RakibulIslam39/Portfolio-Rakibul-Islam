@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/tiles/Hero.astro';
-import TerminalTile from '../components/tiles/TerminalTile.astro';
 import Portrait from '../components/tiles/Portrait.astro';
 import Status from '../components/tiles/Status.astro';
 import Report from '../components/tiles/Report.astro';
@@ -36,11 +35,10 @@ import Blog from '../components/tiles/Blog.astro';
     <Portrait />
     <MapTile />
     <Switcher />
-    <TerminalTile />
-    <Status />
-    <Report />
-    <CiRun />
     <Projects />
+    <Report />
+    <Status />
+    <CiRun />
     <Career />
     <Skills />
     <Blog />
@@ -51,11 +49,23 @@ import Blog from '../components/tiles/Blog.astro';
     <Plugins />
     <Contact />
   </div>
+  <!-- Tiles rise into place on the first visit of a session only, not every time you come back. -->
+  <script is:inline>
+    (function () {
+      var root = document.documentElement;
+      try {
+        if (sessionStorage.getItem('arrived')) root.setAttribute('data-arrived', '');
+        else sessionStorage.setItem('arrived', '1');
+      } catch (e) {
+        root.setAttribute('data-arrived', '');
+      }
+    })();
+  </script>
   <!-- Put a visitor's saved tile order back before the first paint (see src/scripts/rearrange.ts). -->
   <script is:inline>
     (function () {
       var layout = {};
-      try { layout = JSON.parse(localStorage.getItem('home-layout') || '{}') || {}; } catch (e) {}
+      try { layout = JSON.parse(localStorage.getItem('home-layout-v2') || '{}') || {}; } catch (e) {}
       if (!Object.keys(layout).length) return;
       var grid = document.querySelector('[data-bento]');
       var tiles = Array.prototype.slice.call(grid.children).filter(function (t) { return t.classList.contains('tile'); });
@@ -83,8 +93,12 @@ import Blog from '../components/tiles/Blog.astro';
 
 <script>
   import { initRearrange } from '../scripts/rearrange';
+  import { initGlow } from '../scripts/glow';
   const grid = document.querySelector<HTMLElement>('[data-bento]');
-  if (grid) initRearrange(grid);
+  if (grid) {
+    initRearrange(grid);
+    initGlow(grid);
+  }
   if (location.hash === '#edit-layout') document.querySelector<HTMLButtonElement>('[data-layout-edit]')?.click();
 </script>
 
@@ -152,11 +166,10 @@ import Blog from '../components/tiles/Blog.astro';
         'hero hero'
         'photo map'
         'switch switch'
-        'term term'
-        'status status'
-        'report report'
-        'ci ci'
         'proj proj'
+        'report report'
+        'status status'
+        'ci ci'
         'tl tl'
         'skills skills'
         'blog blog'
@@ -176,13 +189,103 @@ import Blog from '../components/tiles/Blog.astro';
       grid-template-areas:
         'hero hero photo map'
         'hero hero switch switch'
-        'term term status status'
-        'report report ci ci'
-        'proj proj tl tl'
-        'proj proj skills skills'
+        'proj proj report report'
+        'proj proj report report'
+        'status status ci ci'
+        'tl tl skills skills'
         'blog blog certs certs'
         'bug bug plugins contact'
         'book stats plugins contact';
     }
+  }
+
+  /* Arrival: after the hero and portrait (left alone, so the page's main content paints at once),
+     each tile fades and rises 8 px, 40 ms after the one before. First visit of a session only. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html:not([data-arrived])) .bento > :global(.tile:nth-child(n + 3)) {
+      animation: tile-in 0.5s var(--ease-arrive) both;
+      animation-delay: calc(var(--i, 0) * 40ms);
+    }
+  }
+  .bento > :global(.tile:nth-child(3)) {
+    --i: 1;
+  }
+  .bento > :global(.tile:nth-child(4)) {
+    --i: 2;
+  }
+  .bento > :global(.tile:nth-child(5)) {
+    --i: 3;
+  }
+  .bento > :global(.tile:nth-child(6)) {
+    --i: 4;
+  }
+  .bento > :global(.tile:nth-child(7)) {
+    --i: 5;
+  }
+  .bento > :global(.tile:nth-child(8)) {
+    --i: 6;
+  }
+  .bento > :global(.tile:nth-child(9)) {
+    --i: 7;
+  }
+  .bento > :global(.tile:nth-child(10)) {
+    --i: 8;
+  }
+  .bento > :global(.tile:nth-child(11)) {
+    --i: 9;
+  }
+  .bento > :global(.tile:nth-child(12)) {
+    --i: 10;
+  }
+  .bento > :global(.tile:nth-child(13)) {
+    --i: 11;
+  }
+  .bento > :global(.tile:nth-child(14)) {
+    --i: 12;
+  }
+  .bento > :global(.tile:nth-child(15)) {
+    --i: 13;
+  }
+  .bento > :global(.tile:nth-child(16)) {
+    --i: 14;
+  }
+  .bento > :global(.tile:nth-child(17)) {
+    --i: 15;
+  }
+  .bento > :global(.tile:nth-child(18)) {
+    --i: 16;
+  }
+  @keyframes tile-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* Pointer glow (src/scripts/glow.ts): a soft teal light on the tile edges near the mouse. */
+  .bento[data-glow] > :global(.tile)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: radial-gradient(240px circle at var(--gx, -999px) var(--gy, -999px), color-mix(in srgb, var(--accent) 75%, transparent), transparent 70%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .bento[data-glow]:hover > :global(.tile)::after {
+    opacity: 1;
+  }
+  .bento--editing[data-glow] > :global(.tile)::after {
+    display: none;
   }
 </style>

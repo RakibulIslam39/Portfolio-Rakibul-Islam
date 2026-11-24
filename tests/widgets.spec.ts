@@ -84,3 +84,24 @@ test('contact links are correct', async ({ page }) => {
   await expect(contact.getByRole('link', { name: 'Email' })).toHaveAttribute('href', /^mailto:/);
   await expect(contact.getByRole('link', { name: 'Save contact' })).toHaveAttribute('href', '/rakibul-islam.vcf');
 });
+
+test('the Test report tile holds the live terminal run', async ({ page }) => {
+  const report = page.locator('#report');
+  await expect(report.locator('[data-terminal]')).toHaveCount(1);
+  await expect(page.locator('#term')).toHaveCount(0);
+});
+
+test('tiles rise in on the first visit of a session only', async ({ page }) => {
+  // beforeEach already made the first visit (tiles animated); a second load skips it.
+  await page.evaluate(() => sessionStorage.removeItem('arrived'));
+  await page.reload();
+  await expect(page.locator('html')).not.toHaveAttribute('data-arrived');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-arrived', '');
+});
+
+test('the pointer glow is on for mouse users only', async ({ page, isMobile }) => {
+  const bento = page.locator('[data-bento]');
+  if (isMobile) await expect(bento).not.toHaveAttribute('data-glow');
+  else await expect(bento).toHaveAttribute('data-glow', '');
+});
